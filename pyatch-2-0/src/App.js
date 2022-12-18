@@ -1,13 +1,13 @@
 import './assets/css/App.css';
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { python } from "@codemirror/lang-python";
-import Pyodide from "./features/pyodide/components/pyodide";
+import Pyodide from "./features/pyodide/pyodide";
 import { Bridge } from './scripts/ScratchBridge';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateText } from './features/textEditor/textEditorSlice';
 import CodeMirror from '@uiw/react-codemirror';
 import { pyodideUpdateStatus } from './features/pyodide/pyodideSlice';
-import PyodideStates from './constants/pyodideStates';
+import PyodideStates from './features/pyodide/pyodideConstants';
 
 function App() {
   const ideText = useSelector((state) => state.textEditor.text);

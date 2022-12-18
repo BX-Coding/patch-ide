@@ -1,15 +1,19 @@
-// webworker.js
+import {PyodideStates, PYODIDE_INDEX_URL} from './pyodideConstants'
+import { useSelector, useDispatch } from 'react-redux';
+import { pyodideUpdateStatus } from './pyodideSlice';
 
-// Setup your project to serve `py-worker.js`. You should also serve
-// `pyodide.js`, and all its associated `.asm.js`, `.data`, `.json`,
-// and `.wasm` files as well:
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
+const dispatch = useDispatch()
+
+dispatch(pyodideUpdateStatus(PyodideStates.LOADING));
+importScripts(PYODIDE_INDEX_URL + "pyodide.js");
 
 async function loadPyodideAndPackages() {
   self.pyodide = await loadPyodide();
   // await self.pyodide.loadPackage(["numpy", "pytz"]);
 }
 let pyodideReadyPromise = loadPyodideAndPackages();
+
+dispatch(pyodideUpdateStatus(PyodideStates.READY));
 
 self.onmessage = async (event) => {
   // make sure loading is done
