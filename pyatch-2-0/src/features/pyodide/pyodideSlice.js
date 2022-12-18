@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import PyodideStates from './pyodideConstants';
+import { PyodideStates }  from './pyodideConstants';
 
 const initialState = {
   status: PyodideStates.PRE_LOAD,

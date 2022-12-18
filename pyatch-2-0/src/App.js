@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateText } from './features/textEditor/textEditorSlice';
 import CodeMirror from '@uiw/react-codemirror';
 import { pyodideUpdateStatus } from './features/pyodide/pyodideSlice';
-import PyodideStates from './features/pyodide/pyodideConstants';
+import { PyodideStates } from './features/pyodide/pyodideConstants';
 
 function App() {
   const ideText = useSelector((state) => state.textEditor.text);
