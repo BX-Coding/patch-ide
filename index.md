@@ -1,6 +1,6 @@
 # Welcome to the Pyatch Project!
 
-![Pyatch Logo](https://bxcoding.com/wp-content/uploads/2023/02/PyatchLogo.png =250x250)
+<img src="https://bxcoding.com/wp-content/uploads/2023/02/PyatchLogo.png" width="48">
 
 ## The Goal
 
