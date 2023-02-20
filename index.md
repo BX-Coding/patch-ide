@@ -20,6 +20,18 @@ Scratch is an incredible tool and is widely used in CS education. More likely th
 
 The functionality behind the Pyatch IDE React component is made of several other js modules working together in tandem. A list of these components, their functionality, and there Github repos can be found below.
 
+#### [Pyatch VM](https://github.com/BX-Coding/pyatch-vm)
+
+A stripped down version of the [Scratch VM](https://github.com/LLK/scratch-vm) used to manage the state of the game view and interface with the Scratch GUI component. Much of the functionality involving thread or execution management was stripped as the Pyatch worker will be handling most of this.
+
+#### [Pyatch Worker](https://github.com/BX-Coding/pyatch-worker)
+
+A web worker module that handles the execution and threading of the program. This module then connects to the Pyatch VM via a socket api to push block execution to the VM.
+
+#### [**Pyatch Linker**](https://github.com/BX-Coding/pyatch-linker)
+
+A small js module responsible for handling the pre-processing of the raw text inputted by the user.
+
 # Development
 
 Development is currently being tracked by the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
