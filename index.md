@@ -22,25 +22,25 @@ The functionality behind the Pyatch IDE React component is made of several other
 
 #### [Pyatch VM](https://github.com/BX-Coding/pyatch-vm)
 
-A stripped down version of the [Scratch VM](https://github.com/LLK/scratch-vm) used to manage the state of the game view and interface with the Scratch GUI component. Much of the functionality involving thread or execution management was stripped as the Pyatch worker will be handling most of this.
+A stripped down version of the [Scratch VM](https://github.com/LLK/scratch-vm) used to manage the state of the game view and interface with the Scratch Renderer component. Much of the functionality involving thread or execution management was stripped as the Pyatch worker will be handling most of this.
 
 #### [Pyatch Worker](https://github.com/BX-Coding/pyatch-worker)
 
 A web worker module that handles the execution and threading of the program. This module then connects to the Pyatch VM via a socket API to push block execution to the VM.
 
-#### [**Pyatch Linker**](https://github.com/BX-Coding/pyatch-linker)
+#### [Pyatch Linker](https://github.com/BX-Coding/pyatch-linker)
 
 A small js module responsible for handling the pre-processing of the raw text inputted by the user.
+
+#### [Scratch Renderer](https://github.com/LLK/scratch-render)
+
+A js module developed by [Scratch](https://github.com/LLK) to render the state of the Scratch VM
 
 ## Component Diagram
 
 An informal diagram of how the components of Pyatch should interact
 
-<object data="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+![Diagram](https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.jpg)
 
 # Development
 
