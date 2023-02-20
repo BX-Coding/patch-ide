@@ -36,7 +36,11 @@ A small js module responsible for handling the pre-processing of the raw text in
 
 An informal diagram of how the components of Pyatch should interact
 
-![Pyatch Components](https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf)
+<object data="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
 
 # Development
 
