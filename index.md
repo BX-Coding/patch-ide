@@ -2,6 +2,8 @@
 
 <img src="https://bxcoding.com/wp-content/uploads/2023/02/PyatchLogo.png" width="120">
 
+# Contextualization
+
 ## The Problem
 
 Learning the syntax of text-based programming languages can be hard, and it is often a roadblock for many young learners looking to take their first step into text-based programming languages after being introduced to Scratch. Python is often the first recommendation because of its simplistic syntax and massive popularity as a scripting language. However, leaners’ first experiences with Python after being introduced to programming with Scratch often are not positive. This is because, there is a distinct loss of agency between the two experiences. Even only somewhat skilled Scratch users, can create almost anything their creative minds can conjure. On the other hand, a somewhat experienced Scratch user attempting to begin learning Python will be presented with a slew of step-by-step extremely structured projects. While many of the core programming concepts that Scratch naturally teaches do translate to Python, there is still a significant loss of agency of the learner due to the pure amount of new syntax, vocabulary, and libraries that a young learner must become familiar with to produce something similar to what they could create in Scratch. 
@@ -12,12 +14,20 @@ Pyatch's intent is to utilize a teaching pattern that we have used at [BX Coding
 
 ## Conclusion
 
-Scratch is an incredible tool and is widely used in CS education. More likely than not, it will be young computer scientists first introduction to programming. Purposefully or not, by the time a student has progressed to the point to where they are looking ot explore text-based programming they have become familiarized with an enormous amount of Scratch vocabulary presented by it's API.
+Scratch is an incredible tool and is widely used in CS education. More likely than not, it will be young computer scientists first introduction to programming. Purposefully or not, by the time a student has progressed to the point to where they are looking to explore text-based programming they have become familiarized with an enormous amount of Scratch concepts and vocabulary utilized within the tool itself. While some of these concepts can clearly be generalized and used in text-based programming almost all of the vocabulary is unusable during the tranisition. Pyatch offers an accessible online tool to help utilize this vocabulary while a young computer scientist tackles the challenging task of learning the syntax of Python. The result is a learning enviroment that encourages less structured creative exploration of Python and nutures young comuputer scienctists self-efficacy and agency.
 
-## Developers
+# Architrcture & Design
+
+The functionality behind the Pyatch IDE React component is made of several other js modules working together in tandem. A list of these components, their functionality, and there Github repos can be found below.
+
+# Development
+
+Development is currently being tracked by the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
+
+## Devleopers
 
 The Pyatch Project is currently being developed by [Elliot Roe](https://github.com/ElliotRoe)
 
-## Want to join?
+# Want to join?
 
 Reach out to [Elliot Roe](https://github.com/ElliotRoe)! We welcome all collaborators
