@@ -32,6 +32,12 @@ A web worker module that handles the execution and threading of the program. Thi
 
 A small js module responsible for handling the pre-processing of the raw text inputted by the user.
 
+## Component Diagram
+
+An informal diagram of how the components of Pyatch should interact
+
+![Pyatch Components](https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.pdf)
+
 # Development
 
 Development is currently being tracked by the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
