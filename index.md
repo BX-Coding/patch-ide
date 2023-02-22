@@ -56,7 +56,7 @@ Development is currently being tracked by the [Pyatch Github project](https://gi
 
 ## Developers
 
-The Pyatch Project is currently being developed by [Elliot Roe](https://github.com/ElliotRoe)
+The Pyatch Project is currently being developed by [Elliot Roe](https://github.com/ElliotRoe) and [Duncan Johnson](https://github.com/DuncanAJohnson)
 
 # Want to join?
 
