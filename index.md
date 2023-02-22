@@ -52,7 +52,7 @@ An informal diagram of how the components of Pyatch interact
 
 # Development
 
-Development is currently being managed by [BX Coding](https://bxcoding.org) and is tracked on the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
+Development is currently being managed by [BX Coding](https://bxcoding.org) and is tracked on the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1) page
 
 ## Developers
 
