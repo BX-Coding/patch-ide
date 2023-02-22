@@ -52,11 +52,12 @@ An informal diagram of how the components of Pyatch interact
 
 # Development
 
-Development is currently being tracked by the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
+Development is currently being managed by [BX Coding](https://bxcoding.org) and tracked by the [Pyatch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1)
 
 ## Developers
 
-The Pyatch Project is currently being developed by [Elliot Roe](https://github.com/ElliotRoe) and [Duncan Johnson](https://github.com/DuncanAJohnson)
+- [Elliot Roe](https://github.com/ElliotRoe)
+- [Duncan Johnson](https://github.com/DuncanAJohnson)
 
 # Want to join?
 
