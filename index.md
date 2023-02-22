@@ -60,4 +60,4 @@ The Pyatch Project is currently being developed by [Elliot Roe](https://github.c
 
 # Want to join?
 
-Reach out to [Elliot Roe](https://github.com/ElliotRoe)! We welcome all collaborators
+Reach out to info@bxcoding.org! We welcome all collaborators
