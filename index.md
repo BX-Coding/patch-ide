@@ -61,4 +61,4 @@ Development is currently being managed by [BX Coding](https://bxcoding.org) and 
 
 # Want to join?
 
-Reach out to info@bxcoding.org! We welcome all collaborators
+Reach out to developer@bxcoding.org! We welcome all collaborators!
