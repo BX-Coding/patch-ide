@@ -1,6 +1,6 @@
 # Welcome to the Pyatch Project!
 
-<img src="https://bxcoding.com/wp-content/uploads/2023/02/PyatchLogo.png" width="120">
+<img src="https://bxcoding.org/wp-content/uploads/2023/02/PyatchLogo.png" width="120">
 
 # Contextualization
 
@@ -48,7 +48,7 @@ A js module developed by [Scratch](https://github.com/LLK) to render the state o
 
 An informal diagram of how the components of Pyatch interact
 
-![Diagram](https://bxcoding.com/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.jpg)
+![Diagram](https://bxcoding.org/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.jpg)
 
 # Development
 
