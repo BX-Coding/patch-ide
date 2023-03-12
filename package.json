@@ -1,0 +1,29 @@
+{
+  "name": "pyatch-2-0",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@codemirror/lang-python": "^6.1.0",
+    "@uiw/react-codemirror": "^4.19.3"
+  },
+
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.0.0"
+  }
+}
