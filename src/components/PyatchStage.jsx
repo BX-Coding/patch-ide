@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import pyatchContext from './pyatchContext';
+import pyatchContext from './provider/PyatchContext.js';
 import DOMElementRenderer from '../util/dom-element-renderer';
 
-const PyatchGameScreen = () => {
+const PyatchStage = () => {
     const { pyatchStage } = useContext(pyatchContext);
     return (
         <DOMElementRenderer
@@ -15,4 +15,4 @@ const PyatchGameScreen = () => {
     );
 }
 
-export default PyatchGameScreen
+export default PyatchStage

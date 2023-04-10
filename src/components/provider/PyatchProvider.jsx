@@ -3,7 +3,7 @@ import PyatchContext from "./PyatchContext.js";
 import { PYATCH_LOADING_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
-import VirtualMachine from '/Users/elliotroe/Documents/GitHub/pyatch-vm/src/virtual-machine.mjs'
+import VirtualMachine from 'pyatch-vm'
 
 const PyatchProvider = props => {
   let pyatchVM = null;

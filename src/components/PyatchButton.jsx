@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Button } from '@mui/material/Button'
-import pyatchContext from './pyatchContext';
+import pyatchContext from './pyatchContext.js';
 
 export function PyatchStartButton(props) {
     const pyatchEditor = useContext(pyatchContext);
