@@ -8,16 +8,7 @@ import './App.css'
 function App() {
 
   return (
-    <PyatchProvider>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <PyatchStage/>
-        </Grid>
-        <Grid item xs={8}>
-          <PyatchStartButton/>
-        </Grid>
-      </Grid>
-    </PyatchProvider>
+    <div>hello</div>
   )
 }
 

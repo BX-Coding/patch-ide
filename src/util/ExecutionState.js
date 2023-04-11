@@ -8,9 +8,9 @@ export const PYATCH_LOADING_STATES = {
 }
 
 export const PYATCH_LOADING_MESSAGES = {
-    [PyodideStates.PRE_LOAD]: 'Pyodide is waiting to loading...',
-    [PyodideStates.LOADING]: 'Pyodide is loading...',
-    [PyodideStates.RUNNING]: 'Pyodide is running...',
-    [PyodideStates.HALTING]: 'Pyodide is halting...',
-    [PyodideStates.READY]: 'Pyodide is ready',
+    [PYATCH_LOADING_STATES.PRE_LOAD]: 'Pyodide is waiting to loading...',
+    [PYATCH_LOADING_STATES.LOADING]: 'Pyodide is loading...',
+    [PYATCH_LOADING_STATES.RUNNING]: 'Pyodide is running...',
+    [PYATCH_LOADING_STATES.HALTING]: 'Pyodide is halting...',
+    [PYATCH_LOADING_STATES.READY]: 'Pyodide is ready',
 }
