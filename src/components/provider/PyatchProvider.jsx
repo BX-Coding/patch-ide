@@ -1,62 +1,64 @@
-import React, { useState,  useEffect } from "react";
+import React, { useState,  useEffect, useMemo } from "react";
 import PyatchContext from "./PyatchContext.js";
-import { PYATCH_LOADING_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
+import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm'
 
+import sprite3ArrBuffer from '../../assets/cat.sprite3';
+
+import { Buffer } from 'buffer-es6'
+
+window.Buffer = Buffer;
+
 const PyatchProvider = props => {
-  let pyatchVM = null;
 
   const pyatchEditor = {};
 
-  [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState("stopped");
   [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState("print('hello world!')");
-  [pyatchEditor.pyatchMessage, pyatchEditor.setPyatchMessage] = useState(PYATCH_LOADING_MESSAGES[PYATCH_LOADING_STATES.PRE_LOAD]);
-  [pyatchEditor.buttonStates, pyatchEditor.setButtonStates] = useState({
-    runDisabled: false,
-    stopDisabled: true,
-  });
+
+  [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
+  [pyatchEditor.onRunPress] = useState(() => {
+    console.log('running');
+    // const targetsAndCode = [{
+    //     'id': 'target1',
+    //     'code': state.editorText,
+    // }]
+    // pyatchVM.run(targetsAndCode);
+  }
+);
+
+  pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
+  pyatchEditor.runDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.READY, [pyatchEditor.executionState]);
+  pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
+
 
   const pyatchStage = {
     canvas: null,
+    height: 400,
+    width: 600,
   };
 
-  useEffect(async () => {
-    pyatchStage.canvas = document.createElement('canvas');
-    const scratchRenderer = new Renderer(pyatchStage.canvas);
+  useEffect(() => {
+    async function useEffectAsync() {
+      pyatchStage.canvas = document.createElement('canvas');
+      const scratchRenderer = new Renderer(pyatchStage.canvas);
 
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
+      const pyatchVM = new VirtualMachine(null);
+      pyatchVM.attachRenderer(scratchRenderer);
+      pyatchVM.attachStorage(makeTestStorage());
 
-    const PATH_TO_PYODIDE = path.join(__dirname, '../../node_modules/pyodide');
-    const PATH_TO_WORKER = path.join(__dirname, '../../src/worker/pyodide-web-worker.mjs');
+      const sprite3 = Buffer.from(sprite3ArrBuffer);
 
-    const pyatchVM = new VirtualMachine(PATH_TO_PYODIDE, PATH_TO_WORKER);
-    pyatchVM.attachRenderer(scratchRenderer);
-    pyatchVM.attachStorage(makeTestStorage());
-
-    const sprite3Uri = path.resolve(__dirname, '../../assets/cat.sprite3');
-    const sprite3 = readFileToBuffer(sprite3Uri);
-
-    await pyatchVM.addSprite(sprite3);
+      await pyatchVM.addSprite(sprite3);
+    }
+    useEffectAsync();
+    
   }, []);
-
-
-  pyatchEditor.onRunPress = () => {
-    const targetsAndCode = [{
-        'id': 'target1',
-        'code': state.editorText,
-    }]
-
-    pyatchVM.run(targetsAndCode);
-
-  }
 
   pyatchEditor.onStopPress = () => {
 
   }
-
 
   return (
    <PyatchContext.Provider

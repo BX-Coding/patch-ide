@@ -15,6 +15,8 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 
 import react from '@vitejs/plugin-react'
 
+import arraybuffer from '@wemap/rollup-plugin-arraybuffer';
+
 import builtins from 'rollup-plugin-node-builtins';
 
 export default {
@@ -62,7 +64,8 @@ export default {
    },
 
    plugins: [
-      react(),
+    arraybuffer({ include: '**/*.sprite3' }),
+    react(),
    ],
 
    optimizeDeps: {
@@ -73,13 +76,26 @@ export default {
           },
           // Enable esbuild polyfill plugins
           plugins: [
-              NodeModulesPolyfillPlugin()
+            // NodeGlobalsPolyfillPlugin({
+            //     buffer: true, 
+            //     process: true,
+            //   }), 
+            NodeModulesPolyfillPlugin()
          ],
          loader: {
             '.trie':'base64',
+            '.sprite3':'binary',
          }
       }
   },
 
+  assetsInclude: [
+    "**/*.sprite3",
+    "**/*.worker.mjs" 
+],
+
+worker: {
+    format: 'es'
+}
 
 };
