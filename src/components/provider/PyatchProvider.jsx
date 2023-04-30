@@ -14,45 +14,49 @@ window.Buffer = Buffer;
 const PyatchProvider = props => {
 
   const pyatchEditor = {};
+  let pyatchVM = null;
 
-  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState("print('hello world!')");
+  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState("move(10)");
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
-  [pyatchEditor.onRunPress] = useState(() => {
-    console.log('running');
-    // const targetsAndCode = [{
-    //     'id': 'target1',
-    //     'code': state.editorText,
-    // }]
-    // pyatchVM.run(targetsAndCode);
+  pyatchEditor.onRunPress = () => {
+    const targetsAndCode = {
+      'target1': [pyatchEditor.editorText],
+    }
+    pyatchVM.run(targetsAndCode);
+    pyatchVM.runtime.renderer.draw();
   }
-);
 
   pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
-  pyatchEditor.runDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.READY, [pyatchEditor.executionState]);
+  pyatchEditor.runDisabled = false;
   pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
 
 
   const pyatchStage = {
-    canvas: null,
+    canvas: document.createElement('canvas'),
     height: 400,
     width: 600,
   };
 
   useEffect(() => {
-    async function useEffectAsync() {
-      pyatchStage.canvas = document.createElement('canvas');
+    async function effectAsync() {
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
-      const pyatchVM = new VirtualMachine(null);
+      pyatchVM = new VirtualMachine(null);
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
 
       const sprite3 = Buffer.from(sprite3ArrBuffer);
 
       await pyatchVM.addSprite(sprite3);
+
+      pyatchVM.runtime.targets[0].id = 'target1'
+
+      pyatchVM.runtime.renderer.draw();
+
+      console.log(pyatchVM);
     }
-    useEffectAsync();
+    effectAsync();
     
   }, []);
 
