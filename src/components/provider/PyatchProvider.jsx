@@ -52,8 +52,6 @@ const PyatchProvider = props => {
       pyatchVM.runtime.targets[0].id = 'target1'
 
       pyatchVM.runtime.renderer.draw();
-
-      console.log(pyatchVM);
     }
     effectAsync();
     
