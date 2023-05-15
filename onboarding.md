@@ -74,7 +74,7 @@ Once all the test cases run and everything has a check mark by it, you are good 
 **Patch IDE**
 Paste this command into your terminal in order to clone the Patch IDE repository
 
-    git clone https://github.com/BX-Coding/pyatch-vm.git
+    git clone https://github.com/BX-Coding/pyatch-react-ide.git
 
 Once the repo is cloned, open the folder in VSCode.
 In the VSCode terminal paste the following command.
