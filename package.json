@@ -16,7 +16,7 @@
     "file-loader": "^6.2.0",
     "fs": "^0.0.1-security",
     "lodash.omit": "^4.5.0",
-    "pyatch-vm": "github:BX-Coding/pyatch-vm#main",
+    "pyatch-vm": "github:BX-Coding/pyatch-vm#duncanjohnson99/bxc-89-register-threads-doesnt-correctly",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-style-proptype": "^3.2.2",
