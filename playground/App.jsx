@@ -1,31 +1,31 @@
-import { useState } from 'react'
 import PyatchProvider from '../src/components/provider/PyatchProvider.jsx';
-import { PyatchStartButton,  PyatchStopButton} from '../src/components/PyatchButton.jsx';
+import {PyatchStartButton,  PyatchStopButton} from '../src/components/PyatchButton.jsx';
 import PyatchStage from '../src/components/PyatchStage.jsx';
+import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
 import { PyatchCodeEditor } from '../src/components/PyatchEditor.jsx';
 
 function App() {
-
   return (
     <PyatchProvider>
       <Grid container width={'100%'} spacing={2}>
         <Grid item xs={7}>
           <PyatchCodeEditor/>
         </Grid>
-        <Grid container item direction="column" xs={4} spacing={2}>
-          <Grid container item spacing={2}>
-            <Grid item>
-              <PyatchStartButton/>
-            </Grid>
-            <Grid item>
+        <Grid container item spacing={2}>
+          <Grid item>
+            <PyatchStartButton/>
+          </Grid>
+          <Grid item>
             <PyatchStopButton/>
-            </Grid>
           </Grid>
-          <Grid container item xs={6}>
+        </Grid>
+        <Grid container item xs={6}>
           <PyatchStage/>
-          </Grid>
+        </Grid>
+        <Grid container item>
+          <PyatchSpriteArea/>
         </Grid>
       </Grid>
     </PyatchProvider>
