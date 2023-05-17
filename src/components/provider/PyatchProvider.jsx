@@ -4,7 +4,7 @@ import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/Exe
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
-import { PyatchSelectSprite }  from "../PyatchSelectSprite.jsx";
+import { updateState }  from "../PyatchEditor.jsx";
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
@@ -16,17 +16,19 @@ const pyatchEditor = {};
 
 let pyatchVM = null;
 
-let activeSprite = 0;
-
 let nextSpriteID = 0;
 
 const PyatchProvider = props => {
 
   let [sprites, setSprites] = useState([]);
-
   const pyatchSetSprite = {
     sprites: [sprites, setSprites]
   };
+
+  let [activeSprite, setActiveSprite] = useState();
+  const pyatchSetActiveSprite = {
+    activeSprite: [activeSprite, setActiveSprite]
+  }
 
   let [spriteX, setSpriteX] = useState(0);
   let [spriteY, setSpriteY] = useState(0);
@@ -45,14 +47,17 @@ const PyatchProvider = props => {
     setSpriteY(pyatchVM.runtime.targets[activeSprite].y);
   }
 
-  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState(["move(10)\n", "goToXY(50, 50)\n"]);
+  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([]);
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   pyatchEditor.onRunPress = () => {
-    const threadsAndCode = {
-      'target1': [pyatchEditor.editorText[1]],
-      'target2': [pyatchEditor.editorText[0]]
-    }
+    const threadsAndCode = { };
+
+    sprites.forEach((sprite) => {
+      threadsAndCode['target' + sprite] = pyatchEditor.editorText[sprite];
+    });
+
+    console.log(threadsAndCode);
 
     pyatchVM.run(threadsAndCode);
 
@@ -68,7 +73,8 @@ const PyatchProvider = props => {
     height: 400,
     width: 600,
   };
-
+  
+  // runs once on window render
   useEffect(() => {
     function effect() {
 
@@ -102,6 +108,10 @@ const PyatchProvider = props => {
 
     setSprites(() => [...sprites, nextSpriteID]);
 
+    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, ""]);
+
+    setActiveSprite(nextSpriteID);
+
     nextSpriteID++;
 
     pyatchVM.runtime.renderer.draw();
@@ -109,14 +119,16 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.onSelectSprite = (spriteID) => {
-    activeSprite = spriteID;
-    console.log(activeSprite);
-    changeSpriteValues();
+    
+    setActiveSprite(spriteID);
+
+    changeSpriteValues(pyatchEditor.editorText[spriteID]);
+
   }
 
   return (
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, pyatchSetSprite, activeSprite}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, pyatchSetSprite, pyatchSetActiveSprite}}
     >
       {props.children}
     </PyatchContext.Provider>

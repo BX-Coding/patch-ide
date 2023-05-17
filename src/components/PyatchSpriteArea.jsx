@@ -4,7 +4,6 @@ import pyatchContext from './provider/PyatchContext.js';
 import { PyatchSelectSprite } from './PyatchSelectSprite.jsx';
 import { PyatchSpriteAttributes } from './PyatchSpriteAttributes.jsx';
 
-
 const PyatchSpriteArea = () => {
     let { pyatchSetSprite } = useContext(pyatchContext);
 
