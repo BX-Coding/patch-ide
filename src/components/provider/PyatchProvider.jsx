@@ -4,6 +4,7 @@ import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/Exe
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm'
+import {globalVar} from '../PatchVariables.jsx'
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
@@ -23,7 +24,7 @@ const PyatchProvider = props => {
     const targetsAndCode = {
       'target1': [pyatchEditor.editorText],
     }
-    pyatchVM.run(targetsAndCode);
+    pyatchVM.run(targetsAndCode, globalVar);
   }
 
   pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
