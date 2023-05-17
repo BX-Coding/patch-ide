@@ -4,14 +4,14 @@ import PyatchStage from '../src/components/PyatchStage.jsx';
 import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
-import { PyatchCodeEditor } from '../src/components/PyatchEditor.jsx';
+import PyatchEditor from '../src/components/PyatchEditor.jsx';
 
 function App() {
   return (
     <PyatchProvider>
       <Grid container width={'100%'} spacing={2}>
         <Grid item xs={7}>
-          <PyatchCodeEditor/>
+          <PyatchEditor/>
         </Grid>
         <Grid container item spacing={2}>
           <Grid item>
