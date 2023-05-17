@@ -16,14 +16,16 @@ export default function PatchVariables() {
             height: 1,
             border: '1px dashed grey'
             }}>
-            <Grid container justifyContent="center">
-                <Grid item xs={12}>
-                    <h1 align="center">Variables</h1>
+            <Grid>
+                <Grid container justifyContent="center">
+                    <Grid item xs={12}>
+                        <h1>Variables</h1>
+                    </Grid>
+                    <Grid>
+                        <VariableInputField/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <VariableInputField/>
-                </Grid>
-                <Grid item xs={3}>
+                <Grid container>
                     <PlusButton/>
                 </Grid>
             </Grid>
@@ -46,20 +48,24 @@ export function PlusButton(){
             value = parseInt(value);
         }
         globalVar[variableName] = value;
-        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <p style={styleVarList} key={name}>{name}={value}</p>));
+        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <p style={styleVarList} key={name} align = "left">{name}={value}</p>));
 
     };
 
 
     return (
         <> 
-        <IconButton
+        <Grid container justifyContent ="center">
+            <Grid item>
+                <IconButton
             onClick={handleClick}
             style={{ color: "white"}}
-        >
+            >
             <AddCircleIcon />
-        </IconButton>
-        {currentVars}
+            </IconButton>
+                </Grid>
+        </Grid>
+        <Grid item>{currentVars}</Grid>
         </>
 
     );
