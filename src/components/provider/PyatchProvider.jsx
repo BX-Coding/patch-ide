@@ -18,22 +18,30 @@ let pyatchVM = null;
 
 let nextSpriteID = 0;
 
+let persistentActiveSprite = 0;
+
 const PyatchProvider = props => {
 
   let [sprites, setSprites] = useState([]);
 
-  let [activeSprite, setActiveSprite] = useState();
+  let [activeSprite, setActiveSpriteState] = useState(0);
 
   let [spriteX, setSpriteX] = useState(0);
   let [spriteY, setSpriteY] = useState(0);
   let [spriteSize, setSpriteSize] = useState(100);
   let [spriteDirection, setSpriteDirection] = useState(90);
 
+  // dictionary this
   const pyatchSpriteValues = [spriteX, spriteY, spriteSize, spriteDirection];
 
-  function changeSpriteValues() {
-    setSpriteX(pyatchVM.runtime.targets[activeSprite].x);
-    setSpriteY(pyatchVM.runtime.targets[activeSprite].y);
+  function changeSpriteValues(spriteID) {
+    console.log(persistentActiveSprite);
+
+    setSpriteX(pyatchVM.runtime.targets[persistentActiveSprite].x);
+    setSpriteY(pyatchVM.runtime.targets[persistentActiveSprite].y);
+    setSpriteSize(pyatchVM.runtime.targets[persistentActiveSprite].size);
+    setSpriteDirection(pyatchVM.runtime.targets[persistentActiveSprite].direction);
+
   }
 
   [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([]);
@@ -43,10 +51,8 @@ const PyatchProvider = props => {
     const threadsAndCode = { };
 
     sprites.forEach((sprite) => {
-      threadsAndCode['target' + sprite] = pyatchEditor.editorText[sprite];
+      threadsAndCode['target' + sprite] = [pyatchEditor.editorText[sprite]];
     });
-
-    console.log(threadsAndCode);
 
     pyatchVM.run(threadsAndCode);
 
@@ -75,6 +81,8 @@ const PyatchProvider = props => {
 
       pyatchVM.runtime.renderer.draw();
 
+      pyatchVM.start();
+
     }
     effect();
   
@@ -85,6 +93,11 @@ const PyatchProvider = props => {
 
   }
 
+  function setActiveSprite(spriteID) {
+    persistentActiveSprite = spriteID;
+    setActiveSpriteState(spriteID);
+  }
+
   pyatchEditor.onAddSprite = async () => {
     const sprite3 = Buffer.from(sprite3ArrBuffer);
 
@@ -93,7 +106,7 @@ const PyatchProvider = props => {
     pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-    pyatchVM.runtime.targets[0].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
     setSprites(() => [...sprites, nextSpriteID]);
 
@@ -111,7 +124,7 @@ const PyatchProvider = props => {
     
     setActiveSprite(spriteID);
 
-    changeSpriteValues(pyatchEditor.editorText[spriteID]);
+    changeSpriteValues(spriteID);
 
   }
 
