@@ -34,8 +34,15 @@ const PyatchProvider = props => {
   // dictionary this
   const pyatchSpriteValues = [spriteX, spriteY, spriteSize, spriteDirection];
 
-  function changeSpriteValues(spriteID) {
-    console.log(persistentActiveSprite);
+  function changeSpriteValues(eventSource = null) {
+    // only update the attributes if the active sprite has changes
+    if (eventSource) {
+      if (eventSource.id !== 'target' + persistentActiveSprite) {
+        return;
+      }
+    }
+
+    console.log("updating attribute values");
 
     setSpriteX(pyatchVM.runtime.targets[persistentActiveSprite].x);
     setSpriteY(pyatchVM.runtime.targets[persistentActiveSprite].y);
@@ -124,7 +131,7 @@ const PyatchProvider = props => {
     
     setActiveSprite(spriteID);
 
-    changeSpriteValues(spriteID);
+    changeSpriteValues();
 
   }
 
