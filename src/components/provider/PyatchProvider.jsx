@@ -31,8 +31,12 @@ const PyatchProvider = props => {
   let [spriteSize, setSpriteSize] = useState(100);
   let [spriteDirection, setSpriteDirection] = useState(90);
 
-  // dictionary this
-  const pyatchSpriteValues = [spriteX, spriteY, spriteSize, spriteDirection];
+  const pyatchSpriteValues = {
+    x: spriteX, 
+    y: spriteY, 
+    size: spriteSize, 
+    direction: spriteDirection
+  };
 
   function changeSpriteValues(eventSource = null) {
     // only update the attributes if the active sprite has changes
