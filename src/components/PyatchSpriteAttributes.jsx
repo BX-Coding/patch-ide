@@ -11,6 +11,6 @@ export function PyatchSpriteAttributes(props) {
     let spriteDirectionVal = pyatchSpriteValues[3];
 
     return(
-        <h1>X: {spriteXVal} Y: {spriteYVal} Size: {spriteSizeVal} Direction: {spriteDirectionVal} </h1>
+        <h1>X: {Math.round(spriteXVal)} Y: {Math.round(spriteYVal)} Size: {Math.round(spriteSizeVal)} Direction: {Math.round(spriteDirectionVal)} </h1>
     );
 }
