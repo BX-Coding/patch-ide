@@ -4,7 +4,7 @@ import { PyatchTargetEditor } from './PyatchTargetEditor.jsx';
 
 const PyatchEditor = () => {
     let { sprites } = useContext(pyatchContext);
-
+    
     return (
         <div>
             {sprites.map((sprite) => {

@@ -16,12 +16,14 @@ export function PyatchTargetEditor(props) {
 
     const active = {
         'pointer-events': 'auto',
-        'opacity': '1'
+        'opacity': '1',
+        'position': 'relative'
     };
 
     const inactive = {
         'pointer-events': 'none',
-        'opacity': '0'
+        'opacity': '0',
+        'position': 'absolute'
     };
 
     return(
