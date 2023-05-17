@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 let globalVar = {};
 export {globalVar};
@@ -19,7 +20,7 @@ export default function PatchVariables() {
             <Grid>
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <h1>Variables</h1>
+                        <Typography align="center"><h1>Variables</h1></Typography>
                     </Grid>
                     <Grid>
                         <VariableInputField/>
@@ -48,7 +49,7 @@ export function PlusButton(){
             value = parseInt(value);
         }
         globalVar[variableName] = value;
-        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <p style={styleVarList} key={name} align = "left">{name}={value}</p>));
+        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <p style={styleVarList} key={name} align = "left">{name} = {value}</p>));
 
     };
 
