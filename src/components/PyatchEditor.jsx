@@ -6,9 +6,7 @@ import { python } from '@codemirror/lang-python';
 
 export function PyatchCodeEditor(props) {
     const { pyatchEditor } = useContext(pyatchContext);
-    const { pyatchSetActiveSprite } = useContext(pyatchContext);
-
-    let activeSprite = pyatchSetActiveSprite["activeSprite"][0];
+    const { activeSprite } = useContext(pyatchContext);
 
     const updateState = (newValue) => {
         console.log(activeSprite);

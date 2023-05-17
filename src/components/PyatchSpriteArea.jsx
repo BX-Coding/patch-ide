@@ -5,15 +5,13 @@ import { PyatchSelectSprite } from './PyatchSelectSprite.jsx';
 import { PyatchSpriteAttributes } from './PyatchSpriteAttributes.jsx';
 
 const PyatchSpriteArea = () => {
-    let { pyatchSetSprite } = useContext(pyatchContext);
-
-    const spriteIDArray = pyatchSetSprite["sprites"][0];
+    let { sprites } = useContext(pyatchContext);
 
     return (
         <div>
             <PyatchSpriteAttributes/>
             
-            {spriteIDArray.map((sprite) => {
+            {sprites.map((sprite) => {
                 return <PyatchSelectSprite key={sprite} spriteID={sprite}/>
             })}
             

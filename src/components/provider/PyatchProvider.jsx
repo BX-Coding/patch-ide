@@ -21,26 +21,15 @@ let nextSpriteID = 0;
 const PyatchProvider = props => {
 
   let [sprites, setSprites] = useState([]);
-  const pyatchSetSprite = {
-    sprites: [sprites, setSprites]
-  };
 
   let [activeSprite, setActiveSprite] = useState();
-  const pyatchSetActiveSprite = {
-    activeSprite: [activeSprite, setActiveSprite]
-  }
 
   let [spriteX, setSpriteX] = useState(0);
   let [spriteY, setSpriteY] = useState(0);
   let [spriteSize, setSpriteSize] = useState(100);
   let [spriteDirection, setSpriteDirection] = useState(90);
 
-  const pyatchSpriteValues = {
-    spriteX: [spriteX, setSpriteX],
-    spriteY: [spriteY, setSpriteY],
-    spriteSize: [spriteSize, setSpriteSize],
-    spriteDirection: [spriteDirection, setSpriteDirection]
-  };
+  const pyatchSpriteValues = [spriteX, spriteY, spriteSize, spriteDirection];
 
   function changeSpriteValues() {
     setSpriteX(pyatchVM.runtime.targets[activeSprite].x);
@@ -128,7 +117,7 @@ const PyatchProvider = props => {
 
   return (
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, pyatchSetSprite, pyatchSetActiveSprite}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite}}
     >
       {props.children}
     </PyatchContext.Provider>
