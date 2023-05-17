@@ -46,8 +46,6 @@ const PyatchProvider = props => {
       }
     }
 
-    console.log("updating attribute values");
-
     setSpriteX(pyatchVM.runtime.targets[persistentActiveSprite].x);
     setSpriteY(pyatchVM.runtime.targets[persistentActiveSprite].y);
     setSpriteSize(pyatchVM.runtime.targets[persistentActiveSprite].size);

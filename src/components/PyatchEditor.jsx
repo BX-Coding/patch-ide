@@ -9,7 +9,6 @@ export function PyatchCodeEditor(props) {
     const { activeSprite } = useContext(pyatchContext);
 
     const updateState = (newValue) => {
-        console.log(activeSprite);
         pyatchEditor.editorText[activeSprite] = newValue;
     }
 
