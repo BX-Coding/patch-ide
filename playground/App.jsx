@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import './App.css'
 import { PyatchCodeEditor } from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
+import PatchVariables from '../src/components/PatchVariables.jsx';
 
 function App() {
 
@@ -15,7 +16,10 @@ function App() {
         <Grid container item direction ="row" xs={12}>
           <PatchTopBar/>
         </Grid>
-        <Grid item xs={7}>
+        <Grid item xs={2.5}>
+          <PatchVariables/>
+        </Grid>
+        <Grid item xs={5}>
           <PyatchCodeEditor/>
         </Grid>
         <Grid container item direction="column" xs={4} spacing={2}>
