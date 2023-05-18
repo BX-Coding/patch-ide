@@ -5,6 +5,7 @@ import PyatchStage from '../src/components/PyatchStage.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
 import { PyatchCodeEditor } from '../src/components/PyatchEditor.jsx';
+import PatchTopBar from '../src/components/PatchTopBar.jsx';
 import PatchVariables from '../src/components/PatchVariables.jsx';
 
 function App() {
@@ -12,6 +13,9 @@ function App() {
   return (
     <PyatchProvider>
       <Grid container width={'100%'} spacing={2}>
+        <Grid container item direction ="row" xs={12}>
+          <PatchTopBar/>
+        </Grid>
         <Grid item xs={2.5}>
           <PatchVariables/>
         </Grid>

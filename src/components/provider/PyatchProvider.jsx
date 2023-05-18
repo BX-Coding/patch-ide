@@ -43,7 +43,7 @@ const PyatchProvider = props => {
     async function effectAsync() {
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
-      pyatchVM = new VirtualMachine(null);
+      pyatchVM = new VirtualMachine();
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
 
@@ -54,6 +54,8 @@ const PyatchProvider = props => {
       pyatchVM.runtime.targets[0].id = 'target1'
 
       pyatchVM.runtime.renderer.draw();
+
+      pyatchVM.start();
     }
     effectAsync();
     
