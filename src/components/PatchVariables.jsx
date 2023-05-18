@@ -6,16 +6,11 @@ import Grid from '@mui/material/Grid';
 import { useState, useContext, createContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import pyatchContext from './provider/PyatchProvider.jsx';
+import PyatchContext from "./provider/PyatchContext.js";
 
-let globalVar = {};
-export {globalVar};
-
-const VarsContext = createContext("");
 export default function PatchVariables() {
-    const [currentVars, setCurrentVars] = useState("");
+
     return (
-        <VarsContext.Provider value={{currentVars,setCurrentVars}}>
         <Box
             sx={{
             height: 1,
@@ -38,48 +33,52 @@ export default function PatchVariables() {
                 </Grid>
             </Grid>
         </Box>
-        </VarsContext.Provider>
 
     );
   }
 
 export function PlusButton(){
-        const {currentVars, setCurrentVars} = useContext(VarsContext);
-        const handleClick = (event) =>{
-        let variableName = varName.value;
+    const { pyatchEditor } = useContext(PyatchContext);
+
+    const handleClick = (event) =>{
+        let name = varName.value;
         let value = varValue.value;
-        if(!isNaN(parseInt(value))){
+        if(!Number.isNaN(parseInt(value))){
             value = parseInt(value);
         }
-        globalVar[variableName] = value;
-        const newVar = { variableName : value };
-        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <Typography key={name} align = "left">{name} = {value}</Typography>));
+        pyatchEditor.setGlobalVariables(() => ({
+            ...pyatchEditor.setGlobalVariables,
+            [name]:value
+        }));
 
     };
 
-
     return (
-        <> 
         <Grid container>
             <Grid item xs={12}>
                 <IconButton
-            onClick={handleClick}
-            style={{ color: "white"}}
-            >
-            <AddCircleIcon />
-            </IconButton>
-                </Grid>
+                onClick={handleClick}
+                style={{ color: "white"}}
+                >
+                    <AddCircleIcon />
+                </IconButton>
+            </Grid>
         </Grid>
-        </>
-
     );
 }
 
-export function VarList(){
-    const {currentVars, setCurretVars} = useContext(VarsContext);
-    console.log(currentVars);
+function VarLine(props) {
+    return (
+        <Typography>{props.name} = {props.value}</Typography>
+    )
+}
+
+export function VarList() {
+    const { pyatchEditor } = useContext(PyatchContext);
     return(
-        <Grid>{currentVars}</Grid>
+        <Grid>{Object.keys(pyatchEditor.globalVariables).map((name) => {
+            return <VarLine name={name} value={pyatchEditor.globalVariables[name]}/>
+        })}</Grid>
     );
 }
 
