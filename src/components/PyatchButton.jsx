@@ -16,6 +16,6 @@ export function PyatchStopButton(props) {
     const { pyatchEditor } = useContext(pyatchContext);
 
     return(
-        <Button variant="outlined" color="error" onClick={pyatchEditor.onStop} disabled={pyatchEditor.stopDisabled}><DangerousIcon/></Button>
+        <Button variant="outlined" color="error" size="small" onClick={pyatchEditor.onStop} disabled={pyatchEditor.stopDisabled} sx={{mb: "1vh"}}><DangerousIcon/></Button>
     );
 }
