@@ -1,28 +1,40 @@
 import React, { useContext } from 'react';
-import { PyatchAddSprite } from './PyatchAddSprite.jsx';
+import { PyatchAddSprite } from "./PyatchAddSprite.jsx"; //plus button
+import { PyatchSelectSprite } from "./PyatchSelectSprite.jsx"; //sprite name button
+import { PyatchSpriteAttributes } from "./PyatchSpriteAttributes.jsx"; //height and stuff
+import { PyatchSpriteName } from "./PyatchSpriteName.jsx"; //textfeild
 import pyatchContext from './provider/PyatchContext.js';
-import { PyatchSelectSprite } from './PyatchSelectSprite.jsx';
-import { PyatchSpriteAttributes } from './PyatchSpriteAttributes.jsx';
-import { PyatchSpriteName } from './PyatchSpriteName.jsx';
+import Grid from '@mui/material/Grid';
 
-const PyatchSpriteArea = () => {
+export default function PyatchSpriteArea(){
     let { sprites } = useContext(pyatchContext);
-
-    return (
-        <div>
-            {sprites.map((sprite) => {
-                return <PyatchSpriteName key={sprite} spriteID={sprite}/>
-            })}
-
-            <PyatchSpriteAttributes/>
-            
-            {sprites.map((sprite) => {
+    
+    return(
+        <Grid>
+            <Grid container justifyContent = "center">
+                <Grid item xs={12}>
+                    <PyatchSpriteAttributes/>
+                </Grid>
+            </Grid>
+            <Grid container sx={{ alignItems: 'center' }}>
+                <Grid item xs={12}>
+                    {sprites.map((sprite) => {
+                        return <PyatchSpriteName key={sprite} spriteID={sprite}/>
+                        })}
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid item xs={12}>
+                {sprites.map((sprite) => {
                 return <PyatchSelectSprite key={sprite} spriteID={sprite}/>
             })}
-            
-            <PyatchAddSprite/>
-        </div>
+                </Grid>
+            </Grid>
+            <Grid container sx={{ alignItems: 'center' }}>
+                <Grid item xs={12}>
+                    <PyatchAddSprite/>
+                </Grid>
+            </Grid>
+        </Grid>
     );
 }
-
-export default PyatchSpriteArea

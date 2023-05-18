@@ -9,27 +9,31 @@ import PyatchEditor from '../src/components/PyatchEditor.jsx';
 function App() {
   return (
     <PyatchProvider>
-      <Grid container width={'100%'} spacing={2}>
-        <Grid item xs={7}>
-          <PyatchEditor/>
-        </Grid>
-        <Grid container item spacing={2}>
-          <Grid item>
-            <PyatchStartButton/>
+      <Grid container item direction = "row" width={'100%'} spacing={2}>
+          <Grid item xs={7}>
+            <PyatchEditor/>
           </Grid>
-          <Grid item>
-            <PyatchStopButton/>
+          <Grid item xs={5}>
+            <Grid container spacing={2} item direction = "row">
+              <Grid item>
+                <PyatchStartButton/>
+              </Grid>
+              <Grid item>
+                <PyatchStopButton/>
+              </Grid>
+            </Grid>
+            <Grid container justifyContent="center">
+              <Grid item xs={12}>
+                <PyatchStage/>
+              </Grid>
+              <Grid item xs={12}>
+                <PyatchSpriteArea/>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container item xs={6}>
-          <PyatchStage/>
-        </Grid>
-        <Grid container item>
-          <PyatchSpriteArea/>
-        </Grid>
       </Grid>
     </PyatchProvider>
-  )
+  );
 }
 
-export default App
+export default App;

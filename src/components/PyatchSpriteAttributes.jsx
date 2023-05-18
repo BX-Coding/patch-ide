@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
+import Typography from '@mui/material/Typography';
 
 
 export function PyatchSpriteAttributes(props) {
@@ -11,6 +12,6 @@ export function PyatchSpriteAttributes(props) {
     let spriteDirectionVal = pyatchSpriteValues.direction;
 
     return(
-        <h1>X: {Math.round(spriteXVal)} Y: {Math.round(spriteYVal)} Size: {Math.round(spriteSizeVal)} Direction: {Math.round(spriteDirectionVal)} </h1>
+        <Typography variant="h5" align = "center">X: {Math.round(spriteXVal)} Y: {Math.round(spriteYVal)} Size: {Math.round(spriteSizeVal)} Direction: {Math.round(spriteDirectionVal)} </Typography>
     );
 }

@@ -31,6 +31,9 @@ export function PyatchSpriteName(props) {
             <TextField 
                 defaultValue={spriteName}
                 onChange={updateName}
+                fullWidth
+                sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                size="small"
             />
         </div>
     );

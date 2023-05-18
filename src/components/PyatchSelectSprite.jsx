@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 export function PyatchSelectSprite(props) {
     const { pyatchEditor } = useContext(pyatchContext);
@@ -12,6 +13,6 @@ export function PyatchSelectSprite(props) {
     let spriteName = pyatchEditor.getSpriteName(spriteID);
 
     return(
-        <Button variant="contained" onClick={() => pyatchEditor.onSelectSprite(spriteID)}>{spriteName}</Button>
+        <Button variant="contained" onClick={() => pyatchEditor.onSelectSprite(spriteID)} sx={{m:"1vh"}}>{spriteName}</Button>
     );
 }
