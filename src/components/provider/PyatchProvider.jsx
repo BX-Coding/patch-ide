@@ -25,7 +25,7 @@ const PyatchProvider = props => {
     const targetsAndCode = {
       'target1': [pyatchEditor.editorText],
     }
-    pyatchVM.run(targetsAndCode, pyatchEditor.globalVariables);
+    pyatchVM.run(targetsAndCode);
   }
 
   pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
