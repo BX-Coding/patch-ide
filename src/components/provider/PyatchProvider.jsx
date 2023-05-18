@@ -1,10 +1,10 @@
-import React, { useState,  useEffect, useMemo } from "react";
+import React, { useState,  useEffect, useMemo, createContext } from "react";
 import PyatchContext from "./PyatchContext.js";
 import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm'
-import {globalVar} from '../PatchVariables.jsx'
+
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
@@ -12,8 +12,9 @@ import { Buffer } from 'buffer-es6'
 
 window.Buffer = Buffer;
 
-const PyatchProvider = props => {
 
+const PyatchProvider = props => {
+  const [currentVars, setCurrentVars] = useState([]);
   const pyatchEditor = {};
   let pyatchVM = null;
 
@@ -63,11 +64,13 @@ const PyatchProvider = props => {
   }
 
   return (
+   <>
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage}}
+      value={{pyatchEditor, pyatchStage, currentVars, setCurrentVars}}
     >
       {props.children}
     </PyatchContext.Provider>
+    </>
   );
 };
 

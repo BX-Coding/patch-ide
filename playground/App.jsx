@@ -12,13 +12,13 @@ function App() {
   return (
     <PyatchProvider>
       <Grid container width={'100%'} spacing={2}>
-        <Grid item xs={1.5}>
+        <Grid item xs={2.5}>
           <PatchVariables/>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <PyatchCodeEditor/>
         </Grid>
-        <Grid container item direction="column" xs={4.5} spacing={2}>
+        <Grid container item direction="column" xs={4} spacing={2}>
           <Grid container item spacing={2}>
             <Grid item>
               <PyatchStartButton/>

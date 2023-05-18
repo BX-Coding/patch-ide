@@ -3,15 +3,19 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { useState } from 'react';
+import { useState, useContext, createContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import pyatchContext from './provider/PyatchProvider.jsx';
 
 let globalVar = {};
 export {globalVar};
 
+const VarsContext = createContext("");
 export default function PatchVariables() {
+    const [currentVars, setCurrentVars] = useState("");
     return (
+        <VarsContext.Provider value={{currentVars,setCurrentVars}}>
         <Box
             sx={{
             height: 1,
@@ -20,44 +24,44 @@ export default function PatchVariables() {
             <Grid>
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <Typography align="center"><h1>Variables</h1></Typography>
-                    </Grid>
-                    <Grid>
-                        <VariableInputField/>
+                        <Typography align="center" variant="h6">Global Variables</Typography>
                     </Grid>
                 </Grid>
-                <Grid container>
-                    <PlusButton/>
+                <Grid container sx={{ alignItems: 'center' }}>
+                    <Grid item xs={10}>
+                        <VariableInputField/>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <PlusButton/>
+                    </Grid>
+                    <Grid item xs={12} sx={{ml:"1vh"}}><VarList/></Grid>
                 </Grid>
             </Grid>
         </Box>
+        </VarsContext.Provider>
 
     );
   }
 
 export function PlusButton(){
-    //don't know what to do here, center variable names
-    const styleVarList={
-        margin: 10,
-    }
-
-    const [currentVars, setCurrentVars] = useState("");
-    const handleClick = (event) =>{
+        const {currentVars, setCurrentVars} = useContext(VarsContext);
+        const handleClick = (event) =>{
         let variableName = varName.value;
         let value = varValue.value;
         if(!isNaN(parseInt(value))){
             value = parseInt(value);
         }
         globalVar[variableName] = value;
-        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <p style={styleVarList} key={name} align = "left">{name} = {value}</p>));
+        const newVar = { variableName : value };
+        setCurrentVars(Object.entries(globalVar).map(([name, value]) => <Typography key={name} align = "left">{name} = {value}</Typography>));
 
     };
 
 
     return (
         <> 
-        <Grid container justifyContent ="center">
-            <Grid item>
+        <Grid container>
+            <Grid item xs={12}>
                 <IconButton
             onClick={handleClick}
             style={{ color: "white"}}
@@ -66,32 +70,53 @@ export function PlusButton(){
             </IconButton>
                 </Grid>
         </Grid>
-        <Grid item>{currentVars}</Grid>
         </>
 
+    );
+}
+
+export function VarList(){
+    const {currentVars, setCurretVars} = useContext(VarsContext);
+    console.log(currentVars);
+    return(
+        <Grid>{currentVars}</Grid>
     );
 }
 
 export function VariableInputField(){
     return (
        <>
-        <TextField
-            label = "Variable Name"
-            id="varName"
-            variant="outlined"  
-            size="small"
-            sx={{ width: "90%", ml: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-            InputLabelProps={{style : {color : 'white'} }}
-        />
-        <p align="center">=</p>
-        <TextField
-            label = "Variable Value"
-            id="varValue"
-            variant="outlined"  
-            size="small"
-            sx={{ width: "90%", ml: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-            InputLabelProps={{style : {color : 'white'} }}
-        /> 
+        <Grid>
+                
+                <Grid container item direction="row" justifyContent="center" sx={{ alignItems: 'center' }}>
+                    <Grid item xs={6.5}>
+                <Typography variant="outlined" margin='dense' sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}>
+                    <TextField
+                    label = "Variable Name"
+                    id="varName"
+                    size = "small"
+                    fullWidth
+                    InputLabelProps={{style : {color : 'white'} }}
+                    InputProps={{style:{height: "2em"}}}
+                />
+                </Typography>
+                </Grid>
+                <Grid item xs={0.5}>
+                <Typography align="center">=</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                    <Typography variant="outlined" margin = 'dense'sx={{input: { color: 'white'}, fieldset: { borderColor: "white" }}}>
+                    <TextField
+                        label = "Value"
+                        id="varValue"
+                        size="small"
+                        fullWidth
+                        InputLabelProps={{style : {color : 'white'} }}
+                        InputProps={{style:{height: "2em"}}}
+                    /> </Typography>
+                </Grid>
+                </Grid>
+        </Grid>
         </>
     );
 }
