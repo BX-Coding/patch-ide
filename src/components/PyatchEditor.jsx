@@ -8,7 +8,7 @@ const PyatchEditor = () => {
     return (
         <div>
             {sprites.map((sprite) => {
-                return <PyatchTargetEditor spriteID={sprite}/>
+                return <PyatchTargetEditor key={sprite} spriteID={sprite}/>
             })}
         </div>
     );

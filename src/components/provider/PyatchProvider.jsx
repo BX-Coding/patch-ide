@@ -25,6 +25,7 @@ const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
 
   let [activeSprite, setActiveSpriteState] = useState(0);
+  let [activeSpriteName, setActiveSpriteName] = useState();
 
   let [spriteX, setSpriteX] = useState(0);
   let [spriteY, setSpriteY] = useState(0);
@@ -137,9 +138,24 @@ const PyatchProvider = props => {
 
   }
 
+  pyatchEditor.getSpriteName = (spriteID) => {
+    if (pyatchVM) {
+      return pyatchVM.runtime.getTargetById('target' + spriteID).getName();
+    } else {
+      return "No Sprite";
+    }
+  }
+
+  pyatchEditor.setSpriteName = (name) => {
+    if (pyatchVM) {
+      pyatchVM.runtime.getTargetById('target' + activeSprite).sprite.name = name;
+      setActiveSpriteName(name);
+    }
+  }
+
   return (
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName}}
     >
       {props.children}
     </PyatchContext.Provider>
