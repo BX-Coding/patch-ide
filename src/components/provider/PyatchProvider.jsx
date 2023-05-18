@@ -14,18 +14,18 @@ window.Buffer = Buffer;
 
 
 const PyatchProvider = props => {
-  const [currentVars, setCurrentVars] = useState([]);
   const pyatchEditor = {};
   let pyatchVM = null;
 
   [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState("move(10)");
+  [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   pyatchEditor.onRunPress = () => {
     const targetsAndCode = {
       'target1': [pyatchEditor.editorText],
     }
-    pyatchVM.run(targetsAndCode, globalVar);
+    pyatchVM.run(targetsAndCode, pyatchEditor.globalVariables);
   }
 
   pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
@@ -68,7 +68,7 @@ const PyatchProvider = props => {
   return (
    <>
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, currentVars, setCurrentVars}}
+      value={{pyatchEditor, pyatchStage}}
     >
       {props.children}
     </PyatchContext.Provider>
