@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, createContext } from "react";
 import PyatchContext from "./PyatchContext.js";
 import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
-import { updateState }  from "../PyatchEditor.jsx";
+
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
@@ -21,7 +21,6 @@ let nextSpriteID = 0;
 let persistentActiveSprite = 0;
 
 const PyatchProvider = props => {
-
   let [sprites, setSprites] = useState([]);
 
   let [activeSprite, setActiveSpriteState] = useState(0);
@@ -55,6 +54,7 @@ const PyatchProvider = props => {
   }
 
   [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([]);
+  [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   pyatchEditor.onRunPress = () => {
@@ -85,11 +85,12 @@ const PyatchProvider = props => {
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
-      pyatchVM = new VirtualMachine(null); 
+      pyatchVM = new VirtualMachine(); 
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
 
       pyatchVM.runtime.renderer.draw();
+
 
       pyatchVM.start();
 
@@ -154,11 +155,13 @@ const PyatchProvider = props => {
   }
 
   return (
+   <>
    <PyatchContext.Provider
       value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName}}
     >
       {props.children}
     </PyatchContext.Provider>
+    </>
   );
 };
 

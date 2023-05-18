@@ -5,15 +5,23 @@ import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
 import PyatchEditor from '../src/components/PyatchEditor.jsx';
+import PatchTopBar from '../src/components/PatchTopBar.jsx';
+import PatchVariables from '../src/components/PatchVariables.jsx';
 
 function App() {
   return (
     <PyatchProvider>
       <Grid container item direction = "row" width={'100%'} spacing={2}>
-          <Grid item xs={7}>
+        <Grid container item direction ="row" xs={12}>
+          <PatchTopBar/>
+        </Grid>
+        <Grid item xs={2}>
+          <PatchVariables/>
+        </Grid>
+          <Grid item xs={6}>
             <PyatchEditor/>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={4}>
             <Grid container spacing={2} item direction = "row">
               <Grid item>
                 <PyatchStartButton/>
