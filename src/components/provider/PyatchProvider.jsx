@@ -4,6 +4,7 @@ import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/Exe
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
+import AudioEngine from 'scratch-audio';
 
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
@@ -19,6 +20,8 @@ let pyatchVM = null;
 let nextSpriteID = 0;
 
 let persistentActiveSprite = 0;
+
+let audioEngine = null;
 
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
@@ -111,6 +114,11 @@ const PyatchProvider = props => {
 
   pyatchEditor.onAddSprite = async () => {
     const sprite3 = Buffer.from(sprite3ArrBuffer);
+
+    if(!audioEngine){
+      audioEngine = new AudioEngine();
+      pyatchVM.attachAudioEngine(audioEngine);
+    }
 
     await pyatchVM.addSprite(sprite3);
 
