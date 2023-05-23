@@ -31,7 +31,7 @@ export function PyatchTargetEditor(props) {
         <div style={(activeSprite == props.spriteID) ? active : inactive}>
             <CodeMirror
                 value={pyatchEditor.editorText[props.spriteID]}
-                extensions={[python(), autocompletion({override: [theCompletions]})]}
+                extensions={[python(), autocompletion({override: [completions]})]}
                 theme={material}
                 onChange={updateState}
                 height="90vh"
@@ -40,70 +40,67 @@ export function PyatchTargetEditor(props) {
     );
 }
 
-function theCompletions(context){
+function completions(context){
     let word = context.matchBefore(/\w*/);
-    if (word.from == word.to && !context.explicit && (word.length>0))
-        return {options:[{autoCloseBrackets: true}]}
-    if (word.from == word.to && !context.explicit)
-        return null
+    if (word.length>0)
+        return {options:[{autoCloseBrackets: true}]};
+    if (word.from == word.to)
+        return null;
     return {
         from: word.from,
         options: [
-        {label: "touchingObject", detail: "event"},
-        {label: "broadcast", detail: "event"},
-        {label: "broadCastAndWait", detail: "event"},
-        {label: "hatGreaterThanPredicate", detail: "event"},
-        {label: "say", detail: "look"},
-        {label: "sayForSecs", detail: "look"},
-        {label: "think", detail: "look"},
-        {label: "thinkForSecs", detail: "look"},
-        {label: "show", detail: "look"},
-        {label: "hide", detail: "look"},
-        {label: "switchCostume", detail: "look"},
-        {label: "switchBackdrop", detail: "look"},
-        {label: "switchBackdropAndWait", detail: "look"},
-        {label: "nextCostume", detail: "look"},
-        {label: "nextBackdrop", detail: "look"},
-        {label: "changeEffect", detail: "look"},
-        {label: "setEffect", detail: "look"},
-        {label: "clearEffects", detail: "look"},
-        {label: "changeSize", detail: "look"},
-        {label: "setSize", detail: "look"},
-        {label: "goToFrontBack", detail: "look"},
-        {label: "goForwardBackwardLayers", detail: "look"},
-        {label: "getSize", detail: "look"},
-        {label: "getCostumeNumberName", detail: "look"},
-        {label: "getBackdropNumberName", detail: "look"},
-        {label: "moveSteps", detail: "motion"},
-        {label: "goToXY", detail: "motion"},
-        {label: "goTo", detail: "motion"},
-        {label: "turnRight", detail: "motion"},
-        {label: "turnLeft", detail: "motion"},
-        {label: "pointInDirection", detail: "motion"},
-        {label: "pointTowards", detail: "motion"},
-        {label: "glide", detail: "motion"},
-        {label: "glideTo", detail: "motion"},
-        {label: "ifOnEdgeBounce", detail: "motion"},
-        {label: "setRotationStyle", detail: "motion"},
-        {label: "changeX", detail: "motion"},
-        {label: "changeY", detail: "motion"},
-        {label: "setY", detail: "motion"},
-        {label: "setX", detail: "motion"},
-        {label: "getX", detail: "motion"},
-        {label: "getY", detail: "motion"},
-        {label: "getDirection", detail: "motion"},
-        {label: "playSound", detail: "sound"},
-        {label: "playSoundAndWait", detail: "sound"},
-        {label: "stopAllSounds", detail: "sound"},
-        {label: "setEffectTo", detail: "sound"},
-        {label: "changeEffectBy", detail: "sound"},
-        {label: "clearEffects", detail: "sound"},
-        {label: "soundsMenu", detail: "sound"},
-        {label: "beatsMenu", detail: "sound"},
-        {label: "effectsMenu", detail: "sound"},
-        {label: "setVolumeTo", detail: "sound"},
-        {label: "changeVolumeBy", detail: "sound"},
-        {label: "getVolume", detail: "sound"}
+        {label: "whenTouchingObject", detail: "(target)"},
+        {label: "broadcast", detail: "(message)"},
+        {label: "broadcastAndWait", detail: "(message)"},
+        {label: "whenGreaterThan", detail: "(target, value)"},
+        {label: "say", detail: "(message)"},
+        {label: "sayFor", detail: "(message, seconds)"},
+        {label: "think", detail: "(message)"},
+        {label: "thinkFor", detail: "(message, seconds)"},
+        {label: "show", detail: "()"},
+        {label: "hide", detail: "()"},
+        {label: "setCostumeTo", detail: "(costume)"},
+        {label: "setBackdropTo", detail: "(backdrop)"},
+        {label: "setBackdropToAndWait", detail: "(backdrop)"},
+        {label: "nextCostume", detail: "()"},
+        {label: "nextBackdrop", detail: "()"},
+        {label: "changeGraphicEffectBy", detail: "(effect, change)"},
+        {label: "setGraphicEffectTo", detail: "(effect, value)"},
+        {label: "clearGraphicEffects", detail: "()"},
+        {label: "changeSizeBy", detail: "(change)"},
+        {label: "setSizeTo", detail: "(size)"},
+        {label: "setLayerTo", detail: "(front or back)"},
+        {label: "changeLayerBy", detail: "(number)"},
+        {label: "getSize", detail: "()"},
+        {label: "getCostume", detail: "()"},
+        {label: "getBackdrop", detail: "()"},
+        {label: "move", detail: "(steps)"},
+        {label: "goToXY", detail: "(x, y)"},
+        {label: "goTo", detail: "(targetName)"},
+        {label: "turnRight", detail: "(degrees)"},
+        {label: "turnLeft", detail: "(degrees)"},
+        {label: "pointInDirection", detail: "(degrees)"},
+        {label: "pointTowards", detail: "(targetName)"},
+        {label: "glide", detail: "(seconds, x, y)"},
+        {label: "glideTo", detail: "(seconds, targetName)"},
+        {label: "ifOnEdgeBounce", detail: "()"},
+        {label: "setRotationStyle", detail: "(style)"},
+        {label: "changeX", detail: "(change in x)"},
+        {label: "changeY", detail: "(change in y)"},
+        {label: "setY", detail: "(y)"},
+        {label: "setX", detail: "(x)"},
+        {label: "getX", detail: "()"},
+        {label: "getY", detail: "()"},
+        {label: "getDirection", detail: "()"},
+        {label: "playSound", detail: "(sound)"},
+        {label: "playSoundUntilDone", detail: "(sound)"},
+        {label: "stopAllSounds", detail: "()"},
+        {label: "setSoundEffectTo", detail: "(sound, value)"},
+        {label: "changeSoundEffectBy", detail: "(sound, value)"},
+        {label: "clearSoundEffects", detail: "()"},
+        {label: "setVolumeTo", detail: "(volume)"},
+        {label: "changeVolumeBy", detail: "(volume)"},
+        {label: "getVolume", detail: "()"}
         ]
-    }
+    };
 }
