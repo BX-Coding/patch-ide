@@ -23,6 +23,8 @@ let persistentActiveSprite = 0;
 
 let audioEngine = null;
 
+let currentId = 0;
+
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
 
@@ -33,6 +35,52 @@ const PyatchProvider = props => {
   let [spriteY, setSpriteY] = useState(0);
   let [spriteSize, setSpriteSize] = useState(100);
   let [spriteDirection, setSpriteDirection] = useState(90);
+
+  let [errorList, setErrorList] = useState([]);
+
+  //returns array with each line of code for given sprite id
+  pyatchEditor.getCodeLines = (sprite) => {
+    let linesOfCode = [];
+    let prev = 0;
+    if(!pyatchEditor.editorText[sprite]){
+      return [];
+    }
+    for(let i = 0; i < pyatchEditor.editorText[sprite].length; i++){
+      if(pyatchEditor.editorText[sprite][i]=='\n'){
+        linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, i));
+        prev = i+1;
+      }
+    }
+    linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, pyatchEditor.editorText[sprite].length));
+    return linesOfCode;
+  }
+
+
+  function generateError(error){
+    let line = error.line;
+    let sprite = error.sprite;
+    let linesOfCode = pyatchEditor.getCodeLines(sprite);
+    let priorText = [];
+    let afterText= [];
+    for (let i=3; i>0; i--){
+      if(line-i-1>=0 && line-i-1<linesOfCode.length)priorText.push(line-i+" "+linesOfCode[line-i-1]);
+      if(line-i+3<linesOfCode.length)afterText.push(line-i+4+" "+linesOfCode[line-i+3]);
+    }
+
+
+    let currentError = {
+      "uid" : currentId,
+      "line" : line,
+      "errName" : error.name,
+      "priorText" : priorText,
+      "afterText" : afterText,
+      "sprite" : pyatchEditor.getSpriteName(sprite),
+      "errCode" : line + " "+ linesOfCode[line-1]
+    };
+    currentId++;
+    return currentError;
+    
+  }
 
   const pyatchSpriteValues = {
     x: spriteX, 
@@ -62,6 +110,7 @@ const PyatchProvider = props => {
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   pyatchEditor.onRunPress = () => {
     const threadsAndCode = { };
+    setErrorList([]);
 
     sprites.forEach((sprite) => {
       threadsAndCode['target' + sprite] = [pyatchEditor.editorText[sprite]];
@@ -97,6 +146,20 @@ const PyatchProvider = props => {
 
       pyatchVM.start();
 
+      /*Pass in an array of error objects with the folowing properties:
+      * {
+      *   "name" : the error text
+      *   "line" : the integer of the line the error happended on
+      *   "sprite" : the integer of the sprite the error happened on
+      * }*/
+      pyatchVM.on('ERROR_CAUGHT', (errors) => {
+        let newErrs = [];
+        for(let i=0; i < errors.length; i++){
+          newErrs.push(generateError(errors[i]));
+        }
+        setErrorList(errorList.concat(newErrs));
+      });
+
     }
     effect();
   
@@ -121,7 +184,6 @@ const PyatchProvider = props => {
     }
 
     await pyatchVM.addSprite(sprite3);
-
     pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
@@ -140,11 +202,9 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.onSelectSprite = (spriteID) => {
-    
     setActiveSprite(spriteID);
 
     changeSpriteValues();
-
   }
 
   pyatchEditor.getSpriteName = (spriteID) => {
@@ -165,7 +225,7 @@ const PyatchProvider = props => {
   return (
    <>
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList}}
     >
       {props.children}
     </PyatchContext.Provider>

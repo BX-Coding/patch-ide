@@ -14,7 +14,9 @@ export default function PatchVariables() {
         <Box
             sx={{
             height: 1,
-            border: '1px dashed grey'
+            border: '1px dashed grey',
+            height: '150%',
+            mb: "1vh"
             }}>
             <Grid>
                 <Grid container justifyContent="center">
@@ -23,7 +25,7 @@ export default function PatchVariables() {
                     </Grid>
                 </Grid>
                 <Grid container sx={{ alignItems: 'center' }}>
-                    <Grid item xs={10}>
+                    <Grid item xs={10} sx={{mb:"1vh"}}>
                         <VariableInputField/>
                     </Grid>
                     <Grid item xs={2}>
@@ -47,7 +49,7 @@ function PlusButton(){
             value = parseInt(value);
         }
         pyatchEditor.setGlobalVariables(() => ({
-            ...pyatchEditor.setGlobalVariables,
+            ...pyatchEditor.globalVariables,
             [name]:value
         }));
 
@@ -76,8 +78,8 @@ function VarLine(props) {
 function VarList() {
     const { pyatchEditor } = useContext(PyatchContext);
     return(
-        <Grid>{Object.keys(pyatchEditor.globalVariables).map((name) => {
-            return <VarLine name={name} value={pyatchEditor.globalVariables[name]}/>
+        <Grid item xs={12}>{Object.keys(pyatchEditor.globalVariables).map((name) => {
+            return <VarLine key = {name} name={name} value={pyatchEditor.globalVariables[name]}/>
         })}</Grid>
     );
 }

@@ -1,1 +1,4 @@
-
+.scrollEffect{
+    overflow-y:scroll;
+    height: 90vh;
+}

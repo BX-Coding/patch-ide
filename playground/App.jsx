@@ -7,6 +7,7 @@ import './App.css'
 import PyatchEditor from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
 import PatchVariables from '../src/components/PatchVariables.jsx';
+import PatchErrorWindow from '../src/components/PatchErrorWindow.jsx';
 
 function App() {
   return (
@@ -16,7 +17,10 @@ function App() {
           <PatchTopBar/>
         </Grid>
         <Grid item xs={2}>
-          <PatchVariables/>
+              <div className = "scrollEffect">
+                <Grid><PatchVariables/></Grid>
+                <Grid><PatchErrorWindow/></Grid>
+              </div>
         </Grid>
           <Grid item xs={6}>
             <PyatchEditor/>
