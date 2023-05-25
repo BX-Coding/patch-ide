@@ -13,9 +13,7 @@ export default function PatchVariables() {
     return (
         <Box
             sx={{
-            height: 1,
             border: '1px dashed grey',
-            height: '150%',
             mb: "1vh"
             }}>
             <Grid>
