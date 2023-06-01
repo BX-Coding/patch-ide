@@ -108,15 +108,16 @@ const PyatchProvider = props => {
   [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
-  pyatchEditor.onRunPress = () => {
-    const threadsAndCode = { };
+  pyatchEditor.onRunPress = async () => {
+    const executionObject = { };
     setErrorList([]);
 
     sprites.forEach((sprite) => {
-      threadsAndCode['target' + sprite] = [pyatchEditor.editorText[sprite]];
+      executionObject['target' + sprite] = {"event_whenflagclicked": [pyatchEditor.editorText[sprite]]};
     });
 
-    pyatchVM.run(threadsAndCode);
+    await pyatchVM.loadScripts(executionObject);
+    await pyatchVM.startHats("event_whenflagclicked");
 
   }
 

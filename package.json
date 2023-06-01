@@ -20,6 +20,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-style-proptype": "^3.2.2",
+    "scratch-audio": "^0.1.0-prerelease.20221123180128",
     "scratch-parser": "^5.1.1",
     "scratch-render": "^0.1.0-prerelease.20230318150639",
     "scratch-render-fonts-vite": "^1.0.0",
