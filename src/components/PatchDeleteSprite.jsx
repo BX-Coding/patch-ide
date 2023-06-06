@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import Button from '@mui/material/Button';
 import pyatchContext from './provider/PyatchContext.js';
-import ClearIcon from '@mui/icons-material/Clear';
 import Grid from '@mui/material/Grid';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 export function PyatchDeleteSprite(props) {
     const { pyatchEditor } = useContext(pyatchContext);
@@ -10,7 +10,7 @@ export function PyatchDeleteSprite(props) {
 
     return(
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={()=>pyatchEditor.onDeleteSprite(activeSprite)} sx={{m:"1vh"}}><ClearIcon/></Button>
+            <Button variant="contained" onClick={()=>pyatchEditor.onDeleteSprite(activeSprite)} sx={{m:"1vh"}}><DeleteOutlineIcon/></Button>
         </Grid>
     );
 }

@@ -25,7 +25,6 @@ let audioEngine = null;
 
 let currentId = 0;
 
-let numDeletedSprites = 0;
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
 
@@ -225,13 +224,17 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.onDeleteSprite = async(spriteID) => {
-
     let nonDeletedSprites = [...sprites];
-    let deletedSprite = nonDeletedSprites.splice(spriteID-numDeletedSprites, 1);
-    console.log(deletedSprite.length);
+    let locOfActiveSprite = 0;
+    for(let i=0; i<sprites.length; i++){
+      if(sprites[i]==spriteID){
+        locOfActiveSprite=i;
+      }
+    }
+    nonDeletedSprites.splice(locOfActiveSprite, 1);
     setSprites(nonDeletedSprites);
-    numDeletedSprites++;
 
+    //I really don't think this does anything, but I'll leave it here because it doesn't hurt?
     await pyatchVM.deleteSprite('target'+spriteID);
 
   }
