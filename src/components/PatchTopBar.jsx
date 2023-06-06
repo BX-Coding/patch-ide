@@ -4,6 +4,9 @@ import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
+import PatchSerializer, { getBlocksJSON } from '../util/serialization'
+import * as PyatchProvider from './provider/PyatchProvider.jsx';
+import pyatchContext from './provider/PyatchContext.js';
 
 export default function PatchTopBar(){
     return(
@@ -71,6 +74,7 @@ export function PatchFileName() {
 }
 
 export function PatchFileButton() {
+  const { pyatchEditor } = React.useContext(pyatchContext);
   
     const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -80,6 +84,13 @@ export function PatchFileButton() {
   const handleClose = (event) => {
     setAnchorEl(null);
     console.log(event.currentTarget.id);
+  };
+  const handleDownload = (event) => {
+    /*sprites.forEach((sprite) => {
+      executionObject['target' + sprite] = {"event_whenflagclicked": [pyatchEditor.editorText[sprite]]};
+    });*/
+    console.log("Downloading your project...");
+    console.log(JSON.stringify(pyatchEditor.getSerializedVM()));
   };
 
   return (
@@ -106,7 +117,7 @@ export function PatchFileButton() {
         <MenuItem id="saveNow" onClick={handleClose}>Save Now</MenuItem>
         <MenuItem id="saveCopy" onClick={handleClose}>Save As A Copy</MenuItem>
         <MenuItem id="load" onClick={handleClose}>Load From Your Computer</MenuItem>
-        <MenuItem id="localSave" onClick={handleClose}>Save To Your Computer</MenuItem>
+        <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
       </Menu>
     </>
   );

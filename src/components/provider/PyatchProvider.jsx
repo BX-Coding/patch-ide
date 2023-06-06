@@ -15,7 +15,7 @@ window.Buffer = Buffer;
 
 const pyatchEditor = {};
 
-let pyatchVM = null;
+export let pyatchVM = null;
 
 let nextSpriteID = 0;
 
@@ -220,6 +220,14 @@ const PyatchProvider = props => {
     if (pyatchVM) {
       pyatchVM.runtime.getTargetById('target' + activeSprite).sprite.name = name;
       setActiveSpriteName(name);
+    }
+  }
+
+  pyatchEditor.getSerializedVM = () => {
+    if (pyatchVM) {
+      return pyatchVM.serializeMachine();
+    } else {
+      return "";
     }
   }
 
