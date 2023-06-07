@@ -185,6 +185,7 @@ const PyatchProvider = props => {
     }
 
     await pyatchVM.addSprite(sprite3);
+
     pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
@@ -223,11 +224,45 @@ const PyatchProvider = props => {
     }
   }
 
-  pyatchEditor.getSerializedVM = () => {
+  pyatchEditor.getSerializedProject = () => {
     if (pyatchVM) {
-      return pyatchVM.serializeMachine();
+      return pyatchVM.serializeProject();
     } else {
       return "";
+    }
+  }
+  pyatchEditor.downloadProject = () => {
+    return pyatchVM.downloadProject();
+  }
+
+  pyatchEditor.loadSerializedProject = async (vmState) => {
+    if (pyatchVM) {
+      /* TODO: clear out old targets first */
+
+      var result = await pyatchVM.loadProject(vmState);
+
+      var newTargetsCount = result.importedProject.targets.length;
+      nextSpriteID -= newTargetsCount;
+
+      for (var i = 0; i < newTargetsCount; i++) {
+        pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
+
+        // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
+        await pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+
+        setSprites(() => [...sprites, nextSpriteID]);
+
+        await pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, ""]);
+
+        setActiveSprite(nextSpriteID);
+
+        nextSpriteID++;
+      }
+
+      pyatchVM.runtime.renderer.draw();
+      return;
+    } else {
+      return null;
     }
   }
 
