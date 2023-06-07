@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export function PyatchTargetEditor(props) {
     const { pyatchEditor } = useContext(pyatchContext);
-    const { editorText, eventList } = pyatchEditor;
+    const { editorText, eventLabels } = pyatchEditor;
     const { spriteID } = props;
     const spriteThreads = editorText[spriteID];
 
@@ -31,7 +31,7 @@ export function PyatchTargetEditor(props) {
         <SplitPane split="vertical">
             {spriteThreads.map((thread, i) => 
             <Pane initialSize={`${Math.floor(1/spriteThreads.length * 100)}%`}>
-                <ThreadEditor spriteId={spriteID} threadId={i} eventMap={eventList} first={i === 0} final={i === (spriteThreads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
+                <ThreadEditor spriteId={spriteID} threadId={i} eventMap={eventLabels} first={i === 0} final={i === (spriteThreads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
             </Pane>)}
         </SplitPane>
     );
@@ -40,7 +40,7 @@ export function PyatchTargetEditor(props) {
 function ThreadEditor(props) {
     const { spriteId, threadId, eventMap, first, final, onAddThread, onDeleteThread } = props;
     const { pyatchEditor } = useContext(pyatchContext);
-    const { editorText, eventOptionsMap } = pyatchEditor;
+    const { editorText, getEventOptions } = pyatchEditor;
     const threadState = editorText[spriteId][threadId];
 
     const handleCodeChange = (newValue) => {
@@ -50,6 +50,7 @@ function ThreadEditor(props) {
 
     const handleEventChange = (event, newValue) => {
         threadState.eventId = newValue.id;
+        threadState.option = "";
         pyatchEditor.setEditorText(() => [...editorText]);
     }
 
@@ -66,7 +67,7 @@ function ThreadEditor(props) {
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
     let eventOptionsList;
     if (threadState.eventId !== "event_whenbroadcastreceived") {
-        eventOptionsList = (eventOptionsMap[threadState.eventId] ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
+        eventOptionsList = (getEventOptions(threadState.eventId) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
     }
     return (
         <>

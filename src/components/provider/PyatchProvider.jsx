@@ -143,7 +143,7 @@ const PyatchProvider = props => {
     width: 600,
   };
 
-  [pyatchEditor.eventList, pyatchEditor.setEventList] = useState({});
+  [pyatchEditor.eventLabels, pyatchEditor.setEventLabels] = useState({});
   [pyatchEditor.eventOptionsMap, pyatchEditor.setEventOptionsMap] = useState({});
   
   // runs once on window render
@@ -156,34 +156,8 @@ const PyatchProvider = props => {
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
 
-      pyatchVM.getEventMap = () => {
-        return {
-          event_whenflagclicked: "When Flag Clicked",
-          event_whenkeypressed: "When Key Pressed",
-          event_whenthisspriteclicked: "When This Sprite Clicked",
-          event_whentouchingobject: "When Touching Object",
-          event_whenstageclicked: "When Stage Clicked",
-          event_whenbackdropswitchesto: "When Backdrop Switches To",
-          event_whengreaterthan: "When Greater Than",
-          event_whenbroadcastreceived: "When Broadcast Received",
-        }
-      }
-
-      pyatchVM.getEventOptionsMap = () => {
-        return {
-          event_whenflagclicked: null,
-          event_whenkeypressed: Array.from(Array(26), (e, i) => String.fromCharCode(65 + i)),
-          event_whenthisspriteclicked: null,
-          event_whentouchingobject: ["sprite1"],
-          event_whenstageclicked: null,
-          event_whenbackdropswitchesto: ["backdrop1"],
-          event_whengreaterthan: null,
-          event_whenbroadcastreceived: "Free Input",
-        }
-      }
-
-      pyatchEditor.setEventList(pyatchVM.getEventMap());
-      pyatchEditor.setEventOptionsMap(pyatchVM.getEventOptionsMap());
+      pyatchEditor.setEventLabels(pyatchVM.getEventLabels());
+      pyatchEditor.getEventOptions = pyatchVM.getEventOptionsMap.bind(pyatchVM);
 
       pyatchVM.runtime.draw();
       pyatchVM.start();
