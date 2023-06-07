@@ -113,7 +113,18 @@ const PyatchProvider = props => {
     setErrorList([]);
 
     sprites.forEach((sprite) => {
-      executionObject['target' + sprite] = {"event_whenflagclicked": [pyatchEditor.editorText[sprite]]};
+      const targetEventMap = {};
+      const spriteThreads = pyatchEditor.editorText[sprite];
+
+      spriteThreads.forEach((thread) => {
+        if (thread.option === "") {
+          targetEventMap[thread.eventId] = [...(targetEventMap[thread.eventId] ?? []), thread.code];
+        } else {
+          targetEventMap[thread.eventId] = {};
+          targetEventMap[thread.eventId][thread.option] = [...(targetEventMap[thread.eventId][thread.option] ?? []), thread.code];
+        }
+      });
+      executionObject['target' + sprite] = targetEventMap;
     });
 
     await pyatchVM.loadScripts(executionObject);
@@ -131,6 +142,9 @@ const PyatchProvider = props => {
     height: 400,
     width: 600,
   };
+
+  [pyatchEditor.eventList, pyatchEditor.setEventList] = useState({});
+  [pyatchEditor.eventOptionsMap, pyatchEditor.setEventOptionsMap] = useState({});
   
   // runs once on window render
   useEffect(() => {
@@ -142,10 +156,39 @@ const PyatchProvider = props => {
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
 
-      pyatchVM.runtime.renderer.draw();
+      pyatchVM.getEventMap = () => {
+        return {
+          event_whenflagclicked: "When Flag Clicked",
+          event_whenkeypressed: "When Key Pressed",
+          event_whenthisspriteclicked: "When This Sprite Clicked",
+          event_whentouchingobject: "When Touching Object",
+          event_whenstageclicked: "When Stage Clicked",
+          event_whenbackdropswitchesto: "When Backdrop Switches To",
+          event_whengreaterthan: "When Greater Than",
+          event_whenbroadcastreceived: "When Broadcast Received",
+        }
+      }
 
+      pyatchVM.getEventOptionsMap = () => {
+        return {
+          event_whenflagclicked: null,
+          event_whenkeypressed: Array.from(Array(26), (e, i) => String.fromCharCode(65 + i)),
+          event_whenthisspriteclicked: null,
+          event_whentouchingobject: ["sprite1"],
+          event_whenstageclicked: null,
+          event_whenbackdropswitchesto: ["backdrop1"],
+          event_whengreaterthan: null,
+          event_whenbroadcastreceived: "Free Input",
+        }
+      }
 
+      pyatchEditor.setEventList(pyatchVM.getEventMap());
+      pyatchEditor.setEventOptionsMap(pyatchVM.getEventOptionsMap());
+
+      pyatchVM.runtime.draw();
       pyatchVM.start();
+
+      pyatchEditor.onAddSprite();
 
       /*Pass in an array of error objects with the folowing properties:
       * {
@@ -192,7 +235,7 @@ const PyatchProvider = props => {
 
     setSprites(() => [...sprites, nextSpriteID]);
 
-    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, ""]);
+    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{code: "", eventId: "event_whenflagclicked", option: ""}]]);
 
     setActiveSprite(nextSpriteID);
 

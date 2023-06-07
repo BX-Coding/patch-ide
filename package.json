@@ -19,6 +19,8 @@
     "pyatch-vm": "github:BX-Coding/pyatch-vm#main",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-split-pane": "^2.0.3",
+    "react-split-pane-next": "^1.0.5",
     "react-style-proptype": "^3.2.2",
     "scratch-audio": "^0.1.0-prerelease.20221123180128",
     "scratch-parser": "^5.1.1",
