@@ -4,7 +4,6 @@ import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
-import PatchSerializer, { getBlocksJSON } from '../util/serialization'
 import * as PyatchProvider from './provider/PyatchProvider.jsx';
 import pyatchContext from './provider/PyatchContext.js';
 

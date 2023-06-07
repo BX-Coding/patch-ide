@@ -7,7 +7,9 @@ export function PyatchSpriteName(props) {
     const { activeSprite } = useContext(pyatchContext);
     const { pyatchEditor } = useContext(pyatchContext);
 
-    let spriteName = pyatchEditor.getSpriteName(activeSprite);
+    const { sprites, setSprites } = useContext(pyatchContext);
+
+    let spriteName = pyatchEditor.getSpriteName(props.spriteID);
 
     const updateName = (name) => {
         pyatchEditor.setSpriteName(name.target.value);
@@ -24,7 +26,6 @@ export function PyatchSpriteName(props) {
         'opacity': '0',
         'position': 'absolute'
     };
-        
 
     return(
         <div style={(activeSprite == props.spriteID) ? active : inactive}>
