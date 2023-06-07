@@ -6,10 +6,10 @@ import Grid from '@mui/material/Grid';
 
 export function PyatchAddSprite(props) {
     const { pyatchEditor } = useContext(pyatchContext);
-
+    let background = false;
     return(
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={pyatchEditor.onAddSprite} disabled={pyatchEditor.addSpriteDisabled} sx={{m:"1vh"}}><AddIcon/></Button>
+            <Button variant="contained" onClick={() => pyatchEditor.onAddSprite(background)} disabled={pyatchEditor.addSpriteDisabled} sx={{m:"1vh"}}><AddIcon/></Button>
         </Grid>
     );
 }

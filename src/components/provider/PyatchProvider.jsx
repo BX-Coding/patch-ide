@@ -5,6 +5,8 @@ import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
+import backdrops from '../../assets/backdrops.json';
+import ScratchSVGRenderer from 'scratch-svg-renderer';
 
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
@@ -17,7 +19,7 @@ const pyatchEditor = {};
 
 let pyatchVM = null;
 
-let nextSpriteID = 0;
+let nextSpriteID = 1;
 
 let persistentActiveSprite = 0;
 
@@ -141,6 +143,9 @@ const PyatchProvider = props => {
       pyatchVM = new VirtualMachine(); 
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
+      pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
+      pyatchVM.addSprite(backdrops[0]);
+
 
       pyatchVM.runtime.renderer.draw();
 
@@ -176,7 +181,10 @@ const PyatchProvider = props => {
     setActiveSpriteState(spriteID);
   }
 
-  pyatchEditor.onAddSprite = async () => {
+  pyatchEditor.onAddSprite = async (background) => {
+    if(background){
+      pyatchVM.sprites[0].setCostume()
+    }else{
     const sprite3 = Buffer.from(sprite3ArrBuffer);
 
     if(!audioEngine){
@@ -197,9 +205,14 @@ const PyatchProvider = props => {
     setActiveSprite(nextSpriteID);
 
     nextSpriteID++;
+    }
+    pyatchVM.runtime.renderer.draw();
+  }
+
+  pyatchEditor.onBackgroundChange = async () => {
+    await pyatchVM.addSprite(backdrops[0]);
 
     pyatchVM.runtime.renderer.draw();
-
   }
 
   pyatchEditor.onSelectSprite = (spriteID) => {
