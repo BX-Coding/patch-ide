@@ -86,12 +86,32 @@ export function PatchFileButton() {
     console.log(event.currentTarget.id);
   };
   const handleDownload = (event) => {
-    /*sprites.forEach((sprite) => {
-      executionObject['target' + sprite] = {"event_whenflagclicked": [pyatchEditor.editorText[sprite]]};
-    });*/
-    console.log("Downloading your project...");
-    console.log(JSON.stringify(pyatchEditor.getSerializedVM()));
+    pyatchEditor.downloadProject();
   };
+  const handleUpload = (event) => {
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => { 
+
+      // getting a hold of the file reference
+      var file = e.target.files[0]; 
+
+      // setting up the reader
+      var reader = new FileReader();
+      reader.readAsText(file,'UTF-8');
+
+      // here we tell the reader what to do when it's done reading...
+      reader.onload = readerEvent => {
+          var content = readerEvent.target.result; // this is the content!
+
+          pyatchEditor.loadSerializedProject(content);
+      }
+    }
+
+    input.click();
+  }
 
   return (
     <>
@@ -116,7 +136,7 @@ export function PatchFileButton() {
         <MenuItem id="new" onClick={handleClose}>New</MenuItem>
         <MenuItem id="saveNow" onClick={handleClose}>Save Now</MenuItem>
         <MenuItem id="saveCopy" onClick={handleClose}>Save As A Copy</MenuItem>
-        <MenuItem id="load" onClick={handleClose}>Load From Your Computer</MenuItem>
+        <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
       </Menu>
     </>

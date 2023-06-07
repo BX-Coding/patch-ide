@@ -7,7 +7,7 @@ import { python } from '@codemirror/lang-python';
 
 const PyatchEditor = () => {
     let { sprites } = useContext(pyatchContext);
-    return ((Object.keys(sprites).length===0) ? <NoSprites/> : <Sprites/>);
+    return ((Object.keys(sprites).length===0) ? <NoSprites/> : <FilteredTargetEditor/>);
 }
 
 function NoSprites(){
@@ -21,13 +21,13 @@ function NoSprites(){
     );
 }
 
-function Sprites(){
+function FilteredTargetEditor(){
     let { sprites } = useContext(pyatchContext);
+    const { activeSprite } = useContext(pyatchContext);
+    const filteredSprites = sprites.filter((sprite) => sprite === activeSprite);
     return(
         <>
-            {sprites.map((sprite) => {
-                return <PyatchTargetEditor key={sprite} spriteID={sprite}/>
-            })}
+            {filteredSprites.map((sprite) => <PyatchTargetEditor key={sprite} spriteID={sprite}/>)}
         </>
     );
 }
