@@ -109,7 +109,7 @@ const PyatchProvider = props => {
   }
 
   [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([""]);
-  [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
+  [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState([]);
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   
@@ -262,7 +262,7 @@ const PyatchProvider = props => {
   return (
    <>
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM}}
     >
       {props.children}
     </PyatchContext.Provider>
