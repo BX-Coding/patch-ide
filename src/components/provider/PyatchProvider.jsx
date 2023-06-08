@@ -273,18 +273,32 @@ const PyatchProvider = props => {
     if (pyatchVM) {
       /* TODO: clear out old targets first */
 
+      var oldTargets = pyatchVM.runtime.targets;
+      var oldExecutableTargets = pyatchVM.runtime.executableTargets;
+      var oldEventMap = pyatchVM.runtime.pyatchWorker._eventMap;
+
+      pyatchVM.runtime.targets = [];
+      pyatchVM.runtime.executableTargets = [];
+      pyatchVM.runtime.pyatchWorker._eventMap = null;
+
+      nextSpriteID = 1;
+      await pyatchEditor.startupBackground();
+
       var result = await pyatchVM.loadProject(vmState);
 
       if (result == null) {
         console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
+
+        pyatchVM.runtime.targets = oldTargets;
+        pyatchVM.runtime.executableTargets = oldExecutableTargets;
+        pyatchVM.runtime.pyatchWorker._eventMap = oldEventMap;
+
         return;
       }
 
-      nextSpriteID = 0;
+      pyatchEditor.onBackgroundChange(result.json.background);
 
       var newTargetsCount = result.importedProject.targets.length;
-
-      var nextSpriteID2 = nextSpriteID;
 
       if(!audioEngine){
         audioEngine = new AudioEngine();
@@ -294,7 +308,7 @@ const PyatchProvider = props => {
       let newSprites = [];
       let newText = [];
 
-      for (var i = 0; i < newTargetsCount; i++) {
+      for (var i = 0; i < newTargetsCount; i++) {        
         // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
         await pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
@@ -302,45 +316,54 @@ const PyatchProvider = props => {
 
         newSprites.push(nextSpriteID);
 
+        let notPushed = false;
+
         // Time to generate code.
-        let smallJSON = result.json.code['target' + nextSpriteID];
-        if (smallJSON != null) {
-          let threads = [];
-          /*let flagClick = smallJSON['event_whenflagclicked'];
-          if (flagClick != null && flagClick.forEach instanceof Function) {
-            var threadCount = flagClick.length;
-            for (var j = 0; j < threadCount; j++) {
-              threads[j] = {code: flagClick[j], eventId: 'event_whenflagclicked'};
-            }
-            /*flagClick.forEach(thread => {
-              threads.push({code: thread, eventId: 'event_whenflagclicked'});
-            });*//*
-          }*/
-          let keys = Object.keys(smallJSON);
-          if (Array.isArray(keys)) {
-            var keyCount = keys.length;
-            for (var j = 0; j < keyCount; j++) {
-              if (Array.isArray(smallJSON[keys[j]])) {
-                smallJSON[keys[j]].forEach(code => {
-                  threads.push({code: code, eventId: keys[j], option: ''});
-                });
-              } else {
-                let optionKeys = Object.keys(smallJSON[keys[j]]);
-                optionKeys.forEach(realKey => {
-                  //threads.push({code: realCode, eventId: keys[j], option: code});
-                  smallJSON[keys[j]][realKey].forEach(realCode => {
-                    threads.push({code: realCode, eventId: keys[j], option: realKey});
-                  })
-                });
+        if (result.json.code) {
+          let smallJSON = result.json.code['target' + nextSpriteID];
+          if (smallJSON != null) {
+            let threads = [];
+            /*let flagClick = smallJSON['event_whenflagclicked'];
+            if (flagClick != null && flagClick.forEach instanceof Function) {
+              var threadCount = flagClick.length;
+              for (var j = 0; j < threadCount; j++) {
+                threads[j] = {code: flagClick[j], eventId: 'event_whenflagclicked'};
+              }
+              /*flagClick.forEach(thread => {
+                threads.push({code: thread, eventId: 'event_whenflagclicked'});
+              });*//*
+            }*/
+            let keys = Object.keys(smallJSON);
+            if (Array.isArray(keys)) {
+              var keyCount = keys.length;
+              for (var j = 0; j < keyCount; j++) {
+                if (Array.isArray(smallJSON[keys[j]])) {
+                  smallJSON[keys[j]].forEach(code => {
+                    threads.push({code: code, eventId: keys[j], option: ''});
+                  });
+                } else {
+                  let optionKeys = Object.keys(smallJSON[keys[j]]);
+                  optionKeys.forEach(realKey => {
+                    //threads.push({code: realCode, eventId: keys[j], option: code});
+                    smallJSON[keys[j]][realKey].forEach(realCode => {
+                      threads.push({code: realCode, eventId: keys[j], option: realKey});
+                    })
+                  });
+                }
               }
             }
+            newText.push(threads);
+          } else {
+            notPushed = true;
           }
-          newText.push(threads);
+
+          //setActiveSprite(nextSpriteID);
         } else {
+          notPushed = true;
+        }
+        if (notPushed) {
           newText.push([{code: '', eventId: 'event_whenflagclicked'}]);
         }
-
-        //setActiveSprite(nextSpriteID);
 
         nextSpriteID++;
       }
@@ -350,7 +373,7 @@ const PyatchProvider = props => {
       
 
       //await pyatchVM.loadScripts(result.json.code);
-      setActiveSprite(0);
+      setActiveSprite(1);
       
       //pyatchVM.runtime.renderer.draw();
       //return;
