@@ -84,6 +84,25 @@ export function PatchFileButton() {
     setAnchorEl(null);
     console.log(event.currentTarget.id);
   };
+  const handleSaveNow = (event) => {
+    /* TODO: test to make sure this works with binary and not just text */
+    let proj = pyatchEditor.getSerializedProject();
+    let text = proj.text();
+    localStorage.setItem("proj", text);
+  };
+  const handleLoadFromLocalStorage = (event) => {
+    let text = localStorage.getItem("proj");
+    if (text) {
+      let proj = new Blob(text);
+      pyatchEditor.loadSerializedProject()
+    } else {
+      console.warn("No project detected in localStorage.");
+    }
+  }
+  const handleNew = (event) => {
+    /* For now, this will just clear the project from localStorage and reload. */
+    localStorage.removeItem("proj");
+  }
   const handleDownload = (event) => {
     pyatchEditor.downloadProject();
   };
@@ -99,7 +118,7 @@ export function PatchFileButton() {
 
       // setting up the reader
       var reader = new FileReader();
-      reader.readAsText(file,'UTF-8');
+      reader.readAsArrayBuffer(file);
 
       // here we tell the reader what to do when it's done reading...
       reader.onload = readerEvent => {
@@ -132,8 +151,8 @@ export function PatchFileButton() {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem id="new" onClick={handleClose}>New</MenuItem>
-        <MenuItem id="saveNow" onClick={handleClose}>Save Now</MenuItem>
+        <MenuItem id="new" onClick={handleNew}>New</MenuItem>
+        <MenuItem id="saveNow" onClick={handleSaveNow} onLoad={handleLoadFromLocalStorage}>Save Now</MenuItem>
         <MenuItem id="saveCopy" onClick={handleClose}>Save As A Copy</MenuItem>
         <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>

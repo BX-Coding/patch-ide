@@ -255,9 +255,14 @@ const PyatchProvider = props => {
     if (pyatchVM) {
       /* TODO: clear out old targets first */
 
-      nextSpriteID = 0;
-
       var result = await pyatchVM.loadProject(vmState);
+
+      if (result == null) {
+        console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
+        return;
+      }
+
+      nextSpriteID = 0;
 
       var newTargetsCount = result.importedProject.targets.length;
 
