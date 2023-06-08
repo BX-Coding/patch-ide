@@ -75,36 +75,32 @@ export function PatchFileName() {
 export function PatchFileButton() {
   const { pyatchEditor } = React.useContext(pyatchContext);
   
-    const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = (event) => {
     setAnchorEl(null);
     console.log(event.currentTarget.id);
   };
-  const handleSaveNow = (event) => {
-    /* TODO: test to make sure this works with binary and not just text */
-    let proj = pyatchEditor.getSerializedProject();
-    let text = proj.text();
-    localStorage.setItem("proj", text);
+
+  const handleSaveNow = async (event) => {
+    // idk if awaiting this is bad but it is unnecessary.
+    pyatchEditor.saveToLocalStorage();
   };
+
   const handleLoadFromLocalStorage = (event) => {
-    let text = localStorage.getItem("proj");
-    if (text) {
-      let proj = new Blob(text);
-      pyatchEditor.loadSerializedProject()
-    } else {
-      console.warn("No project detected in localStorage.");
-    }
+    pyatchEditor.loadFromLocalStorage();
   }
   const handleNew = (event) => {
     /* For now, this will just clear the project from localStorage and reload. */
     localStorage.removeItem("proj");
   }
-  const handleDownload = (event) => {
-    pyatchEditor.downloadProject();
+  const handleDownload = async (event) => {
+    await pyatchEditor.downloadProject();
   };
   const handleUpload = (event) => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
@@ -121,7 +117,7 @@ export function PatchFileButton() {
       reader.readAsArrayBuffer(file);
 
       // here we tell the reader what to do when it's done reading...
-      reader.onload = readerEvent => {
+      reader.onloadend = readerEvent => {
           var content = readerEvent.target.result; // this is the content!
 
           pyatchEditor.loadSerializedProject(content);
@@ -152,7 +148,7 @@ export function PatchFileButton() {
         }}
       >
         <MenuItem id="new" onClick={handleNew}>New</MenuItem>
-        <MenuItem id="saveNow" onClick={handleSaveNow} onLoad={handleLoadFromLocalStorage}>Save Now</MenuItem>
+        <MenuItem id="saveNow" onClick={handleSaveNow}>Save Now</MenuItem>
         <MenuItem id="saveCopy" onClick={handleClose}>Save As A Copy</MenuItem>
         <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>

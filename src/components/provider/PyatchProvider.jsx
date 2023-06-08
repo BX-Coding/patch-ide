@@ -12,6 +12,7 @@ import ScratchSVGRenderer from 'scratch-svg-renderer';
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
 import { Buffer } from 'buffer-es6'
+import PatchTopBar from "../PatchTopBar.jsx";
 
 window.Buffer = Buffer;
 
@@ -116,8 +117,8 @@ const PyatchProvider = props => {
     await pyatchVM.addSprite(backdrops[0]);
     pyatchEditor.onBackgroundChange(12);
   }
-  
-  pyatchEditor.onRunPress = async () => {
+
+  pyatchEditor.generateExecutionObject = () => {
     const executionObject = { };
     setErrorList([]);
 
@@ -135,6 +136,12 @@ const PyatchProvider = props => {
       });
       executionObject['target' + sprite] = targetEventMap;
     });
+
+    return executionObject;
+  }
+  
+  pyatchEditor.onRunPress = async () => {
+    const executionObject = pyatchEditor.generateExecutionObject();
 
     await pyatchVM.loadScripts(executionObject);
     await pyatchVM.startHats("event_whenflagclicked");
@@ -172,7 +179,9 @@ const PyatchProvider = props => {
       pyatchVM.runtime.draw();
       pyatchVM.start();
 
-      pyatchEditor.onAddSprite();
+      if (!pyatchEditor.loadFromLocalStorage()) {
+        pyatchEditor.onAddSprite();
+      }
 
       /*Pass in an array of error objects with the folowing properties:
       * {
@@ -187,13 +196,10 @@ const PyatchProvider = props => {
         }
         setErrorList(errorList.concat(newErrs));
       });
-
     }
     effect();
   
   }, []);
-  
-
 
   pyatchEditor.onStopPress = () => {
 
@@ -258,14 +264,22 @@ const PyatchProvider = props => {
     }
   }
 
-  pyatchEditor.getSerializedProject = () => {
+  pyatchEditor.getSerializedProject = async () => {
+    // update scripts so changes since last run will persist
+    const executionObject = pyatchEditor.generateExecutionObject();
+
+    await pyatchVM.loadScripts(executionObject);
     if (pyatchVM) {
-      return pyatchVM.serializeProject();
+      return await pyatchVM.serializeProject();
     } else {
-      return "";
+      return null;
     }
   }
-  pyatchEditor.downloadProject = () => {
+  pyatchEditor.downloadProject = async () => {
+    // update scripts so changes since last run will persist
+    const executionObject = pyatchEditor.generateExecutionObject();
+
+    await pyatchVM.loadScripts(executionObject);
     return pyatchVM.downloadProject();
   }
 
@@ -276,10 +290,12 @@ const PyatchProvider = props => {
       var oldTargets = pyatchVM.runtime.targets;
       var oldExecutableTargets = pyatchVM.runtime.executableTargets;
       var oldEventMap = pyatchVM.runtime.pyatchWorker._eventMap;
+      var oldGlobalVariables = pyatchVM.runtime._globalVariables;
 
       pyatchVM.runtime.targets = [];
       pyatchVM.runtime.executableTargets = [];
       pyatchVM.runtime.pyatchWorker._eventMap = null;
+      pyatchVM.runtime._globalVariables = {};
 
       nextSpriteID = 1;
       await pyatchEditor.startupBackground();
@@ -292,9 +308,12 @@ const PyatchProvider = props => {
         pyatchVM.runtime.targets = oldTargets;
         pyatchVM.runtime.executableTargets = oldExecutableTargets;
         pyatchVM.runtime.pyatchWorker._eventMap = oldEventMap;
+        pyatchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
 
         return;
       }
+
+      pyatchEditor.setGlobalVariables(result.json.globalVariables);
 
       pyatchEditor.onBackgroundChange(result.json.background);
 
@@ -307,6 +326,8 @@ const PyatchProvider = props => {
 
       let newSprites = [];
       let newText = [];
+
+      newText.push({});
 
       for (var i = 0; i < newTargetsCount; i++) {        
         // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
@@ -356,13 +377,11 @@ const PyatchProvider = props => {
           } else {
             notPushed = true;
           }
-
-          //setActiveSprite(nextSpriteID);
         } else {
           notPushed = true;
         }
         if (notPushed) {
-          newText.push([{code: '', eventId: 'event_whenflagclicked'}]);
+          newText.push([{code: '', eventId: 'event_whenflagclicked', option: ''}]);
         }
 
         nextSpriteID++;
@@ -379,6 +398,55 @@ const PyatchProvider = props => {
       //return;
     } else {
       //return null;
+    }
+  }
+
+  pyatchEditor.saveToLocalStorage = async () => {
+    // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
+    let proj = await pyatchEditor.getSerializedProject();
+    var reader = new FileReader();
+    reader.readAsDataURL(proj);
+    reader.onloadend = function() {
+      var base64data = reader.result;
+      localStorage.setItem("proj", base64data);
+      /* TODO: display a "saved" dialog somewhere */
+      console.log("Saved.");
+    }
+  }
+
+  // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+  const b64dataurltoBlob = (b64Data, contentType='', sliceSize=512) => {
+    // the split removes the encoding info from the data url and just returns the raw data
+    const byteCharacters = atob(b64Data.split(',')[1]);
+    const byteArrays = [];
+  
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+  
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+  
+    const blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+  }
+
+  pyatchEditor.loadFromLocalStorage = () => {
+    let text = localStorage.getItem("proj");
+    if (text) {
+      console.log("Loading from localStorage...");
+      let proj = b64dataurltoBlob(text, 'application/zip');
+      pyatchEditor.loadSerializedProject(proj);
+      console.log("Loaded from localStorage...");
+      return true;
+    } else {
+      console.warn("No project detected in localStorage.");
+      return false;
     }
   }
 
