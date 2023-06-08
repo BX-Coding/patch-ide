@@ -91,6 +91,13 @@ function ThreadEditor(props) {
                     size="small"
                     fullWidth
                     sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    componentsProps={{
+                        paper: {
+                          sx: {
+                            width: 400
+                          }
+                        }
+                      }}
                     renderInput={(params) => 
                         <TextField {...params}/>
                     }
