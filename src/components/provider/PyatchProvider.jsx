@@ -224,6 +224,7 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.onDeleteSprite = async(spriteID) => {
+    console.log(pyatchVM.runtime.getTargetById('target' + spriteID).sprite.name);
     let nonDeletedSprites = [...sprites];
     let locOfActiveSprite = 0;
     for(let i=0; i<sprites.length; i++){
@@ -236,6 +237,7 @@ const PyatchProvider = props => {
 
     //I really don't think this does anything, but I'll leave it here because it doesn't hurt?
     await pyatchVM.deleteSprite('target'+spriteID);
+    console.log(pyatchVM.runtime.getTargetById('target' + spriteID).sprite.name);
 
   }
 
