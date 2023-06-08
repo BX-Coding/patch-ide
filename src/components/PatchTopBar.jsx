@@ -98,6 +98,7 @@ export function PatchFileButton() {
   const handleNew = (event) => {
     /* For now, this will just clear the project from localStorage and reload. */
     localStorage.removeItem("proj");
+    location.reload();
   }
   const handleDownload = async (event) => {
     await pyatchEditor.downloadProject();
@@ -139,6 +140,8 @@ export function PatchFileButton() {
       >
         File
       </Button>
+      <Button id="new" variant="contained" style={{marginLeft: 4 + "px"}} onClick={handleNew}>New</Button>
+      <Button id="saveNow" variant="contained" style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>Save Now</Button>
       <Menu
         anchorEl={anchorEl}
         open={open}
