@@ -7,7 +7,7 @@ import { python } from '@codemirror/lang-python';
 
 const PyatchEditor = () => {
     let { sprites } = useContext(pyatchContext);
-    return ((Object.keys(sprites).length===1) ? <NoSprites/> : <FilteredTargetEditor/>);
+    return ((Object.keys(sprites).length===0) ? <NoSprites/> : <FilteredTargetEditor/>);
 }
 
 function NoSprites(){
