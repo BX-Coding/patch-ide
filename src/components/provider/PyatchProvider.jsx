@@ -27,6 +27,8 @@ let audioEngine = null;
 
 let currentId = 0;
 
+let noBackground = true;
+
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
 
@@ -110,6 +112,12 @@ const PyatchProvider = props => {
   [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
+  
+  pyatchEditor.startupBackground = async () => {
+    await pyatchVM.addSprite(backdrops[0]);
+    pyatchEditor.onBackgroundChange(12);
+  }
+  
   pyatchEditor.onRunPress = async () => {
     const executionObject = { };
     setErrorList([]);
@@ -158,7 +166,6 @@ const PyatchProvider = props => {
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
       pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-      pyatchVM.addSprite(backdrops[0]);
 
       pyatchEditor.setEventLabels(pyatchVM.getEventLabels());
       pyatchEditor.getEventOptions = pyatchVM.getEventOptionsMap.bind(pyatchVM);
@@ -188,6 +195,7 @@ const PyatchProvider = props => {
   }, []);
   
 
+
   pyatchEditor.onStopPress = () => {
 
   }
@@ -204,6 +212,10 @@ const PyatchProvider = props => {
   pyatchEditor.onAddSprite = async () => {
     const sprite3 = Buffer.from(sprite3ArrBuffer);
 
+    if(noBackground){
+      await pyatchEditor.startupBackground();
+      noBackground = false;
+    }
     if(!audioEngine){
       audioEngine = new AudioEngine();
       pyatchVM.attachAudioEngine(audioEngine);
@@ -215,13 +227,9 @@ const PyatchProvider = props => {
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
     if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
-    console.log(nextSpriteID);
     let newSprites = [...sprites];
-    console.log(newSprites);
     setSprites(() => [...sprites, nextSpriteID]);
     let newArr = sprites.push(nextSpriteID);
-    console.log(newArr);
-    //setSprites(sprites => [...sprites, nextSpriteID]);
 
     pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{code: "", eventId: "event_whenflagclicked", option: ""}]]);
 
@@ -229,7 +237,6 @@ const PyatchProvider = props => {
 
     nextSpriteID++;
     pyatchVM.runtime.renderer.draw();
-    console.log(sprites);
   }
 
 
