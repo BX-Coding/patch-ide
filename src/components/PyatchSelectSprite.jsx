@@ -8,11 +8,13 @@ export function PyatchSelectSprite(props) {
     // whenever the activeSpriteName changes, reload the buttons so the name changes automatically
     const { activeSpriteName } = useContext(pyatchContext);
 
+    const { activeSprite } = useContext(pyatchContext);
+
     let spriteID = props.spriteID;
 
     let spriteName = pyatchEditor.getSpriteName(spriteID);
 
     return(
-        <Button variant="contained" onClick={() => pyatchEditor.onSelectSprite(spriteID)} sx={{m:"1vh"}}>{spriteName}</Button>
+        <Button variant={spriteID == activeSprite ? "contained" : "outlined"} onClick={() => pyatchEditor.onSelectSprite(spriteID)} sx={{m:"1vh"}}>{spriteName}</Button>
     );
 }

@@ -12,12 +12,13 @@ import ScratchSVGRenderer from 'scratch-svg-renderer';
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
 import { Buffer } from 'buffer-es6'
+import PatchTopBar from "../PatchTopBar.jsx";
 
 window.Buffer = Buffer;
 
 const pyatchEditor = {};
 
-let pyatchVM = null;
+export let pyatchVM = null;
 
 let nextSpriteID = 1;
 
@@ -119,13 +120,33 @@ const PyatchProvider = props => {
   [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState([]);
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
-  
+
+  [pyatchEditor.changesSinceLastSave, pyatchEditor.setChangesSinceLastSave] = useState(false);
+  useEffect(() => {
+    pyatchEditor.setChangesSinceLastSave(true);
+  }, [sprites]);
+    
+  //https://dev.to/zachsnoek/creating-custom-react-hooks-useconfirmtabclose-eno
+  const confirmationMessage = "You have unsaved changes. Continue?";
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+        if (pyatchEditor.changesSinceLastSave) {
+            event.returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [pyatchEditor.changesSinceLastSave]);
+
   pyatchEditor.startupBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
     pyatchEditor.onBackgroundChange(12);
   }
-  
-  pyatchEditor.onRunPress = async () => {
+
+  pyatchEditor.generateExecutionObject = () => {
     const executionObject = { };
     setErrorList([]);
 
@@ -143,6 +164,12 @@ const PyatchProvider = props => {
       });
       executionObject['target' + sprite] = targetEventMap;
     });
+
+    return executionObject;
+  }
+  
+  pyatchEditor.onRunPress = async () => {
+    const executionObject = pyatchEditor.generateExecutionObject();
 
     await pyatchVM.loadScripts(executionObject);
     await pyatchVM.startHats("event_whenflagclicked");
@@ -180,7 +207,9 @@ const PyatchProvider = props => {
       pyatchVM.runtime.draw();
       pyatchVM.start();
 
-      pyatchEditor.onAddSprite();
+      if (!pyatchEditor.loadFromLocalStorage()) {
+        pyatchEditor.onAddSprite();
+      }
 
       /*Pass in an array of error objects with the folowing properties:
       * {
@@ -195,13 +224,10 @@ const PyatchProvider = props => {
         }
         setErrorList(errorList.concat(newErrs));
       });
-
     }
     effect();
   
   }, []);
-  
-
 
   pyatchEditor.onStopPress = () => {
 
@@ -285,6 +311,197 @@ const PyatchProvider = props => {
     pyatchVM.deleteSprite('target'+spriteID);
   }
 
+
+  pyatchEditor.getSerializedProject = async () => {
+    // update scripts so changes since last run will persist
+    const executionObject = pyatchEditor.generateExecutionObject();
+
+    await pyatchVM.loadScripts(executionObject);
+    if (pyatchVM) {
+      return await pyatchVM.serializeProject();
+    } else {
+      return null;
+    }
+  }
+  pyatchEditor.downloadProject = async () => {
+    // update scripts so changes since last run will persist
+    const executionObject = pyatchEditor.generateExecutionObject();
+
+    await pyatchVM.loadScripts(executionObject);
+    return pyatchVM.downloadProject();
+  }
+
+  pyatchEditor.loadSerializedProject = async (vmState) => {
+    if (pyatchVM) {
+      /* TODO: clear out old targets first */
+
+      var oldTargets = pyatchVM.runtime.targets;
+      var oldExecutableTargets = pyatchVM.runtime.executableTargets;
+      var oldEventMap = pyatchVM.runtime.pyatchWorker._eventMap;
+      var oldGlobalVariables = pyatchVM.runtime._globalVariables;
+
+      pyatchVM.runtime.targets = [];
+      pyatchVM.runtime.executableTargets = [];
+      pyatchVM.runtime.pyatchWorker._eventMap = null;
+      pyatchVM.runtime._globalVariables = {};
+
+      nextSpriteID = 1;
+      await pyatchEditor.startupBackground();
+
+      var result = await pyatchVM.loadProject(vmState);
+
+      if (result == null) {
+        console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
+
+        pyatchVM.runtime.targets = oldTargets;
+        pyatchVM.runtime.executableTargets = oldExecutableTargets;
+        pyatchVM.runtime.pyatchWorker._eventMap = oldEventMap;
+        pyatchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
+
+        return;
+      }
+
+      pyatchEditor.setGlobalVariables(result.json.globalVariables);
+
+      pyatchEditor.onBackgroundChange(result.json.background);
+
+      noBackground = false;
+
+      var newTargetsCount = result.importedProject.targets.length;
+
+      if(!audioEngine){
+        audioEngine = new AudioEngine();
+        pyatchVM.attachAudioEngine(audioEngine);
+      }
+
+      let newSprites = [];
+      let newText = [];
+
+      newText.push({});
+
+      for (var i = 0; i < newTargetsCount; i++) {        
+        // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
+        await pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+
+        pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
+
+        newSprites.push(nextSpriteID);
+
+        let notPushed = false;
+
+        // Time to generate code.
+        if (result.json.code) {
+          let smallJSON = result.json.code['target' + nextSpriteID];
+          if (smallJSON != null) {
+            let threads = [];
+            /*let flagClick = smallJSON['event_whenflagclicked'];
+            if (flagClick != null && flagClick.forEach instanceof Function) {
+              var threadCount = flagClick.length;
+              for (var j = 0; j < threadCount; j++) {
+                threads[j] = {code: flagClick[j], eventId: 'event_whenflagclicked'};
+              }
+              /*flagClick.forEach(thread => {
+                threads.push({code: thread, eventId: 'event_whenflagclicked'});
+              });*//*
+            }*/
+            let keys = Object.keys(smallJSON);
+            if (Array.isArray(keys)) {
+              var keyCount = keys.length;
+              for (var j = 0; j < keyCount; j++) {
+                if (Array.isArray(smallJSON[keys[j]])) {
+                  smallJSON[keys[j]].forEach(code => {
+                    threads.push({code: code, eventId: keys[j], option: ''});
+                  });
+                } else {
+                  let optionKeys = Object.keys(smallJSON[keys[j]]);
+                  optionKeys.forEach(realKey => {
+                    //threads.push({code: realCode, eventId: keys[j], option: code});
+                    smallJSON[keys[j]][realKey].forEach(realCode => {
+                      threads.push({code: realCode, eventId: keys[j], option: realKey});
+                    })
+                  });
+                }
+              }
+            }
+            newText.push(threads);
+          } else {
+            notPushed = true;
+          }
+        } else {
+          notPushed = true;
+        }
+        if (notPushed) {
+          newText.push([{code: '', eventId: 'event_whenflagclicked', option: ''}]);
+        }
+
+        nextSpriteID++;
+      }
+
+      setSprites(() => newSprites);
+      pyatchEditor.setEditorText(() => newText);
+      
+      setActiveSprite(1);
+
+      pyatchEditor.setChangesSinceLastSave(false);
+    } else {
+      //return null;
+    }
+  }
+
+  pyatchEditor.saveToLocalStorage = async () => {
+    // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
+    let proj = await pyatchEditor.getSerializedProject();
+    var reader = new FileReader();
+    reader.readAsDataURL(proj);
+    reader.onloadend = function() {
+      var base64data = reader.result;
+      if (base64data) {
+        localStorage.removeItem("proj");
+        localStorage.setItem("proj", base64data);
+      } else {
+        console.error("The base64data to save is null for some reason. Abort.");
+      }
+      /* TODO: display a "saved" dialog somewhere */
+      console.log("Saved.");
+    }
+    pyatchEditor.setChangesSinceLastSave(false);
+  }
+
+  // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+  const b64dataurltoBlob = (b64Data, contentType='', sliceSize=512) => {
+    // the split removes the encoding info from the data url and just returns the raw data
+    const byteCharacters = atob(b64Data.split(',')[1]);
+    const byteArrays = [];
+  
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+  
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+  
+    const blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+  }
+
+  pyatchEditor.loadFromLocalStorage = () => {
+    let text = localStorage.getItem("proj");
+    if (text) {
+      console.log("Loading from localStorage...");
+      let proj = b64dataurltoBlob(text, 'application/zip');
+      pyatchEditor.loadSerializedProject(proj);
+      console.log("Loaded from localStorage...");
+      return true;
+    } else {
+      console.warn("No project detected in localStorage.");
+      return false;
+    }
+  }
 
   return (
    <>
