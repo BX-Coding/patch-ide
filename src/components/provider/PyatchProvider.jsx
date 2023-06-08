@@ -113,6 +113,11 @@ const PyatchProvider = props => {
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
   
+  [pyatchEditor.changesSinceLastSave, pyatchEditor.setChangesSinceLastSave] = useState(false);
+  useEffect(() => {
+    pyatchEditor.setChangesSinceLastSave(true);
+  }, [sprites]);
+
   pyatchEditor.startupBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
     pyatchEditor.onBackgroundChange(12);
@@ -317,6 +322,8 @@ const PyatchProvider = props => {
 
       pyatchEditor.onBackgroundChange(result.json.background);
 
+      noBackground = false;
+
       var newTargetsCount = result.importedProject.targets.length;
 
       if(!audioEngine){
@@ -390,12 +397,9 @@ const PyatchProvider = props => {
       setSprites(() => newSprites);
       pyatchEditor.setEditorText(() => newText);
       
-
-      //await pyatchVM.loadScripts(result.json.code);
       setActiveSprite(1);
-      
-      //pyatchVM.runtime.renderer.draw();
-      //return;
+
+      pyatchEditor.setChangesSinceLastSave(false);
     } else {
       //return null;
     }
@@ -408,10 +412,16 @@ const PyatchProvider = props => {
     reader.readAsDataURL(proj);
     reader.onloadend = function() {
       var base64data = reader.result;
-      localStorage.setItem("proj", base64data);
+      if (base64data) {
+        localStorage.removeItem("proj");
+        localStorage.setItem("proj", base64data);
+      } else {
+        console.error("The base64data to save is null for some reason. Abort.");
+      }
       /* TODO: display a "saved" dialog somewhere */
       console.log("Saved.");
     }
+    pyatchEditor.setChangesSinceLastSave(false);
   }
 
   // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript

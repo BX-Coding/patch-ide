@@ -13,6 +13,7 @@ export function PyatchSpriteName(props) {
 
     const updateName = (name) => {
         pyatchEditor.setSpriteName(name.target.value);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const active = {

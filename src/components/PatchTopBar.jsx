@@ -140,8 +140,7 @@ export function PatchFileButton() {
       >
         File
       </Button>
-      <Button id="new" variant="contained" style={{marginLeft: 4 + "px"}} onClick={handleNew}>New</Button>
-      <Button id="saveNow" variant="contained" style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>Save Now</Button>
+      <Button id="saveNow" variant={pyatchEditor.changesSinceLastSave ? "contained" : "outlined"} style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>{pyatchEditor.changesSinceLastSave ? "Save" : "Saved"}</Button>
       <Menu
         anchorEl={anchorEl}
         open={open}

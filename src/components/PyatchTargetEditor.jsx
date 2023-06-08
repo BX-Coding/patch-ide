@@ -20,11 +20,13 @@ export function PyatchTargetEditor(props) {
     const onAddThread = () => {
         spriteThreads.push({code:"", eventId: "event_whenflagclicked", option: ""});
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const onDeleteThread = (threadId) => {
         spriteThreads.splice(threadId, 1);
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     return(
@@ -46,22 +48,26 @@ function ThreadEditor(props) {
     const handleCodeChange = (newValue) => {
         threadState.code = newValue;
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const handleEventChange = (event, newValue) => {
         threadState.eventId = newValue.id;
         threadState.option = "";
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const handleEventOptionChange = (event, newValue) => {
         threadState.option = newValue.id;
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const handleEventOptionBroadcastChange = (event) => {
         threadState.option = event.target.value;
         pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
