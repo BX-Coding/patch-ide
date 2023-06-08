@@ -15,7 +15,7 @@
     "buffer": "^6.0.3",
     "file-loader": "^6.2.0",
     "lodash.omit": "^4.5.0",
-    "pyatch-vm": "github:BX-Coding/pyatch-vm#benjamin8yrs/bxc-100-serialize-patch-project",
+    "pyatch-vm": "github:BX-Coding/pyatch-vm#main",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-split-pane": "^2.0.3",
