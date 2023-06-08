@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { PyatchAddSprite } from "./PyatchAddSprite.jsx"; //plus button
+import { PyatchDeleteSprite } from "./PatchDeleteSprite.jsx"; //clear button
 import { PyatchSelectSprite } from "./PyatchSelectSprite.jsx"; //sprite name button
 import { PyatchSpriteAttributes } from "./PyatchSpriteAttributes.jsx"; //height and stuff
 import { PyatchSpriteName } from "./PyatchSpriteName.jsx"; //textfeild
@@ -21,6 +22,7 @@ export default function PyatchSpriteArea(){
                     {sprites.map((sprite) => {
                         return <PyatchSpriteName key={sprite} spriteID={sprite}/>
                         })}
+                        <PyatchDeleteSprite/>
                 </Grid>
             </Grid>
             <Grid container>

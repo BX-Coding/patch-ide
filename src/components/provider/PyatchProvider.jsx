@@ -21,7 +21,7 @@ let pyatchVM = null;
 
 let nextSpriteID = 1;
 
-let persistentActiveSprite = 0;
+let persistentActiveSprite = 1;
 
 let audioEngine = null;
 
@@ -32,7 +32,7 @@ let noBackground = true;
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
 
-  let [activeSprite, setActiveSpriteState] = useState(0);
+  let [activeSprite, setActiveSpriteState] = useState(1);
   let [activeSpriteName, setActiveSpriteName] = useState();
 
   let [spriteX, setSpriteX] = useState(0);
@@ -92,7 +92,6 @@ const PyatchProvider = props => {
     size: spriteSize, 
     direction: spriteDirection
   };
-
   function changeSpriteValues(eventSource = null) {
     // only update the attributes if the active sprite has changes
     if (eventSource) {
@@ -101,10 +100,18 @@ const PyatchProvider = props => {
       }
     }
 
-    setSpriteX(pyatchVM.runtime.targets[persistentActiveSprite].x);
-    setSpriteY(pyatchVM.runtime.targets[persistentActiveSprite].y);
-    setSpriteSize(pyatchVM.runtime.targets[persistentActiveSprite].size);
-    setSpriteDirection(pyatchVM.runtime.targets[persistentActiveSprite].direction);
+    let activeSpriteLoc = 0;
+    for(let i=0; i<pyatchVM.runtime.targets.length; i++){
+      if(pyatchVM.runtime.targets[i].id==('target'+activeSprite)){
+        activeSpriteLoc = i;
+      }
+    }
+    if(pyatchVM && pyatchVM.runtime.targets[activeSpriteLoc]){
+      setSpriteX(pyatchVM.runtime.targets[activeSpriteLoc].x);
+      setSpriteY(pyatchVM.runtime.targets[activeSpriteLoc].y);
+      setSpriteSize(pyatchVM.runtime.targets[activeSpriteLoc].size);
+      setSpriteDirection(pyatchVM.runtime.targets[activeSpriteLoc].direction);
+    }
 
   }
 
@@ -222,10 +229,11 @@ const PyatchProvider = props => {
     }
 
     await pyatchVM.addSprite(sprite3);
-    if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
+    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].id = 'target' + nextSpriteID;
+    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].sprite.name = 'Sprite' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-    if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    if(pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1])pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
     setSprites(() => [...sprites, nextSpriteID]);
 
@@ -245,8 +253,8 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.getSpriteName = (spriteID) => {
-    if (pyatchVM) {
-      return pyatchVM.runtime.getTargetById('target' + spriteID).getName();
+    if (pyatchVM.runtime.getTargetById('target'+spriteID)) {
+      return pyatchVM.runtime.getTargetById('target' + spriteID).sprite.name;
     } else {
       return "No Sprite";
     }
@@ -258,6 +266,25 @@ const PyatchProvider = props => {
       setActiveSpriteName(name);
     }
   }
+
+  pyatchEditor.onDeleteSprite = async(spriteID) => {
+    let nonDeletedSprites = [...sprites];
+    let locOfActiveSprite = 0;
+    for(let i=0; i<sprites.length; i++){
+      if(sprites[i]==spriteID){
+        locOfActiveSprite=i;
+      }
+    }
+    nonDeletedSprites.splice(locOfActiveSprite, 1);
+    setSprites(nonDeletedSprites);
+    pyatchEditor.deleteInVM(spriteID);
+
+  }
+
+  pyatchEditor.deleteInVM = (spriteID) => {
+    pyatchVM.deleteSprite('target'+spriteID);
+  }
+
 
   return (
    <>
