@@ -112,11 +112,26 @@ const PyatchProvider = props => {
   [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState([]);
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
-  
+
   [pyatchEditor.changesSinceLastSave, pyatchEditor.setChangesSinceLastSave] = useState(false);
   useEffect(() => {
     pyatchEditor.setChangesSinceLastSave(true);
   }, [sprites]);
+    
+  //https://dev.to/zachsnoek/creating-custom-react-hooks-useconfirmtabclose-eno
+  const confirmationMessage = "You have unsaved changes. Continue?";
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+        if (pyatchEditor.changesSinceLastSave) {
+            event.returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [pyatchEditor.changesSinceLastSave]);
 
   pyatchEditor.startupBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
