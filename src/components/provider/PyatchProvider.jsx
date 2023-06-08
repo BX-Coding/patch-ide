@@ -5,6 +5,8 @@ import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
+import backdrops from '../../assets/backdrops.json';
+import ScratchSVGRenderer from 'scratch-svg-renderer';
 
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
@@ -17,13 +19,15 @@ const pyatchEditor = {};
 
 let pyatchVM = null;
 
-let nextSpriteID = 0;
+let nextSpriteID = 1;
 
 let persistentActiveSprite = 0;
 
 let audioEngine = null;
 
 let currentId = 0;
+
+let noBackground = true;
 
 const PyatchProvider = props => {
   let [sprites, setSprites] = useState([]);
@@ -104,19 +108,25 @@ const PyatchProvider = props => {
 
   }
 
-  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([]);
+  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([""]);
   [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState({});
 
   [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
+  
+  pyatchEditor.startupBackground = async () => {
+    await pyatchVM.addSprite(backdrops[0]);
+    pyatchEditor.onBackgroundChange(12);
+  }
+  
   pyatchEditor.onRunPress = async () => {
     const executionObject = { };
     setErrorList([]);
 
-    sprites.forEach((sprite) => {
+    if(sprites)sprites.forEach((sprite) => {
       const targetEventMap = {};
       const spriteThreads = pyatchEditor.editorText[sprite];
 
-      spriteThreads.forEach((thread) => {
+      if(spriteThreads)spriteThreads.forEach((thread) => {
         if (thread.option === "") {
           targetEventMap[thread.eventId] = [...(targetEventMap[thread.eventId] ?? []), thread.code];
         } else {
@@ -155,6 +165,7 @@ const PyatchProvider = props => {
       pyatchVM = new VirtualMachine(); 
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
+      pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
       pyatchEditor.setEventLabels(pyatchVM.getEventLabels());
       pyatchEditor.getEventOptions = pyatchVM.getEventOptionsMap.bind(pyatchVM);
@@ -184,6 +195,7 @@ const PyatchProvider = props => {
   }, []);
   
 
+
   pyatchEditor.onStopPress = () => {
 
   }
@@ -193,19 +205,27 @@ const PyatchProvider = props => {
     setActiveSpriteState(spriteID);
   }
 
+  pyatchEditor.onBackgroundChange = (index) => {
+    pyatchVM.changeBackground(index);
+  }
+    
   pyatchEditor.onAddSprite = async () => {
     const sprite3 = Buffer.from(sprite3ArrBuffer);
 
+    if(noBackground){
+      await pyatchEditor.startupBackground();
+      noBackground = false;
+    }
     if(!audioEngine){
       audioEngine = new AudioEngine();
       pyatchVM.attachAudioEngine(audioEngine);
     }
 
     await pyatchVM.addSprite(sprite3);
-    pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
+    if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-    pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
     setSprites(() => [...sprites, nextSpriteID]);
 
@@ -214,10 +234,9 @@ const PyatchProvider = props => {
     setActiveSprite(nextSpriteID);
 
     nextSpriteID++;
-
     pyatchVM.runtime.renderer.draw();
-
   }
+
 
   pyatchEditor.onSelectSprite = (spriteID) => {
     setActiveSprite(spriteID);

@@ -29,7 +29,7 @@
     "scratch-render-vite": "^0.1.1",
     "scratch-storage": "github:BX-Coding/scratch-storage-webpack-5",
     "scratch-storage-vite": "^0.0.1-development",
-    "scratch-svg-renderer": "0.2.0-prerelease.20230224194137",
+    "scratch-svg-renderer": "^0.2.0-prerelease.20230224194137",
     "to-style": "^1.3.3"
   },
   "scripts": {
