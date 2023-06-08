@@ -227,9 +227,7 @@ const PyatchProvider = props => {
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
     if(pyatchVM.runtime.targets[nextSpriteID])pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
-    let newSprites = [...sprites];
     setSprites(() => [...sprites, nextSpriteID]);
-    let newArr = sprites.push(nextSpriteID);
 
     pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{code: "", eventId: "event_whenflagclicked", option: ""}]]);
 
