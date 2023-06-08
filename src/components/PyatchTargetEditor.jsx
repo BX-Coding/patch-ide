@@ -120,7 +120,7 @@ function ThreadEditor(props) {
             <CodeMirror
                 value={threadState.code}
                 extensions={[python(), autocompletion({override: [completions]})]}
-                theme={material}
+                theme="dark"
                 onChange={handleCodeChange}
                 height="70vh"
             />
