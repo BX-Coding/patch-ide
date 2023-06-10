@@ -14,6 +14,12 @@ export default {
     path: path.join(__dirname, "/playground/public/assets"),
   },
   mode: "development",
+  devServer: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
+  },
   module: {
     rules: [
       {
@@ -25,6 +31,8 @@ export default {
             presets: [
               '@babel/preset-env', 
               ['@babel/preset-react', {"runtime": "automatic"}]
+          ], plugins: [
+            '@babel/plugin-syntax-import-assertions'
           ]
           }
         }

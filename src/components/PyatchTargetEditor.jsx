@@ -4,39 +4,140 @@ import CodeMirror from '@uiw/react-codemirror';
 import { material } from '@uiw/codemirror-theme-material';
 import { python } from '@codemirror/lang-python';
 import {autocompletion} from "@codemirror/autocomplete";
+import SplitPane, { Pane } from 'react-split-pane-next';
+
+import { Autocomplete, Button, TextField, Grid } from '@mui/material';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export function PyatchTargetEditor(props) {
     const { pyatchEditor } = useContext(pyatchContext);
-    const { activeSprite } = useContext(pyatchContext);
+    const { editorText, eventLabels } = pyatchEditor;
+    const { spriteID } = props;
+    const spriteThreads = editorText[spriteID];
 
-    const updateState = (newValue) => {
-        if (activeSprite == props.spriteID) {
-            pyatchEditor.editorText[props.spriteID] = newValue;
-        }
+
+    const onAddThread = () => {
+        spriteThreads.push({code:"", eventId: "event_whenflagclicked", option: ""});
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
     }
 
-    const active = {
-        'pointerEvents': 'auto',
-        'opacity': '1',
-        'position': 'relative'
-    };
-
-    const inactive = {
-        'pointerEvents': 'none',
-        'opacity': '0',
-        'position': 'absolute'
-    };
+    const onDeleteThread = (threadId) => {
+        spriteThreads.splice(threadId, 1);
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
+    }
 
     return(
-        <div style={(activeSprite == props.spriteID) ? active : inactive}>
+        <SplitPane split="vertical">
+            {spriteThreads.map((thread, i) => 
+            <Pane initialSize={`${Math.floor(1/spriteThreads.length * 100)}%`}>
+                <ThreadEditor spriteId={spriteID} threadId={i} eventMap={eventLabels} first={i === 0} final={i === (spriteThreads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
+            </Pane>)}
+        </SplitPane>
+    );
+}
+
+function ThreadEditor(props) {
+    const { spriteId, threadId, eventMap, first, final, onAddThread, onDeleteThread } = props;
+    const { pyatchEditor } = useContext(pyatchContext);
+    const { editorText, getEventOptions } = pyatchEditor;
+    const threadState = editorText[spriteId][threadId];
+
+    const handleCodeChange = (newValue) => {
+        threadState.code = newValue;
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
+    }
+
+    const handleEventChange = (event, newValue) => {
+        threadState.eventId = newValue.id;
+        threadState.option = "";
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
+    }
+
+    const handleEventOptionChange = (event, newValue) => {
+        threadState.option = newValue.id;
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
+    }
+
+    const handleEventOptionBroadcastChange = (event) => {
+        threadState.option = event.target.value;
+        pyatchEditor.setEditorText(() => [...editorText]);
+        pyatchEditor.setChangesSinceLastSave(true);
+    }
+
+    const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
+    let eventOptionsList;
+    if (threadState.eventId !== "event_whenbroadcastreceived") {
+        eventOptionsList = (getEventOptions(threadState.eventId) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
+    }
+    return (
+        <>
+            <Grid display="flex" flexDirection="row" spacing={2}>
+                <Autocomplete
+                    disablePortal
+                    disableClearable
+                    id="event-thread-selection"
+                    options={eventList}
+                    defaultValue={{id: threadState.eventId, label: eventMap[threadState.eventId]}}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    hiddenLabel
+                    onChange={handleEventChange}
+                    variant="outlined"  
+                    size="small"
+                    fullWidth
+                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    componentsProps={{
+                        paper: {
+                          sx: {
+                            width: 400
+                          }
+                        }
+                      }}
+                    renderInput={(params) => 
+                        <TextField {...params}/>
+                    }
+                />
+                {(eventOptionsList && eventOptionsList.length > 0) && <Autocomplete
+                    disablePortal
+                    disableClearable
+                    id="event-thread-option-selection"
+                    options={eventOptionsList}
+                    defaultValue={{id: threadState.option, label: threadState.option}}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    hiddenLabel
+                    onChange={handleEventOptionChange}
+                    variant="outlined"  
+                    size="small"
+                    fullWidth
+                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    renderInput={(params) => 
+                        <TextField {...params}/>
+                    }
+                />}
+                {threadState.eventId === "event_whenbroadcastreceived" && <TextField
+                    id="event-thread-broadcost-option-text-input"
+                    onChange={handleEventOptionBroadcastChange}
+                    defaultValue={threadState.option}
+                    variant="outlined"  
+                    size="small"
+                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                />}
+                {!first && <Button variant="contained" color="primary" onClick={() => onDeleteThread(threadId)}><DeleteIcon/></Button>}
+                {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
+            </Grid>
             <CodeMirror
-                value={pyatchEditor.editorText[props.spriteID]}
+                value={threadState.code}
                 extensions={[python(), autocompletion({override: [completions]})]}
-                theme={material}
-                onChange={updateState}
-                height="90vh"
+                theme="dark"
+                onChange={handleCodeChange}
+                height="70vh"
             />
-        </div>
+        </>
     );
 }
 
