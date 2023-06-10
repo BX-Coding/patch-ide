@@ -192,7 +192,7 @@ const PyatchProvider = props => {
   
   // runs once on window render
   useEffect(() => {
-    function effect() {
+    function useAsyncEffect() {
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
@@ -225,7 +225,7 @@ const PyatchProvider = props => {
         setErrorList(errorList.concat(newErrs));
       });
     }
-    effect();
+    useAsyncEffect();
   
   }, []);
 
