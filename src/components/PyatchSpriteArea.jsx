@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { PyatchAddSprite } from "./PyatchAddSprite.jsx"; //plus button
+import { SpriteAreaButtons } from "./PyatchSpriteAreaButtons.jsx"; //plus button
 import { PyatchDeleteSprite } from "./PatchDeleteSprite.jsx"; //clear button
 import { PyatchSelectSprite } from "./PyatchSelectSprite.jsx"; //sprite name button
 import { PyatchSpriteAttributes } from "./PyatchSpriteAttributes.jsx"; //height and stuff
@@ -34,7 +34,7 @@ export default function PyatchSpriteArea(){
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>
                 <Grid item xs={12}>
-                    <PyatchAddSprite/>
+                    <SpriteAreaButtons/>
                 </Grid>
             </Grid>
         </Grid>
