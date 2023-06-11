@@ -181,6 +181,8 @@ const PyatchProvider = props => {
   pyatchEditor.addSpriteDisabled = false;
   pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
 
+  const [patchEditorTab, setPatchEditorTab] = useState(0);
+
   const pyatchStage = {
     canvas: document.createElement('canvas'),
     height: 400,
@@ -506,7 +508,7 @@ const PyatchProvider = props => {
   return (
    <>
    <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM}}
+      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, setPatchEditorTab}}
     >
       {props.children}
     </PyatchContext.Provider>
