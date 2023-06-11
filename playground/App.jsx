@@ -6,8 +6,7 @@ import Grid from '@mui/material/Grid';
 import './App.css'
 import PyatchEditor from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import PatchVariables from '../src/components/PatchVariables.jsx';
-import PatchErrorWindow from '../src/components/PatchErrorWindow.jsx';
+import { PatchEditor, PatchCodeEditorTabButton, PatchSpriteEditorTabButton } from '../src/components/PatchEditor.jsx';
 
 function App() {
   return (
@@ -16,13 +15,14 @@ function App() {
         <Grid container item direction ="row" xs={12}>
           <PatchTopBar/>
         </Grid>
-        <Grid item xs={2}>
-              <div className = "scrollEffect">
-                <Grid><PatchVariables/></Grid>
-                <Grid><PatchErrorWindow/></Grid>
-              </div>
+        <Grid item xs={1}>
+              <Grid><PatchCodeEditorTabButton/></Grid>
+              <Grid><PatchSpriteEditorTabButton/></Grid>
         </Grid>
-          <Grid item xs={6}>
+        <Grid item xs={2}>
+              <PatchEditor/>
+        </Grid>
+          <Grid item xs={5}>
             <PyatchEditor/>
           </Grid>
           <Grid item xs={4}>
