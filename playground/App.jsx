@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import './App.css'
 import PyatchEditor from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchEditor, PatchCodeEditorTabButton, PatchSpriteEditorTabButton } from '../src/components/PatchEditor.jsx';
+import { PatchEditor, PatchCodeEditorTabButton, PatchSpriteEditorTabButton } from '../src/components/PatchLeftPanelEditor.jsx';
 
 function App() {
   return (
