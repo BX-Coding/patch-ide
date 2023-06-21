@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import backdrops from '../assets/backdrops.json';
 
 export function PyatchAddSprite(props) {
-    const { pyatchEditor, pyatchVM } = useContext(pyatchContext);
+    const { pyatchEditor, pyatchVM, activeSprite } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const costumes = backdrops[0].costumes;
     const open = Boolean(anchorEl);
@@ -27,8 +27,9 @@ export function PyatchAddSprite(props) {
     const handleClose2 = (event) => {
         setAnchorEl2(null);
     };
-    const handleUploadNew = (event) => {
-        pyatchEditor.handleUploadCostume();
+    const handleUploadNew = async (event) => {
+        var newId = await pyatchEditor.onAddSprite();
+        pyatchEditor.handleUploadCostume('target' + newId);
     };
     const handleSetCostumeEditor = (event) => {
 

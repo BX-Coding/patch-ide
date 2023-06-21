@@ -44,6 +44,8 @@ const PyatchProvider = props => {
 
   let [errorList, setErrorList] = useState([]);
 
+  let [costumesUpdate, setCostumesUpdate] = useState(false);
+
   //returns array with each line of code for given sprite id
   pyatchEditor.getCodeLines = (sprite) => {
     let linesOfCode = [];
@@ -142,23 +144,26 @@ const PyatchProvider = props => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [pyatchEditor.changesSinceLastSave]);
 
-  // This same function also appears in PyatchAddSprite
-  const handleNewCostume = (costume, fromCostumeLibrary, targetId) => {
+  const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
     const costumes = Array.isArray(costume) ? costume : [costume];
 
-    return Promise.all(costumes.map(c => {
+    var returnval = await Promise.all(costumes.map(c => {
       if (fromCostumeLibrary) {
         return pyatchVM.addCostumeFromLibrary(c.md5, c);
       }
       return pyatchVM.addCostume(c.md5, c, targetId);
-    })).then(() => null);
+    }));
+
+    setCostumesUpdate(!costumesUpdate);
+
+    return returnval;
   }
 
-  pyatchEditor.handleUploadCostume = () => {
+  pyatchEditor.handleUploadCostume = (targetName) => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/png, image/jpeg image/svg+xml image/bmp image/gif';
+    input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
 
     input.onchange = e => {
       handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
@@ -166,7 +171,14 @@ const PyatchProvider = props => {
           vmCostumes.forEach((costume, i) => {
             costume.name = `${fileName}${i ? i + 1 : ''}`;
           });
-          handleNewCostume(vmCostumes, false, 'target' + activeSprite);
+
+          if (targetName == undefined || targetName == null) {
+            handleNewCostume(vmCostumes, false, 'target' + activeSprite);
+          } else {
+            handleNewCostume(vmCostumes, false, targetName);
+          }
+
+          // await handleNewCostume if you want to do anything here
         }, console.log);
       }, console.log);
     }
@@ -304,6 +316,8 @@ const PyatchProvider = props => {
 
     nextSpriteID++;
     pyatchVM.runtime.renderer.draw();
+
+    return nextSpriteID - 1;
   }
 
 
@@ -541,7 +555,7 @@ const PyatchProvider = props => {
   return (
     <>
       <PyatchContext.Provider
-        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, setPatchEditorTab }}
+        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, costumesUpdate, setPatchEditorTab }}
       >
         {props.children}
       </PyatchContext.Provider>

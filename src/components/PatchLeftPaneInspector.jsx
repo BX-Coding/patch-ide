@@ -85,8 +85,7 @@ function ItemCard(props) {
 }
 
 function AddCostumeButton(props) {
-    const { pyatchVM } = useContext(pyatchContext);
-    const { targetId, setCostumeIndex } = props;
+    const { pyatchEditor } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -96,39 +95,7 @@ function AddCostumeButton(props) {
 
     const handleClose = (event) => {
         setAnchorEl(null);
-        console.log(event.currentTarget.id);
     };
-
-    const handleNewCostume = (costume, fromCostumeLibrary, targetId) => {
-        const costumes = Array.isArray(costume) ? costume : [costume];
-
-        return Promise.all(costumes.map(c => {
-            if (fromCostumeLibrary) {
-                return pyatchVM.addCostumeFromLibrary(c.md5, c);
-            }
-            return pyatchVM.addCostume(c.md5, c, targetId);
-        })).then(() => setCostumeIndex(0));
-    }
-
-    const handleUploadButtonClick = (event) => {
-        //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/png, image/jpeg image/svg+xml image/bmp image/gif';
-    
-        input.onchange = e => {
-            handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-                costumeUpload(buffer, fileType, pyatchVM.runtime.storage, vmCostumes => {
-                    vmCostumes.forEach((costume, i) => {
-                        costume.name = `${fileName}${i ? i + 1 : ''}`;
-                    });
-                    handleNewCostume(vmCostumes, false, targetId);
-                }, console.log);
-            }, console.log);
-        }
-    
-        input.click();
-      }
 
     return <>
         <Button 
@@ -149,17 +116,18 @@ function AddCostumeButton(props) {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem id="upload" onClick={handleUploadButtonClick}>From Upload</MenuItem>
+        <MenuItem id="upload" onClick={() => {pyatchEditor.handleUploadCostume(); handleClose();}}>From Upload</MenuItem>
       </Menu>
     </>
 }
 
 function PatchSpriteInspector(props) {
-    const { pyatchVM, activeSprite } = useContext(pyatchContext);
-    const selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
-    const currentCostume = selectedTarget.getCurrentCostume();
+    const { pyatchVM, activeSprite, costumesUpdate } = useContext(pyatchContext);
+    let selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+    let currentCostume = selectedTarget.getCurrentCostume();
     
-    const [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
+    let [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
+    let [costumes, setCostumes] = useState(selectedTarget.getCostumes());
 
     const handleClick = (costumeName) => {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
@@ -174,7 +142,14 @@ function PatchSpriteInspector(props) {
     }
 
     const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon/></Button>
-    const costumes = selectedTarget.getCostumes();
+
+    React.useEffect(() => {
+        selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+        currentCostume = selectedTarget.getCurrentCostume();
+        console.warn(selectedTarget.getCostumeIndexByName(currentCostume.name));
+        setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
+        setCostumes(selectedTarget.getCostumes());
+    }, [activeSprite, costumesUpdate]);
 
     return (<>
         {costumes.map((costume, i) => 
@@ -184,6 +159,7 @@ function PatchSpriteInspector(props) {
                 selected={i === costumeIndex} 
                 onClick={handleClick}
                 actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
+                key={costume.name}
                 />)}
             <AddCostumeButton targetId={selectedTarget.id} setCostumeIndex={setCostumeIndex}/>
     </>);
