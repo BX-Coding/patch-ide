@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import './App.css'
 import PyatchEditor from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchEditor, PatchCodeEditorTabButton, PatchSpriteEditorTabButton } from '../src/components/PatchEditor.jsx';
+import { PatchLeftPaneInspector, PatchCodeEditorTabButton as PatchCodeInspectorTabButton, PatchSpriteEditorTabButton as PatchSpriteInspectorTabButton } from '../src/components/PatchLeftPaneInspector.jsx';
 
 function App() {
   return (
@@ -16,11 +16,11 @@ function App() {
           <PatchTopBar/>
         </Grid>
         <Grid item xs={1}>
-              <Grid><PatchCodeEditorTabButton/></Grid>
-              <Grid><PatchSpriteEditorTabButton/></Grid>
+              <Grid><PatchCodeInspectorTabButton/></Grid>
+              <Grid><PatchSpriteInspectorTabButton/></Grid>
         </Grid>
         <Grid item xs={2}>
-              <PatchEditor/>
+              <PatchLeftPaneInspector/>
         </Grid>
           <Grid item xs={5}>
             <PyatchEditor/>

@@ -15,11 +15,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import { Typography, Box } from '@mui/material';
 
-export function PatchEditor(props) {
+export function PatchLeftPaneInspector(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
     return <div className = "scrollEffect">
-        {[<PatchCodeEditorTab/>, <PatchSpriteEditorTab/>][patchEditorTab]}
+        {[<PatchCodeInspector/>, <PatchSpriteInspector/>][patchEditorTab]}
     </div>
 }
 
@@ -47,7 +47,7 @@ export function PatchSpriteEditorTabButton(props) {
     );
 }
 
-function PatchCodeEditorTab(props) {
+function PatchCodeInspector(props) {
     return <>
         <Grid><PatchVariables/></Grid>
         <Grid><PatchErrorWindow/></Grid>
@@ -154,7 +154,7 @@ function AddCostumeButton(props) {
     </>
 }
 
-function PatchSpriteEditorTab(props) {
+function PatchSpriteInspector(props) {
     const { pyatchVM, activeSprite } = useContext(pyatchContext);
     const selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
     const currentCostume = selectedTarget.getCurrentCostume();
