@@ -7,6 +7,7 @@ import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
 import backdrops from '../../assets/backdrops.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
+import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
 
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
@@ -47,13 +48,13 @@ const PyatchProvider = props => {
   pyatchEditor.getCodeLines = (sprite) => {
     let linesOfCode = [];
     let prev = 0;
-    if(!pyatchEditor.editorText[sprite]){
+    if (!pyatchEditor.editorText[sprite]) {
       return [];
     }
-    for(let i = 0; i < pyatchEditor.editorText[sprite].length; i++){
-      if(pyatchEditor.editorText[sprite][i]=='\n'){
+    for (let i = 0; i < pyatchEditor.editorText[sprite].length; i++) {
+      if (pyatchEditor.editorText[sprite][i] == '\n') {
         linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, i));
-        prev = i+1;
+        prev = i + 1;
       }
     }
     linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, pyatchEditor.editorText[sprite].length));
@@ -61,36 +62,36 @@ const PyatchProvider = props => {
   }
 
 
-  function generateError(error){
+  function generateError(error) {
     let line = error.line;
     let sprite = error.sprite;
     let linesOfCode = pyatchEditor.getCodeLines(sprite);
     let priorText = [];
-    let afterText= [];
-    for (let i=3; i>0; i--){
-      if(line-i-1>=0 && line-i-1<linesOfCode.length)priorText.push(line-i+" "+linesOfCode[line-i-1]);
-      if(line-i+3<linesOfCode.length)afterText.push(line-i+4+" "+linesOfCode[line-i+3]);
+    let afterText = [];
+    for (let i = 3; i > 0; i--) {
+      if (line - i - 1 >= 0 && line - i - 1 < linesOfCode.length) priorText.push(line - i + " " + linesOfCode[line - i - 1]);
+      if (line - i + 3 < linesOfCode.length) afterText.push(line - i + 4 + " " + linesOfCode[line - i + 3]);
     }
 
 
     let currentError = {
-      "uid" : currentId,
-      "line" : line,
-      "errName" : error.name,
-      "priorText" : priorText,
-      "afterText" : afterText,
-      "sprite" : pyatchEditor.getSpriteName(sprite),
-      "errCode" : line + " "+ linesOfCode[line-1]
+      "uid": currentId,
+      "line": line,
+      "errName": error.name,
+      "priorText": priorText,
+      "afterText": afterText,
+      "sprite": pyatchEditor.getSpriteName(sprite),
+      "errCode": line + " " + linesOfCode[line - 1]
     };
     currentId++;
     return currentError;
-    
+
   }
 
   const pyatchSpriteValues = {
-    x: spriteX, 
-    y: spriteY, 
-    size: spriteSize, 
+    x: spriteX,
+    y: spriteY,
+    size: spriteSize,
     direction: spriteDirection
   };
   function changeSpriteValues(eventSource = null) {
@@ -102,12 +103,12 @@ const PyatchProvider = props => {
     }
 
     let activeSpriteLoc = 0;
-    for(let i=0; i<pyatchVM.runtime.targets.length; i++){
-      if(pyatchVM.runtime.targets[i].id==('target'+activeSprite)){
+    for (let i = 0; i < pyatchVM.runtime.targets.length; i++) {
+      if (pyatchVM.runtime.targets[i].id == ('target' + activeSprite)) {
         activeSpriteLoc = i;
       }
     }
-    if(pyatchVM && pyatchVM.runtime.targets[activeSpriteLoc]){
+    if (pyatchVM && pyatchVM.runtime.targets[activeSpriteLoc]) {
       setSpriteX(pyatchVM.runtime.targets[activeSpriteLoc].x);
       setSpriteY(pyatchVM.runtime.targets[activeSpriteLoc].y);
       setSpriteSize(pyatchVM.runtime.targets[activeSpriteLoc].size);
@@ -125,21 +126,53 @@ const PyatchProvider = props => {
   useEffect(() => {
     pyatchEditor.setChangesSinceLastSave(true);
   }, [sprites]);
-    
+
   //https://dev.to/zachsnoek/creating-custom-react-hooks-useconfirmtabclose-eno
   const confirmationMessage = "You have unsaved changes. Continue?";
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-        if (pyatchEditor.changesSinceLastSave) {
-            event.returnValue = confirmationMessage;
-            return confirmationMessage;
-        }
+      if (pyatchEditor.changesSinceLastSave) {
+        event.returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
-        window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [pyatchEditor.changesSinceLastSave]);
+
+  // This same function also appears in PyatchAddSprite
+  const handleNewCostume = (costume, fromCostumeLibrary, targetId) => {
+    const costumes = Array.isArray(costume) ? costume : [costume];
+
+    return Promise.all(costumes.map(c => {
+      if (fromCostumeLibrary) {
+        return pyatchVM.addCostumeFromLibrary(c.md5, c);
+      }
+      return pyatchVM.addCostume(c.md5, c, targetId);
+    })).then(() => null);
+  }
+
+  pyatchEditor.handleUploadCostume = () => {
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/png, image/jpeg image/svg+xml image/bmp image/gif';
+
+    input.onchange = e => {
+      handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
+        costumeUpload(buffer, fileType, pyatchVM.runtime.storage, async vmCostumes => {
+          vmCostumes.forEach((costume, i) => {
+            costume.name = `${fileName}${i ? i + 1 : ''}`;
+          });
+          handleNewCostume(vmCostumes, false, 'target' + activeSprite);
+        }, console.log);
+      }, console.log);
+    }
+
+    input.click();
+  };
 
   pyatchEditor.startupBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
@@ -147,14 +180,14 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.generateExecutionObject = () => {
-    const executionObject = { };
+    const executionObject = {};
     setErrorList([]);
 
-    if(sprites)sprites.forEach((sprite) => {
+    if (sprites) sprites.forEach((sprite) => {
       const targetEventMap = {};
       const spriteThreads = pyatchEditor.editorText[sprite];
 
-      if(spriteThreads)spriteThreads.forEach((thread) => {
+      if (spriteThreads) spriteThreads.forEach((thread) => {
         if (thread.option === "") {
           targetEventMap[thread.eventId] = [...(targetEventMap[thread.eventId] ?? []), thread.code];
         } else {
@@ -167,7 +200,7 @@ const PyatchProvider = props => {
 
     return executionObject;
   }
-  
+
   pyatchEditor.onRunPress = async () => {
     const executionObject = pyatchEditor.generateExecutionObject();
 
@@ -179,7 +212,7 @@ const PyatchProvider = props => {
   pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
   pyatchEditor.runDisabled = false;
   pyatchEditor.addSpriteDisabled = false;
-  pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState!=PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
+  pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState != PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
 
   const [patchEditorTab, setPatchEditorTab] = useState(0);
 
@@ -191,14 +224,14 @@ const PyatchProvider = props => {
 
   [pyatchEditor.eventLabels, pyatchEditor.setEventLabels] = useState({});
   [pyatchEditor.eventOptionsMap, pyatchEditor.setEventOptionsMap] = useState({});
-  
+
   // runs once on window render
   useEffect(() => {
     function useAsyncEffect() {
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
-      pyatchVM = new VirtualMachine(); 
+      pyatchVM = new VirtualMachine();
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
       pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
@@ -221,14 +254,14 @@ const PyatchProvider = props => {
       * }*/
       pyatchVM.on('ERROR_CAUGHT', (errors) => {
         let newErrs = [];
-        for(let i=0; i < errors.length; i++){
+        for (let i = 0; i < errors.length; i++) {
           newErrs.push(generateError(errors[i]));
         }
         setErrorList(errorList.concat(newErrs));
       });
     }
     useAsyncEffect();
-  
+
   }, []);
 
   pyatchEditor.onStopPress = () => {
@@ -243,29 +276,29 @@ const PyatchProvider = props => {
   pyatchEditor.onBackgroundChange = (index) => {
     pyatchVM.changeBackground(index);
   }
-    
+
   pyatchEditor.onAddSprite = async () => {
     const sprite3 = Buffer.from(sprite3ArrBuffer);
 
-    if(noBackground){
+    if (noBackground) {
       await pyatchEditor.startupBackground();
       noBackground = false;
     }
-    if(!audioEngine){
+    if (!audioEngine) {
       audioEngine = new AudioEngine();
       pyatchVM.attachAudioEngine(audioEngine);
     }
 
     await pyatchVM.addSprite(sprite3);
-    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].id = 'target' + nextSpriteID;
-    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].sprite.name = 'Sprite' + nextSpriteID;
+    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].id = 'target' + nextSpriteID;
+    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].sprite.name = 'Sprite' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-    if(pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1])pyatchVM.runtime.targets[pyatchVM.runtime.targets.length-1].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    if (pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1]) pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
     setSprites(() => [...sprites, nextSpriteID]);
 
-    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{code: "", eventId: "event_whenflagclicked", option: ""}]]);
+    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{ code: "", eventId: "event_whenflagclicked", option: "" }]]);
 
     setActiveSprite(nextSpriteID);
 
@@ -281,7 +314,7 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.getSpriteName = (spriteID) => {
-    if (pyatchVM.runtime.getTargetById('target'+spriteID)) {
+    if (pyatchVM.runtime.getTargetById('target' + spriteID)) {
       return pyatchVM.runtime.getTargetById('target' + spriteID).sprite.name;
     } else {
       return "No Sprite";
@@ -295,12 +328,12 @@ const PyatchProvider = props => {
     }
   }
 
-  pyatchEditor.onDeleteSprite = async(spriteID) => {
+  pyatchEditor.onDeleteSprite = async (spriteID) => {
     let nonDeletedSprites = [...sprites];
     let locOfActiveSprite = 0;
-    for(let i=0; i<sprites.length; i++){
-      if(sprites[i]==spriteID){
-        locOfActiveSprite=i;
+    for (let i = 0; i < sprites.length; i++) {
+      if (sprites[i] == spriteID) {
+        locOfActiveSprite = i;
       }
     }
     nonDeletedSprites.splice(locOfActiveSprite, 1);
@@ -310,7 +343,7 @@ const PyatchProvider = props => {
   }
 
   pyatchEditor.deleteInVM = (spriteID) => {
-    pyatchVM.deleteSprite('target'+spriteID);
+    pyatchVM.deleteSprite('target' + spriteID);
   }
 
 
@@ -371,7 +404,7 @@ const PyatchProvider = props => {
 
       var newTargetsCount = result.importedProject.targets.length;
 
-      if(!audioEngine){
+      if (!audioEngine) {
         audioEngine = new AudioEngine();
         pyatchVM.attachAudioEngine(audioEngine);
       }
@@ -381,7 +414,7 @@ const PyatchProvider = props => {
 
       newText.push({});
 
-      for (var i = 0; i < newTargetsCount; i++) {        
+      for (var i = 0; i < newTargetsCount; i++) {
         // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
         await pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
 
@@ -405,21 +438,21 @@ const PyatchProvider = props => {
               /*flagClick.forEach(thread => {
                 threads.push({code: thread, eventId: 'event_whenflagclicked'});
               });*//*
-            }*/
+        }*/
             let keys = Object.keys(smallJSON);
             if (Array.isArray(keys)) {
               var keyCount = keys.length;
               for (var j = 0; j < keyCount; j++) {
                 if (Array.isArray(smallJSON[keys[j]])) {
                   smallJSON[keys[j]].forEach(code => {
-                    threads.push({code: code, eventId: keys[j], option: ''});
+                    threads.push({ code: code, eventId: keys[j], option: '' });
                   });
                 } else {
                   let optionKeys = Object.keys(smallJSON[keys[j]]);
                   optionKeys.forEach(realKey => {
                     //threads.push({code: realCode, eventId: keys[j], option: code});
                     smallJSON[keys[j]][realKey].forEach(realCode => {
-                      threads.push({code: realCode, eventId: keys[j], option: realKey});
+                      threads.push({ code: realCode, eventId: keys[j], option: realKey });
                     })
                   });
                 }
@@ -433,7 +466,7 @@ const PyatchProvider = props => {
           notPushed = true;
         }
         if (notPushed) {
-          newText.push([{code: '', eventId: 'event_whenflagclicked', option: ''}]);
+          newText.push([{ code: '', eventId: 'event_whenflagclicked', option: '' }]);
         }
 
         nextSpriteID++;
@@ -441,7 +474,7 @@ const PyatchProvider = props => {
 
       setSprites(() => newSprites);
       pyatchEditor.setEditorText(() => newText);
-      
+
       setActiveSprite(1);
 
       pyatchEditor.setChangesSinceLastSave(false);
@@ -455,7 +488,7 @@ const PyatchProvider = props => {
     let proj = await pyatchEditor.getSerializedProject();
     var reader = new FileReader();
     reader.readAsDataURL(proj);
-    reader.onloadend = function() {
+    reader.onloadend = function () {
       var base64data = reader.result;
       if (base64data) {
         localStorage.removeItem("proj");
@@ -470,24 +503,24 @@ const PyatchProvider = props => {
   }
 
   // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
-  const b64dataurltoBlob = (b64Data, contentType='', sliceSize=512) => {
+  const b64dataurltoBlob = (b64Data, contentType = '', sliceSize = 512) => {
     // the split removes the encoding info from the data url and just returns the raw data
     const byteCharacters = atob(b64Data.split(',')[1]);
     const byteArrays = [];
-  
+
     for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
       const slice = byteCharacters.slice(offset, offset + sliceSize);
-  
+
       const byteNumbers = new Array(slice.length);
       for (let i = 0; i < slice.length; i++) {
         byteNumbers[i] = slice.charCodeAt(i);
       }
-  
+
       const byteArray = new Uint8Array(byteNumbers);
       byteArrays.push(byteArray);
     }
-  
-    const blob = new Blob(byteArrays, {type: contentType});
+
+    const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
 
@@ -506,12 +539,12 @@ const PyatchProvider = props => {
   }
 
   return (
-   <>
-   <PyatchContext.Provider
-      value={{pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, setPatchEditorTab}}
-    >
-      {props.children}
-    </PyatchContext.Provider>
+    <>
+      <PyatchContext.Provider
+        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, setPatchEditorTab }}
+      >
+        {props.children}
+      </PyatchContext.Provider>
     </>
   );
 };
