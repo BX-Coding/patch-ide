@@ -1,9 +1,12 @@
 import React, { useContext } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
+
 import CodeMirror from '@uiw/react-codemirror';
-import { material } from '@uiw/codemirror-theme-material';
 import { python } from '@codemirror/lang-python';
-import {autocompletion} from "@codemirror/autocomplete";
+import { autocompletion } from "@codemirror/autocomplete";
+import { lintGutter } from "@codemirror/lint";
+import pythonLinter from '../util/python-syntax-lint.js';
+
 import SplitPane, { Pane } from 'react-split-pane-next';
 
 import { Autocomplete, Button, TextField, Grid } from '@mui/material';
@@ -133,7 +136,7 @@ function ThreadEditor(props) {
             <Grid marginTop="4px">
                 <CodeMirror
                     value={threadState.code}
-                    extensions={[python(), autocompletion({override: [completions]})]}
+                    extensions={[python(), autocompletion({override: [completions]}), pythonLinter(console.log), lintGutter()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"
