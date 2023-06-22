@@ -4,6 +4,7 @@ import { PyatchTargetEditor } from './PyatchTargetEditor.jsx';
 import CodeMirror from '@uiw/react-codemirror';
 import { material } from '@uiw/codemirror-theme-material';
 import { python } from '@codemirror/lang-python';
+import { Typography } from '@mui/material';
 
 const PyatchEditor = () => {
     let { sprites } = useContext(pyatchContext);
@@ -12,12 +13,7 @@ const PyatchEditor = () => {
 
 function NoSprites(){
     return(
-        <CodeMirror
-            value={""}
-            extensions={[python()]}
-            theme={material}
-            height="90vh"
-        />
+        <Typography>No Sprite Selected</Typography>
     );
 }
 
