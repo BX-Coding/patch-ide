@@ -46,6 +46,10 @@ const PyatchProvider = props => {
 
   let [costumesUpdate, setCostumesUpdate] = useState(false);
 
+  let [showInternalChooser, setShowInternalChooser] = useState(false);
+  let [internalChooserAdd, setInternalChooserAdd] = useState(false);
+  let [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
+
   //returns array with each line of code for given sprite id
   pyatchEditor.getCodeLines = (sprite) => {
     let linesOfCode = [];
@@ -149,7 +153,8 @@ const PyatchProvider = props => {
 
     var returnval = await Promise.all(costumes.map(c => {
       if (fromCostumeLibrary) {
-        return pyatchVM.addCostumeFromLibrary(c.md5, c);
+        //return pyatchVM.addCostumeFromLibrary(c.md5, c);
+        return pyatchVM.addCostume(c.md5ext, c, targetId);
       }
       return pyatchVM.addCostume(c.md5, c, targetId);
     }));
@@ -185,6 +190,11 @@ const PyatchProvider = props => {
 
     input.click();
   };
+
+  pyatchEditor.handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
+    console.warn(costumes);
+    handleNewCostume(costumes, fromCostumeLibrary, 'target' + activeSprite);
+  }
 
   pyatchEditor.startupBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
@@ -289,8 +299,8 @@ const PyatchProvider = props => {
     pyatchVM.changeBackground(index);
   }
 
-  pyatchEditor.onAddSprite = async () => {
-    const sprite3 = Buffer.from(sprite3ArrBuffer);
+  pyatchEditor.onAddSprite = async (sprite) => {
+    const sprite3 = (sprite != null && sprite != undefined) ? sprite : Buffer.from(sprite3ArrBuffer);
 
     if (noBackground) {
       await pyatchEditor.startupBackground();
@@ -555,7 +565,7 @@ const PyatchProvider = props => {
   return (
     <>
       <PyatchContext.Provider
-        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, costumesUpdate, setPatchEditorTab }}
+        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, costumesUpdate, showInternalChooser, internalChooserAdd, internalChooserUpdate, setShowInternalChooser, setInternalChooserAdd, setPatchEditorTab, setInternalChooserUpdate }}
       >
         {props.children}
       </PyatchContext.Provider>

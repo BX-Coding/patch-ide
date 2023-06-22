@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import Button from '@mui/material/Button';
 import pyatchContext from './provider/PyatchContext.js';
 import AddIcon from '@mui/icons-material/Add';
@@ -6,9 +7,11 @@ import Grid from '@mui/material/Grid';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import backdrops from '../assets/backdrops.json';
+import sprites from '../assets/sprites.json';
+import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 
 export function PyatchAddSprite(props) {
-    const { pyatchEditor, pyatchVM, activeSprite } = useContext(pyatchContext);
+    const { pyatchEditor, pyatchVM, activeSprite, showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const costumes = backdrops[0].costumes;
     const open = Boolean(anchorEl);
@@ -35,6 +38,18 @@ export function PyatchAddSprite(props) {
 
     };
 
+    const [anchorEl3, setAnchorEl3] = React.useState(null);
+    const open3 = Boolean(anchorEl3);
+    const handleClick3 = (event) => {
+        setShowInternalChooser(true);
+        setInternalChooserAdd(true);
+        setInternalChooserUpdate(!internalChooserUpdate);
+        handleClose2();
+    };
+    const handleClose3 = (event) => {
+        
+    };
+
     return (
         <Grid container justifyContent="center">
             <Button variant="contained" onClick={handleClick2} disabled={pyatchEditor.addSpriteDisabled} sx={{ m: "1vh" }}>Add Sprite</Button>
@@ -51,7 +66,7 @@ export function PyatchAddSprite(props) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem key="existing" onClick={() => { pyatchEditor.onAddSprite(); handleSetCostumeEditor(); }}>Use existing costume</MenuItem>
+                <MenuItem key="existing" onClick={handleClick3}>Use existing costume</MenuItem>
                 <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
             </Menu>
             <Button
@@ -74,10 +89,11 @@ export function PyatchAddSprite(props) {
                 }}
             >
                 {costumes.map((costume, i) => {
-                    return <MenuItem key={i} onClick={() => pyatchEditor.onBackgroundChange(i)}>{costume.name}</MenuItem>
+                    return <MenuItem keyNum={i} onClick={() => pyatchEditor.onBackgroundChange(i)}>{costume.name}</MenuItem>
                 })}
 
             </Menu>
+            <PatchInternalSpriteChooser pyatchVM={pyatchVM}/>
         </Grid>
     );
 }

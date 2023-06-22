@@ -32,7 +32,7 @@ export function PyatchTargetEditor(props) {
     return(
         <SplitPane split="vertical">
             {spriteThreads.map((thread, i) => 
-            <Pane initialSize={`${Math.floor(1/spriteThreads.length * 100)}%`}>
+            <Pane initialSize={`${100/spriteThreads.length}%`}>
                 <ThreadEditor spriteId={spriteID} threadId={i} eventMap={eventLabels} first={i === 0} final={i === (spriteThreads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
             </Pane>)}
         </SplitPane>
@@ -77,7 +77,7 @@ function ThreadEditor(props) {
     }
     return (
         <>
-            <Grid display="flex" flexDirection="row" spacing={2}>
+            <Grid display="flex" flexDirection="row" spacing={2} marginTop="4px">
                 <Autocomplete
                     disablePortal
                     disableClearable
@@ -130,13 +130,15 @@ function ThreadEditor(props) {
                 {!first && <Button variant="contained" color="primary" onClick={() => onDeleteThread(threadId)}><DeleteIcon/></Button>}
                 {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
             </Grid>
-            <CodeMirror
-                value={threadState.code}
-                extensions={[python(), autocompletion({override: [completions]})]}
-                theme="dark"
-                onChange={handleCodeChange}
-                height="70vh"
-            />
+            <Grid marginTop="4px">
+                <CodeMirror
+                    value={threadState.code}
+                    extensions={[python(), autocompletion({override: [completions]})]}
+                    theme="dark"
+                    onChange={handleCodeChange}
+                    height="calc(100vh - 164px)"
+                />
+            </Grid>
         </>
     );
 }
