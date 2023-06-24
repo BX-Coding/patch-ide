@@ -10,7 +10,7 @@ import pyatchContext from './provider/PyatchContext.js';
 export default function PatchTopBar(){
     return(
         <>
-        <Grid container item direction = "row" xs = {8} spacing={2}>
+        <Grid container item direction = "row" xs = {8} spacing={2} className="patchTopBar">
           <Grid item>
             <PatchFileButton/>
           </Grid>

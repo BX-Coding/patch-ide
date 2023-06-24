@@ -3,7 +3,7 @@ import pyatchContext from './provider/PyatchContext.js';
 import PatchVariables from './PatchVariables.jsx';
 import PatchErrorWindow from './PatchErrorWindow.jsx';
 import getCostumeUrl from '../util/get-costume-url.js';
-import {handleFileUpload, costumeUpload} from '../util/file-uploader.js'
+import { handleFileUpload, costumeUpload } from '../util/file-uploader.js'
 
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
@@ -14,12 +14,15 @@ import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import { Typography, Box } from '@mui/material';
+import PyatchEditor from './PyatchEditor.jsx'
+
+import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 
 export function PatchLeftPaneInspector(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
-    return <div className = "scrollEffect">
-        {[<PatchCodeInspector/>, <PatchSpriteInspector/>][patchEditorTab]}
+    return <div class="tabContent">
+        {[<PyatchEditor />, <PatchEditorStuff />][patchEditorTab]}
     </div>
 }
 
@@ -30,12 +33,25 @@ export function PatchCodeEditorTabButton(props) {
         setPatchEditorTab(0);
     }
 
-    return(
-        <Button variant={patchEditorTab === 0 ? "contained" : "outlined"} onClick={updateEditorTab}><DataObjectIcon/></Button>
+    return (
+        <Button variant={patchEditorTab === 0 ? "contained" : "outlined"} onClick={updateEditorTab}><DataObjectIcon /></Button>
     );
 }
 
-export function PatchSpriteEditorTabButton(props) {
+export function PatchEditorStuff(props) {
+    return (
+        <Grid container marginTop="8px">
+            <Grid item>
+                <PatchSpriteInspector />
+            </Grid>
+            <Grid item>
+                <PatchCodeInspector />
+            </Grid>
+        </Grid>
+    );
+}
+
+/*export function PatchSpriteEditorTabButton(props) {
     const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
 
     const updateEditorTab = () => {
@@ -45,48 +61,61 @@ export function PatchSpriteEditorTabButton(props) {
     return(
         <Button variant={patchEditorTab === 1 ? "contained" : "outlined"} onClick={updateEditorTab}><FlutterDashIcon/></Button>
     );
+}*/
+
+export function PatchCodeTextEditorTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+
+    const updateEditorTab = () => {
+        setPatchEditorTab(1);
+    }
+
+    return (
+        <Button variant={patchEditorTab === 1 ? "contained" : "outlined"} onClick={updateEditorTab}><FlutterDashIcon /></Button>
+    );
 }
 
 function PatchCodeInspector(props) {
     return <>
-        <Grid><PatchVariables/></Grid>
-        <Grid><PatchErrorWindow/></Grid>
+        <Grid><PatchVariables /></Grid>
+        <Grid><PatchErrorWindow /></Grid>
     </>;
 }
 
 function ItemCard(props) {
-    const {imageSrc, title, selected, onClick, actionButtons} = props;
+    const { imageSrc, title, selected, onClick, actionButtons } = props;
     return (
-    <Box sx={{
-      backgroundColor: selected ? 'primary.dark' : 'none',
-      borderColor: 'primary.dark',
-      borderStyle: 'solid',
-      borderWidth: 3,
-      borderRadius: 1,
-      margin: 2,
-      '&:hover': {
-        backgroundColor: 'primary.main',
-        opacity: [0.9, 0.8, 0.7],
-      },
-    }}
+        <Box sx={{
+            backgroundColor: selected ? 'primary.dark' : 'none',
+            borderColor: 'primary.dark',
+            borderStyle: 'solid',
+            borderWidth: 3,
+            borderRadius: 1,
+            marginBottom: "4px",
+            '&:hover': {
+                backgroundColor: 'primary.main',
+                opacity: [0.9, 0.8, 0.7],
+            },
+        }}
 
-    onClick={()=>{onClick(title)}}
-  >
-    <Box sx={{
-        display: 'flex',
-        justifyContent: 'center',
-    }}><img src={imageSrc} width={100}/></Box>
-    <Grid display='flex' justifyContent='space-between' alignItems='center' sx={{backgroundColor: 'primary.dark',
-            padding: 1,}}>
-        <Typography>{title}</Typography>
-        {actionButtons}
-    </Grid>
-  </Box>)
+            onClick={() => { onClick(title) }}
+        >
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+            }}><img src={imageSrc} width={100} /></Box>
+            <Grid display='flex' justifyContent='space-between' alignItems='center' sx={{
+                backgroundColor: 'primary.dark',
+                padding: 1,
+            }}>
+                <Typography>{title}</Typography>
+                {actionButtons}
+            </Grid>
+        </Box>)
 }
 
 function AddCostumeButton(props) {
-    const { pyatchVM } = useContext(pyatchContext);
-    const { targetId, setCostumeIndex } = props;
+    const { pyatchEditor, showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -96,45 +125,20 @@ function AddCostumeButton(props) {
 
     const handleClose = (event) => {
         setAnchorEl(null);
-        console.log(event.currentTarget.id);
     };
 
-    const handleNewCostume = (costume, fromCostumeLibrary, targetId) => {
-        const costumes = Array.isArray(costume) ? costume : [costume];
-
-        return Promise.all(costumes.map(c => {
-            if (fromCostumeLibrary) {
-                return pyatchVM.addCostumeFromLibrary(c.md5, c);
-            }
-            return pyatchVM.addCostume(c.md5, c, targetId);
-        })).then(() => setCostumeIndex(0));
+    const handleBuiltIn = () => {
+        handleClose();
+        setInternalChooserAdd(false);
+        setShowInternalChooser(true);
+        setInternalChooserUpdate(!internalChooserUpdate);
     }
 
-    const handleUploadButtonClick = (event) => {
-        //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/png, image/jpeg image/svg+xml image/bmp image/gif';
-    
-        input.onchange = e => {
-            handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-                costumeUpload(buffer, fileType, pyatchVM.runtime.storage, vmCostumes => {
-                    vmCostumes.forEach((costume, i) => {
-                        costume.name = `${fileName}${i ? i + 1 : ''}`;
-                    });
-                    handleNewCostume(vmCostumes, false, targetId);
-                }, console.log);
-            }, console.log);
-        }
-    
-        input.click();
-      }
-
     return <>
-        <Button 
+        <Button
             id='addNewCostume'
-            varient='contained' 
-            color='primary'         
+            varient='contained'
+            color='primary'
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
@@ -142,24 +146,26 @@ function AddCostumeButton(props) {
             Add New Costume
         </Button>
         <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem id="upload" onClick={handleUploadButtonClick}>From Upload</MenuItem>
-      </Menu>
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+                'aria-labelledby': 'basic-button',
+            }}
+        >
+            <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
+            <MenuItem id="upload" onClick={() => { pyatchEditor.handleUploadCostume(); handleClose(); }}>From Upload</MenuItem>
+        </Menu>
     </>
 }
 
 function PatchSpriteInspector(props) {
-    const { pyatchVM, activeSprite } = useContext(pyatchContext);
-    const selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
-    const currentCostume = selectedTarget.getCurrentCostume();
-    
-    const [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
+    const { pyatchVM, activeSprite, costumesUpdate } = useContext(pyatchContext);
+    let selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+    let currentCostume = selectedTarget.getCurrentCostume();
+
+    let [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
+    let [costumes, setCostumes] = useState(selectedTarget.getCostumes());
 
     const handleClick = (costumeName) => {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
@@ -173,18 +179,28 @@ function PatchSpriteInspector(props) {
         setCostumeIndex(selectedTarget.currentCostume);
     }
 
-    const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon/></Button>
-    const costumes = selectedTarget.getCostumes();
+    const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
+
+    React.useEffect(() => {
+        selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+        currentCostume = selectedTarget.getCurrentCostume();
+        console.warn(selectedTarget.getCostumeIndexByName(currentCostume.name));
+        setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
+        setCostumes(selectedTarget.getCostumes());
+    }, [activeSprite, costumesUpdate]);
 
     return (<>
-        {costumes.map((costume, i) => 
-            <ItemCard 
-                imageSrc={getCostumeUrl(costume.asset)} 
-                title={costume.name} 
-                selected={i === costumeIndex} 
-                onClick={handleClick}
-                actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
+        <div class="costumesHolder">
+            {costumes.map((costume, i) =>
+                <ItemCard
+                    imageSrc={getCostumeUrl(costume.asset)}
+                    title={costume.name}
+                    selected={i === costumeIndex}
+                    onClick={handleClick}
+                    actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
+                    key={costume.name}
                 />)}
-            <AddCostumeButton targetId={selectedTarget.id} setCostumeIndex={setCostumeIndex}/>
+            <AddCostumeButton targetId={selectedTarget.id} setCostumeIndex={setCostumeIndex} />
+        </div>
     </>);
 }

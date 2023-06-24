@@ -1,4 +1,64 @@
-.scrollEffect{
-    overflow-y:scroll;
-    height: 90vh;
+.scrollEffect {
+    overflow-y: scroll;
+}
+
+/*https://stackoverflow.com/questions/11931154/how-to-position-three-divs-in-html-horizontally*/
+.floatItem {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.floatBox {
+    height: 100%;
+    width: 100%;
+}
+
+.costumesHolder {
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    margin-right: 8px;
+    overflow-y: scroll;
+    max-height: calc(100vh - 140px);
+}
+
+.rightContainer {
+    width: 600px;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 8px 0px 0px 8px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.leftContainer {
+    background-color: rgba(255, 255, 255, 0.05);
+    width: calc(100vw - 664px);
+    height: calc(100vh - 76px);
+    margin: 8px 0px 0px 8px;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.spriteChooserImage {
+    width: 64px;
+    height: 64px;
+}
+
+.costumeSelectorHolder {
+    position: fixed;
+    width: 80%;
+    height: 60%;
+    top: 10%;
+    left: 10%;
+    border-radius: 8px;
+    padding: 8px;
+    overflow-y: scroll;
+    border-width: 2px;
+    border-color: #000000;
+    background-color: rgba(60, 60, 60, 1);
+    z-index: 20;
+}
+
+.patchTopBar {
+    max-height: 48px;
 }
