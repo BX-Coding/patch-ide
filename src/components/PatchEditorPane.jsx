@@ -148,7 +148,7 @@ function AddCostumeButton(props) {
 
 function PatchSpriteInspector(props) {
     const { pyatchVM, editingTargetId, costumesUpdate } = useContext(pyatchContext);
-    let selectedTarget = pyatchVM.runtime.getTargetById(editingTargetId);
+    let selectedTarget = pyatchVM.editingTarget;
     let currentCostume = selectedTarget.getCurrentCostume();
 
     let [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
@@ -169,7 +169,7 @@ function PatchSpriteInspector(props) {
     const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
 
     useEffect(() => {
-        selectedTarget = pyatchVM.runtime.getTargetById('target' + editingTargetId);
+        selectedTarget = pyatchVM.runtime.getTargetById(editingTargetId);
         currentCostume = selectedTarget.getCurrentCostume();
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumes(selectedTarget.getCostumes());

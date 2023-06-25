@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 
 import CodeMirror from '@uiw/react-codemirror';
@@ -14,36 +14,40 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
-import { pyatchVM } from './provider/PyatchProvider.jsx';
-
 export function PyatchTargetEditor(props) {
-    const { setChangesSinceLastSave } = useContext(pyatchContext);
+    const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(pyatchContext);
+    const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
     const { target } = props;
-    const threads = target.threads;
 
 
     const onAddThread = () => {
         target.addThread("", "event_whenflagclicked", "");
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
         setChangesSinceLastSave(true);
     }
 
-    const onDeleteThread = (threadId) => {
+    const onDeleteThread = (threadId) => () => {
         target.deleteThread(threadId);
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
         setChangesSinceLastSave(true);
     }
+
+    useEffect(() => {
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
+    }, [editingTargetId]);
 
     return(
         <SplitPane split="vertical">
-            {Object.keys(threads).map((threadId, i) => 
-            <Pane initialSize={`${100/Object.keys(threads).length}%`}>
-                <ThreadEditor thread={threads[threadId]} first={i === 0} final={i === (threads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
+            {editingThreadIds.map((threadId, i) => 
+            <Pane initialSize={`${100/editingThreadIds.length}%`}>
+                <ThreadEditor thread={pyatchVM.editingTarget.getThread(threadId)} first={i === 0} final={i === (editingThreadIds.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread(threadId)}/>
             </Pane>)}
         </SplitPane>
     );
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [scriptText, setScriptText] = useState("");
     const [threadSaved, setThreadSaved] = useState(true);
@@ -133,7 +137,7 @@ function ThreadEditor(props) {
                     sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
                 />}
                 <Button variant="contained" color="success" onClick={handleSave} disabled={threadSaved}><SaveIcon/></Button>
-                {!first && <Button variant="contained" color="primary" onClick={() => onDeleteThread(threadId)}><DeleteIcon/></Button>}
+                {!first && <Button variant="contained" color="primary" onClick={onDeleteThread}><DeleteIcon/></Button>}
                 {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
             </Grid>
             <Grid marginTop="4px">

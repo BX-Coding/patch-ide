@@ -8,11 +8,11 @@ import pyatchContext from './provider/PyatchContext.js';
 import Grid from '@mui/material/Grid';
 
 export default function PyatchSpriteArea(){
-    const { pyatchVM } = useContext(pyatchContext);
-    const vmTargets = pyatchVM ? pyatchVM.getAllRenderedTargets() : [];
-    const [targets, setTargets] = useState(vmTargets);
-    const vmEditingTarget = pyatchVM ? pyatchVM.editingTarget : null;
-    const [editingTarget, setEditingTarget] = useState(vmEditingTarget);
+    const { pyatchVM, targetIds, editingTargetId } = useContext(pyatchContext);
+    if (!pyatchVM) {
+        return null;
+    }
+    const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
 
     
     return(
@@ -30,7 +30,8 @@ export default function PyatchSpriteArea(){
             </Grid>
             <Grid container>
                 <Grid item xs={12}>
-                    {targets.map((target) => {
+                    {targetIds.map((targetId) => {
+                        const target = pyatchVM.runtime.getTargetById(targetId);
                         return (target.isSprite() && target.sprite.name !== "Background") && <PyatchSelectSprite key={target.id} target={target}/>
                     })}
                 </Grid>

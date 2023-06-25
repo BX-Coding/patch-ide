@@ -5,11 +5,11 @@ import Grid from '@mui/material/Grid';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 export function PyatchDeleteSprite(props) {
-    const { pyatchVM } = useContext(pyatchContext);
+    const { editingTargetId, onDeleteSprite } = useContext(pyatchContext);
 
     return(
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={()=>pyatchVM.deleteSprite(pyatchVM.editingTarget)} sx={{m:"1vh"}}><DeleteOutlineIcon/></Button>
+            <Button variant="contained" onClick={()=>onDeleteSprite(editingTargetId)} sx={{m:"1vh"}}><DeleteOutlineIcon/></Button>
         </Grid>
     );
 }

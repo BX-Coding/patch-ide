@@ -3,16 +3,15 @@ import pyatchContext from './provider/PyatchContext.js';
 import Button from '@mui/material/Button';
 
 export function PyatchSelectSprite(props) {
-    const { pyatchVM } = useContext(pyatchContext);
+    const { pyatchVM, editingTargetId, setEditingTargetId } = useContext(pyatchContext);
     const { target } = props;
-    const [isEditing, setIsEditing] = useState(target.id == pyatchVM.editingTarget.id);
     
     const onClick = () => {
+        setEditingTargetId(target.id);
         pyatchVM.setEditingTarget(target.id);
-        setIsEditing(target.id == pyatchVM.editingTarget.id);
     }
 
     return(
-        <Button variant={isEditing ? "contained" : "outlined"} onClick={onClick} sx={{m:"1vh"}}>{target?.sprite?.name}</Button>
+        <Button variant={editingTargetId === target.id ? "contained" : "outlined"} onClick={onClick} sx={{m:"1vh"}}>{target?.sprite?.name}</Button>
     );
 }

@@ -26,7 +26,7 @@ const PyatchProvider = props => {
   //  -------- Patch Editor Global State --------
   const [targetIds, setTargetIds] = useState([]);
   const [editingTargetId, setEditingTargetId] = useState(null);
-
+  
   const [editingTargetX, setEditingTargetX] = useState(0);
   const [editingTargetY, setEditingTargetY] = useState(0);
   const [editingTargetSize, setEditingTargetSize] = useState(0);
@@ -138,6 +138,10 @@ const PyatchProvider = props => {
   // -------- Sprite Values --------
 
   const changeSpriteValues = (eventSource = null) => {
+    if (!pyatchVM) {
+      return;
+    }
+
     // only update the attributes if the active sprite has changes
     if (eventSource) {
       if (eventSource.id !== editingTargetId) {
@@ -145,7 +149,7 @@ const PyatchProvider = props => {
       }
     }
 
-    const editingTarget = pyatchVM.getTargetById(editingTargetId);
+    const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
 
     if (editingTarget) {
       setEditingTargetX(editingTarget.x);
@@ -272,7 +276,7 @@ const PyatchProvider = props => {
     width: 600,
   };
 
-  addToGlobalState({ pyatchVM, pyatchStage });
+  addToGlobalState({ pyatchVM, pyatchStage, onBackgroundChange });
 
   // -------- Patch VM & Project Setup --------
   useEffect(() => {
@@ -320,19 +324,19 @@ const PyatchProvider = props => {
 
   // -------- Global Functions --------
 
-  const onAddSpriteClick = async (sprite) => {
+  const onAddSprite = async (sprite) => {
     if (pyatchVM.runtime.audioEngine) {
       pyatchVM.attachAudioEngine(new AudioEngine());
     }
     await addSprite(sprite);
   }
 
-  const getSerializedProject = async () => {
-    if (pyatchVM) {
-      return await pyatchVM.serializeProject();
-    }
+  const onDeleteSprite = async (targetId) => {
+    await pyatchVM.deleteSprite(targetId);
+    setTargetIds(targetIds.filter(id => id !== targetId));
+    setEditingTargetId(pyatchVM.editingTarget.id);
   }
-
+  
   const downloadProject = async () => {
     return pyatchVM.downloadProject();
   }
@@ -349,7 +353,9 @@ const PyatchProvider = props => {
       pyatchVM.runtime.executableTargets = [];
       pyatchVM.runtime._globalVariables = {};
 
-      var result = await pyatchVM.loadProject(vmState);
+      await addDefaultBackground();
+
+      const result = await pyatchVM.loadProject(vmState);
 
       if (result == null) {
         console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
@@ -363,7 +369,7 @@ const PyatchProvider = props => {
 
       setGlobalVariables(result.json.globalVariables);
       onBackgroundChange(result.json.background);
-      setTargetIds(result.json.targets);
+      setTargetIds(pyatchVM.getAllRenderedTargets().map(target => target.id));
       setEditingTargetId(pyatchVM.editingTarget.id);
       changeSpriteValues(editingTargetId);
 
@@ -373,7 +379,7 @@ const PyatchProvider = props => {
 
   const saveToLocalStorage = async () => {
     // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
-    let proj = await getSerializedProject();
+    let proj = await pyatchVM.zipProject();
     var reader = new FileReader();
     reader.readAsDataURL(proj);
     reader.onloadend = function () {
@@ -431,8 +437,8 @@ const PyatchProvider = props => {
   }
 
   addToGlobalState({
-    onAddSpriteClick,
-    getSerializedProject,
+    onAddSprite,
+    onDeleteSprite,
     downloadProject,
     loadSerializedProject,
     saveToLocalStorage,

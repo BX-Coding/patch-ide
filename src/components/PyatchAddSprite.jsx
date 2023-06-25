@@ -89,7 +89,7 @@ export function PyatchAddSprite(props) {
                 }}
             >
                 {costumes.map((costume, i) => {
-                    return <MenuItem keyNum={i} onClick={() => onBackgroundChange(i)}>{costume.name}</MenuItem>
+                    return <MenuItem key={i} onClick={() => onBackgroundChange(i)}>{costume.name}</MenuItem>
                 })}
 
             </Menu>
