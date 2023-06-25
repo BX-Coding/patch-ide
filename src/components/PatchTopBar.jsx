@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
@@ -73,9 +73,9 @@ export function PatchFileName() {
 }
 
 export function PatchFileButton() {
-  const { pyatchEditor } = React.useContext(pyatchContext);
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave } = useContext(pyatchContext);
   
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -89,11 +89,11 @@ export function PatchFileButton() {
 
   const handleSaveNow = async (event) => {
     // idk if awaiting this is bad but it is unnecessary.
-    pyatchEditor.saveToLocalStorage();
+    saveToLocalStorage();
   };
 
   const handleLoadFromLocalStorage = (event) => {
-    pyatchEditor.loadFromLocalStorage();
+    loadFromLocalStorage();
   }
   const handleNew = (event) => {
     /* For now, this will just clear the project from localStorage and reload. */
@@ -101,30 +101,31 @@ export function PatchFileButton() {
     location.reload();
   }
   const handleDownload = async (event) => {
-    await pyatchEditor.downloadProject();
+    await downloadProject();
   };
+
   const handleUpload = (event) => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
-
+    
     input.onchange = e => { 
-
+      
       // getting a hold of the file reference
       var file = e.target.files[0]; 
-
+      
       // setting up the reader
       var reader = new FileReader();
       reader.readAsArrayBuffer(file);
-
+      
       // here we tell the reader what to do when it's done reading...
       reader.onloadend = readerEvent => {
-          var content = readerEvent.target.result; // this is the content!
-
-          pyatchEditor.loadSerializedProject(content);
+        var content = readerEvent.target.result; // this is the content!
+        
+        loadSerializedProject(content);
       }
     }
-
+    
     input.click();
   }
 
@@ -140,7 +141,7 @@ export function PatchFileButton() {
       >
         File
       </Button>
-      <Button id="saveNow" variant={pyatchEditor.changesSinceLastSave ? "contained" : "outlined"} style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>{pyatchEditor.changesSinceLastSave ? "Save" : "Saved"}</Button>
+      <Button id="saveNow" variant={changesSinceLastSave ? "contained" : "outlined"} style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>{changesSinceLastSave ? "Save" : "Saved"}</Button>
       <Menu
         anchorEl={anchorEl}
         open={open}

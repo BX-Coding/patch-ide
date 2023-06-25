@@ -1,42 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import TextField from '@mui/material/TextField';
+import { Button } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import Grid from '@mui/material/Grid';
 
 
 export function PyatchSpriteName(props) {
-    const { activeSprite } = useContext(pyatchContext);
-    const { pyatchEditor } = useContext(pyatchContext);
+    const { pyatchVM, editingTargetId, setChangesSinceLastSave } = useContext(pyatchContext);
+    const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
+    const [nameSaved, setNameSaved] = useState(true);
+    const [name, setName] = useState(editingTarget.sprite.name);
 
-    const { sprites, setSprites } = useContext(pyatchContext);
-
-    let spriteName = pyatchEditor.getSpriteName(props.spriteID);
-
-    const updateName = (name) => {
-        pyatchEditor.setSpriteName(name.target.value);
-        pyatchEditor.setChangesSinceLastSave(true);
+    const handleSave = () => {
+        pyatchVM.renameSprite(editingTargetId, name);
+        setChangesSinceLastSave(true);
+        setNameSaved(true);
     }
 
-    const active = {
-        'pointerEvents': 'auto',
-        'opacity': '1',
-        'position': 'relative'
-    };
+    const onChange = (event) => {
+        setName(event.target.value);
+        setNameSaved(false);
+    }
 
-    const inactive = {
-        'pointerEvents': 'none',
-        'opacity': '0',
-        'position': 'absolute'
-    };
+    useEffect(() => {
+        setName(editingTarget.sprite.name);
+    }, [editingTarget]);
 
-    return(
-        <div style={(activeSprite == props.spriteID) ? active : inactive}>
-            <TextField 
-                defaultValue={spriteName}
-                onChange={updateName}
-                fullWidth
-                sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-                size="small"
-            />
-        </div>
-    );
+    return(<Grid display="flex">
+        <TextField 
+            value={name}
+            onChange={onChange}
+            fullWidth
+            sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+            size="small"
+        />
+        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved} sx={{m:"1vh"}}><SaveIcon/></Button>
+    </Grid>);
 }

@@ -4,12 +4,13 @@ import Typography from '@mui/material/Typography';
 
 
 export function PyatchSpriteAttributes(props) {
-    const { pyatchSpriteValues } = useContext(pyatchContext);
+    const { pyatchVM } = useContext(pyatchContext);
+    const editingTarget = pyatchVM ? pyatchVM.editingTarget : null;
 
-    let spriteXVal = pyatchSpriteValues.x;
-    let spriteYVal = pyatchSpriteValues.y;
-    let spriteSizeVal = pyatchSpriteValues.size;
-    let spriteDirectionVal = pyatchSpriteValues.direction;
+    let spriteXVal = editingTarget?.x;
+    let spriteYVal = editingTarget?.y;
+    let spriteSizeVal = editingTarget?.size;
+    let spriteDirectionVal = editingTarget?.direction;
 
     return(
         <Typography variant="h5" align = "center">X: {Math.round(spriteXVal)} Y: {Math.round(spriteYVal)} Size: {Math.round(spriteSizeVal)} Direction: {Math.round(spriteDirectionVal)} </Typography>

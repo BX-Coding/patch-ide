@@ -11,7 +11,7 @@ import sprites from '../assets/sprites.json';
 import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 
 export function PyatchAddSprite(props) {
-    const { pyatchEditor, pyatchVM, activeSprite, showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const { onAddSprite, handleUploadCostume, onBackgroundChange, pyatchVM, setShowInternalChooser, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const costumes = backdrops[0].costumes;
     const open = Boolean(anchorEl);
@@ -31,8 +31,8 @@ export function PyatchAddSprite(props) {
         setAnchorEl2(null);
     };
     const handleUploadNew = async (event) => {
-        var newId = await pyatchEditor.onAddSprite();
-        pyatchEditor.handleUploadCostume('target' + newId);
+        var newId = await onAddSprite();
+        handleUploadCostume(newId);
     };
     const handleSetCostumeEditor = (event) => {
 
@@ -52,7 +52,7 @@ export function PyatchAddSprite(props) {
 
     return (
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={handleClick2} disabled={pyatchEditor.addSpriteDisabled} sx={{ m: "1vh" }}>Add Sprite</Button>
+            <Button variant="contained" onClick={handleClick2} sx={{ m: "1vh" }}>Add Sprite</Button>
             <Menu
                 open={open2}
                 anchorEl={anchorEl2}
@@ -89,7 +89,7 @@ export function PyatchAddSprite(props) {
                 }}
             >
                 {costumes.map((costume, i) => {
-                    return <MenuItem keyNum={i} onClick={() => pyatchEditor.onBackgroundChange(i)}>{costume.name}</MenuItem>
+                    return <MenuItem key={i} onClick={() => onBackgroundChange(i)}>{costume.name}</MenuItem>
                 })}
 
             </Menu>

@@ -53,24 +53,23 @@ export function SpriteItem(props) {
 }
 
 export function PatchInternalSpriteChooser(props) {
-    const { pyatchVM } = props;
-    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, pyatchEditor, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const {pyatchVM, showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
 
     const onClickFunc = (sprite) => {
         if (internalChooserAdd) {
-            pyatchEditor.onAddSprite(sprite);
+            onAddSprite(sprite);
         } else {
-            pyatchEditor.handleAddCostumesToActiveTarget(sprite.costumes, true);
+            handleAddCostumesToActiveTarget(sprite.costumes, true);
         }
 
         setShowInternalChooser(false);
         setInternalChooserUpdate(!internalChooserUpdate);
     }
 
-    let [spriteItems, setSpriteItems] = useState(<div className="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}></div>);
+    let [spriteItems, setSpriteItems] = useState(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}></div>);
 
     React.useEffect(() => {
-        setSpriteItems(<div className="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
+        setSpriteItems(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
             </center>

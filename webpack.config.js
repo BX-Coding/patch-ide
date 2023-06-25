@@ -44,10 +44,10 @@ export default {
           'css-loader'
         ]
       },
-      // {
-      //   test: /\.worker\.?(js|mjs)$/,
-      //   type: 'asset/resource'
-      // },
+      {
+        test: /\.png$/,
+        type: 'asset/resource'
+      },
       {
         test: /\.sprite3$/,
         use: ['arraybuffer-loader'],

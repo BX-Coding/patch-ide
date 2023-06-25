@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 
 import CodeMirror from '@uiw/react-codemirror';
@@ -12,71 +12,77 @@ import SplitPane, { Pane } from 'react-split-pane-next';
 import { Autocomplete, Button, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
 
 export function PyatchTargetEditor(props) {
-    const { pyatchEditor } = useContext(pyatchContext);
-    const { editorText, eventLabels } = pyatchEditor;
-    const { spriteID } = props;
-    const spriteThreads = editorText[spriteID];
+    const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(pyatchContext);
+    const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
+    const { target } = props;
 
 
     const onAddThread = () => {
-        spriteThreads.push({code:"", eventId: "event_whenflagclicked", option: ""});
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+        target.addThread("", "event_whenflagclicked", "");
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
+        setChangesSinceLastSave(true);
     }
 
-    const onDeleteThread = (threadId) => {
-        spriteThreads.splice(threadId, 1);
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+    const onDeleteThread = (threadId) => () => {
+        target.deleteThread(threadId);
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
+        setChangesSinceLastSave(true);
     }
+
+    useEffect(() => {
+        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
+    }, [editingTargetId]);
 
     return(
         <SplitPane split="vertical">
-            {spriteThreads.map((thread, i) => 
-            <Pane initialSize={`${100/spriteThreads.length}%`}>
-                <ThreadEditor spriteId={spriteID} threadId={i} eventMap={eventLabels} first={i === 0} final={i === (spriteThreads.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread}/>
+            {editingThreadIds.map((threadId, i) => 
+            <Pane initialSize={`${100/editingThreadIds.length}%`}>
+                <ThreadEditor thread={pyatchVM.editingTarget.getThread(threadId)} first={i === 0} final={i === (editingThreadIds.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread(threadId)}/>
             </Pane>)}
         </SplitPane>
     );
 }
 
 function ThreadEditor(props) {
-    const { spriteId, threadId, eventMap, first, final, onAddThread, onDeleteThread } = props;
-    const { pyatchEditor } = useContext(pyatchContext);
-    const { editorText, getEventOptions } = pyatchEditor;
-    const threadState = editorText[spriteId][threadId];
+    const { setChangesSinceLastSave, pyatchVM } = useContext(pyatchContext);
+    const { thread, first, final, onAddThread, onDeleteThread } = props;
+    const [scriptText, setScriptText] = useState("");
+    const [threadSaved, setThreadSaved] = useState(true);
+
+    const handleSave = () => {
+        thread.updateThreadScript(scriptText);
+        setThreadSaved(true);
+    }
 
     const handleCodeChange = (newValue) => {
-        threadState.code = newValue;
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+        setScriptText(newValue);
+        setChangesSinceLastSave(true);
+        setThreadSaved(false);
     }
 
     const handleEventChange = (event, newValue) => {
-        threadState.eventId = newValue.id;
-        threadState.option = "";
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+        thread.updateThreadTriggerEvent(newValue.id)
+        setChangesSinceLastSave(true);
     }
-
+    
     const handleEventOptionChange = (event, newValue) => {
-        threadState.option = newValue.id;
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+        thread.updateThreadTriggerEventOption(newValue.id)
+        setChangesSinceLastSave(true);
     }
 
     const handleEventOptionBroadcastChange = (event) => {
-        threadState.option = event.target.value;
-        pyatchEditor.setEditorText(() => [...editorText]);
-        pyatchEditor.setChangesSinceLastSave(true);
+        pyatchVM.updateThreadTriggerEventOption(threadId, event.target.value);
+        setChangesSinceLastSave(true);
     }
 
+    const eventMap = pyatchVM.getEventLabels();
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
     let eventOptionsList;
-    if (threadState.eventId !== "event_whenbroadcastreceived") {
-        eventOptionsList = (getEventOptions(threadState.eventId) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
+    if (thread.triggerEvent !== "event_whenbroadcastreceived") {
+        eventOptionsList = (pyatchVM.getEventOptionsMap(thread.triggerEvent) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
     }
     return (
         <>
@@ -86,7 +92,7 @@ function ThreadEditor(props) {
                     disableClearable
                     id="event-thread-selection"
                     options={eventList}
-                    defaultValue={{id: threadState.eventId, label: eventMap[threadState.eventId]}}
+                    defaultValue={{id: thread.triggerEvent, label: eventMap[thread.triggerEvent]}}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     hiddenLabel
                     onChange={handleEventChange}
@@ -110,7 +116,7 @@ function ThreadEditor(props) {
                     disableClearable
                     id="event-thread-option-selection"
                     options={eventOptionsList}
-                    defaultValue={{id: threadState.option, label: threadState.option}}
+                    defaultValue={{id: thread.triggerEvent, label: thread.triggerEvent}}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     hiddenLabel
                     onChange={handleEventOptionChange}
@@ -122,20 +128,21 @@ function ThreadEditor(props) {
                         <TextField {...params}/>
                     }
                 />}
-                {threadState.eventId === "event_whenbroadcastreceived" && <TextField
+                {thread.triggerEvent === "event_whenbroadcastreceived" && <TextField
                     id="event-thread-broadcost-option-text-input"
                     onChange={handleEventOptionBroadcastChange}
-                    defaultValue={threadState.option}
+                    defaultValue={thread.triggerEvent}
                     variant="outlined"  
                     size="small"
                     sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
                 />}
-                {!first && <Button variant="contained" color="primary" onClick={() => onDeleteThread(threadId)}><DeleteIcon/></Button>}
+                <Button variant="contained" color="success" onClick={handleSave} disabled={threadSaved}><SaveIcon/></Button>
+                {!first && <Button variant="contained" color="primary" onClick={onDeleteThread}><DeleteIcon/></Button>}
                 {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
-                    value={threadState.code}
+                    value={thread.script}
                     extensions={[python(), autocompletion({override: [completions]}), pythonLinter(console.log), lintGutter()]}
                     theme="dark"
                     onChange={handleCodeChange}
