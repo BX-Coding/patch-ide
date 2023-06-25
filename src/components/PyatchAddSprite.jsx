@@ -32,7 +32,7 @@ export function PyatchAddSprite(props) {
     };
     const handleUploadNew = async (event) => {
         var newId = await onAddSprite();
-        handleUploadCostume('target' + newId);
+        handleUploadCostume(newId);
     };
     const handleSetCostumeEditor = (event) => {
 

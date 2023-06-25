@@ -122,7 +122,7 @@ export function PatchFileButton() {
       reader.onloadend = readerEvent => {
         var content = readerEvent.target.result; // this is the content!
         
-        pyatchEditor.loadSerializedProject(content);
+        loadSerializedProject(content);
       }
     }
     

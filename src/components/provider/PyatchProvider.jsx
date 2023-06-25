@@ -192,8 +192,10 @@ const PyatchProvider = props => {
       if (fromCostumeLibrary) {
         //return pyatchVM.addCostumeFromLibrary(c.md5, c);
         return pyatchVM.addCostume(c.md5ext, c, targetId);
+      } else {
+
+        return pyatchVM.addCostume(c.md5, c, targetId);
       }
-      return pyatchVM.addCostume(c.md5, c, targetId);
     }));
 
     setCostumesUpdate(!costumesUpdate);
@@ -324,11 +326,12 @@ const PyatchProvider = props => {
 
   // -------- Global Functions --------
 
-  const onAddSprite = async (sprite) => {
+  const onAddSprite = async (sprite = sprites[0]) => {
     if (pyatchVM.runtime.audioEngine) {
       pyatchVM.attachAudioEngine(new AudioEngine());
     }
     await addSprite(sprite);
+    return pyatchVM.editingTarget.id;
   }
 
   const onDeleteSprite = async (targetId) => {
