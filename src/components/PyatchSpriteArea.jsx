@@ -8,7 +8,9 @@ import pyatchContext from './provider/PyatchContext.js';
 import Grid from '@mui/material/Grid';
 
 export default function PyatchSpriteArea(){
-    let { sprites } = useContext(pyatchContext);
+    const { pyatchVM } = useContext(pyatchContext);
+    const targets = pyatchVM.getAllRenderedTargets();
+
     
     return(
         <Grid>
@@ -19,17 +21,15 @@ export default function PyatchSpriteArea(){
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>
                 <Grid item xs={12}>
-                    {sprites.map((sprite) => {
-                        return <PyatchSpriteName key={sprite} spriteID={sprite}/>
-                        })}
-                        <PyatchDeleteSprite/>
+                    <PyatchSpriteName target={pyatchVM.editingTarget}/>
+                    <PyatchDeleteSprite/>
                 </Grid>
             </Grid>
             <Grid container>
                 <Grid item xs={12}>
-                {sprites.map((sprite) => {
-                return <PyatchSelectSprite key={sprite} spriteID={sprite}/>
-            })}
+                    {targets.map((target) => {
+                        return (target.isSprite() && target.sprite.name !== "Background") && <PyatchSelectSprite key={target.id} target={target}/>
+                    })}
                 </Grid>
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>

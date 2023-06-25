@@ -4,39 +4,21 @@ import TextField from '@mui/material/TextField';
 
 
 export function PyatchSpriteName(props) {
-    const { activeSprite } = useContext(pyatchContext);
-    const { pyatchEditor } = useContext(pyatchContext);
-
-    const { sprites, setSprites } = useContext(pyatchContext);
-
-    let spriteName = pyatchEditor.getSpriteName(props.spriteID);
+    const { pyatchEditor, pyatchVM } = useContext(pyatchContext);
+    const { target } = props;
 
     const updateName = (name) => {
-        pyatchEditor.setSpriteName(name.target.value);
+        pyatchVM.getTargetById(target.id).sprite.name = name.target.value;
         pyatchEditor.setChangesSinceLastSave(true);
     }
 
-    const active = {
-        'pointerEvents': 'auto',
-        'opacity': '1',
-        'position': 'relative'
-    };
-
-    const inactive = {
-        'pointerEvents': 'none',
-        'opacity': '0',
-        'position': 'absolute'
-    };
-
     return(
-        <div style={(activeSprite == props.spriteID) ? active : inactive}>
-            <TextField 
-                defaultValue={spriteName}
-                onChange={updateName}
-                fullWidth
-                sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-                size="small"
-            />
-        </div>
+        <TextField 
+            defaultValue={target?.sprite?.name ?? ""}
+            onChange={updateName}
+            fullWidth
+            sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+            size="small"
+        />
     );
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import PatchVariables from './PatchVariables.jsx';
 import PatchErrorWindow from './PatchErrorWindow.jsx';
@@ -14,15 +14,15 @@ import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import { Typography, Box } from '@mui/material';
-import PyatchEditor from './PyatchEditor.jsx'
+import PatchCodeEditor from './PatchCodeEditor.jsx'
 
 import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 
-export function PatchLeftPaneInspector(props) {
+export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
     return <div class="tabContent">
-        {[<PyatchEditor />, <PatchEditorStuff />][patchEditorTab]}
+        {[<PatchCodeEditor />, <PatchSpriteEditor />][patchEditorTab]}
     </div>
 }
 
@@ -38,32 +38,20 @@ export function PatchCodeEditorTabButton(props) {
     );
 }
 
-export function PatchEditorStuff(props) {
+export function PatchSpriteEditor(props) {
     return (
         <Grid container marginTop="8px">
             <Grid item>
                 <PatchSpriteInspector />
             </Grid>
             <Grid item>
-                <PatchCodeInspector />
+                <PatchGlobalVariables />
             </Grid>
         </Grid>
     );
 }
 
-/*export function PatchSpriteEditorTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
-
-    const updateEditorTab = () => {
-        setPatchEditorTab(1);
-    }
-
-    return(
-        <Button variant={patchEditorTab === 1 ? "contained" : "outlined"} onClick={updateEditorTab}><FlutterDashIcon/></Button>
-    );
-}*/
-
-export function PatchCodeTextEditorTabButton(props) {
+export function PatchSpriteTabButton(props) {
     const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
 
     const updateEditorTab = () => {
@@ -75,10 +63,9 @@ export function PatchCodeTextEditorTabButton(props) {
     );
 }
 
-function PatchCodeInspector(props) {
+function PatchGlobalVariables(props) {
     return <>
         <Grid><PatchVariables /></Grid>
-        <Grid><PatchErrorWindow /></Grid>
     </>;
 }
 
@@ -181,10 +168,9 @@ function PatchSpriteInspector(props) {
 
     const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
 
-    React.useEffect(() => {
+    useEffect(() => {
         selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
         currentCostume = selectedTarget.getCurrentCostume();
-        console.warn(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumes(selectedTarget.getCostumes());
     }, [activeSprite, costumesUpdate]);

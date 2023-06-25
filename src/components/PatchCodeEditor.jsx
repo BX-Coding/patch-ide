@@ -7,8 +7,9 @@ import { python } from '@codemirror/lang-python';
 import { Typography } from '@mui/material';
 
 const PyatchEditor = () => {
-    let { sprites } = useContext(pyatchContext);
-    return ((Object.keys(sprites).length===0) ? <NoSprites/> : <FilteredTargetEditor/>);
+    const { pyatchVM } = useContext(pyatchContext);
+    const targets = pyatchVM.getAllRenderedTargets();
+    return (targets.length===0 ? <NoSprites/> : <FilteredTargetEditor/>);
 }
 
 function NoSprites(){
@@ -18,13 +19,9 @@ function NoSprites(){
 }
 
 function FilteredTargetEditor(){
-    let { sprites } = useContext(pyatchContext);
-    const { activeSprite } = useContext(pyatchContext);
-    const filteredSprites = sprites.filter((sprite) => sprite === activeSprite);
+    let { pyatchVM } = useContext(pyatchContext);
     return(
-        <>
-            {filteredSprites.map((sprite) => <PyatchTargetEditor key={sprite} spriteID={sprite}/>)}
-        </>
+        <PyatchTargetEditor key={pyatchVM.editingTarget.id} target={pyatchVM.editingTarget}/>
     );
 }
 

@@ -9,11 +9,14 @@ import backdrops from '../../assets/backdrops.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
 
+import SplashScreen from "../SplashScreen.jsx";
+
 
 import sprite3ArrBuffer from '../../assets/cat.sprite3';
 
 import { Buffer } from 'buffer-es6'
 import PatchTopBar from "../PatchTopBar.jsx";
+import { Typography } from "@mui/material";
 
 window.Buffer = Buffer;
 
@@ -49,6 +52,8 @@ const PyatchProvider = props => {
   let [showInternalChooser, setShowInternalChooser] = useState(false);
   let [internalChooserAdd, setInternalChooserAdd] = useState(false);
   let [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
+
+  const [vmLoaded, setVmLoaded] = useState(false);
 
   //returns array with each line of code for given sprite id
   pyatchEditor.getCodeLines = (sprite) => {
@@ -254,19 +259,20 @@ const PyatchProvider = props => {
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
       pyatchVM = new VirtualMachine();
-      pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachStorage(makeTestStorage());
+      pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-
-      pyatchEditor.setEventLabels(pyatchVM.getEventLabels());
-      pyatchEditor.getEventOptions = pyatchVM.getEventOptionsMap.bind(pyatchVM);
-
+      
       pyatchVM.runtime.draw();
       pyatchVM.start();
+      
+      pyatchVM.on("VM READY", () => {
+        setVmLoaded(true);
+      });
 
-      if (!pyatchEditor.loadFromLocalStorage()) {
-        pyatchEditor.onAddSprite();
-      }
+      // if (!pyatchEditor.loadFromLocalStorage()) {
+      //   pyatchEditor.onAddSprite();
+      // }
 
       /*Pass in an array of error objects with the folowing properties:
       * {
@@ -312,7 +318,6 @@ const PyatchProvider = props => {
     }
 
     await pyatchVM.addSprite(sprite3);
-    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].id = 'target' + nextSpriteID;
     pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].sprite.name = 'Sprite' + nextSpriteID;
 
     // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
@@ -325,7 +330,7 @@ const PyatchProvider = props => {
     setActiveSprite(nextSpriteID);
 
     nextSpriteID++;
-    pyatchVM.runtime.renderer.draw();
+    pyatchVM.runtime.draw();
 
     return nextSpriteID - 1;
   }
@@ -335,39 +340,6 @@ const PyatchProvider = props => {
     setActiveSprite(spriteID);
 
     changeSpriteValues();
-  }
-
-  pyatchEditor.getSpriteName = (spriteID) => {
-    if (pyatchVM.runtime.getTargetById('target' + spriteID)) {
-      return pyatchVM.runtime.getTargetById('target' + spriteID).sprite.name;
-    } else {
-      return "No Sprite";
-    }
-  }
-
-  pyatchEditor.setSpriteName = (name) => {
-    if (pyatchVM) {
-      pyatchVM.runtime.getTargetById('target' + activeSprite).sprite.name = name;
-      setActiveSpriteName(name);
-    }
-  }
-
-  pyatchEditor.onDeleteSprite = async (spriteID) => {
-    let nonDeletedSprites = [...sprites];
-    let locOfActiveSprite = 0;
-    for (let i = 0; i < sprites.length; i++) {
-      if (sprites[i] == spriteID) {
-        locOfActiveSprite = i;
-      }
-    }
-    nonDeletedSprites.splice(locOfActiveSprite, 1);
-    setSprites(nonDeletedSprites);
-    pyatchEditor.deleteInVM(spriteID);
-
-  }
-
-  pyatchEditor.deleteInVM = (spriteID) => {
-    pyatchVM.deleteSprite('target' + spriteID);
   }
 
 
@@ -567,7 +539,7 @@ const PyatchProvider = props => {
       <PyatchContext.Provider
         value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, costumesUpdate, showInternalChooser, internalChooserAdd, internalChooserUpdate, setShowInternalChooser, setInternalChooserAdd, setPatchEditorTab, setInternalChooserUpdate }}
       >
-        {props.children}
+        {(pyatchVM && vmLoaded) ? props.children : <SplashScreen/>}
       </PyatchContext.Provider>
     </>
   );

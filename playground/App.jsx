@@ -4,9 +4,8 @@ import PyatchStage from '../src/components/PyatchStage.jsx';
 import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
-import PyatchEditor from '../src/components/PyatchEditor.jsx';
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchLeftPaneInspector, PatchCodeEditorTabButton as PatchCodeInspectorTabButton, PatchCodeTextEditorTabButton as PatchCodeInspectorCodeTextButton, PatchSpriteEditorTabButton as PatchSpriteInspectorTabButton } from '../src/components/PatchLeftPaneInspector.jsx';
+import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton } from '../src/components/PatchEditorPane.jsx';
 
 function App() {
   return (
@@ -26,11 +25,11 @@ function App() {
         </Grid>
         <Grid item class="leftContainer">
           <Grid container spacing="4px" marginBottom="4px">
-            <Grid item><PatchCodeInspectorTabButton /></Grid>
-            <Grid item><PatchCodeInspectorCodeTextButton /></Grid>
+            <Grid item><PatchCodeEditorTabButton/></Grid>
+            <Grid item><PatchSpriteTabButton/></Grid>
           </Grid>
           <Grid item>
-            <PatchLeftPaneInspector />
+            <PatchEditorPane/>
           </Grid>
         </Grid>
         <Grid item class="rightContainer">
@@ -60,41 +59,3 @@ function App() {
 }
 
 export default App;
-
-/*<PyatchProvider>
-      <Grid container item direction="row" width={'100%'} spacing={2}>
-        <Grid container item direction="row" xs={12}>
-          <PatchTopBar />
-        </Grid>
-        <Grid item xs={3}>
-          <Grid container spacing="4px">
-            <Grid item><PatchCodeInspectorTabButton /></Grid>
-            <Grid item><PatchSpriteInspectorTabButton /></Grid>
-          </Grid>
-          <Grid item>
-            <PatchLeftPaneInspector />
-          </Grid>
-        </Grid>
-        <Grid item xs={5}>
-          <PyatchEditor class={"pyatchEditor"} />
-        </Grid>
-        <Grid item xs={4}>
-          <Grid container spacing={2} direction="row" height={48}>
-            <Grid item>
-              <PyatchStartButton />
-            </Grid>
-            <Grid item>
-              <PyatchStopButton />
-            </Grid>
-          </Grid>
-          <Grid container justifyContent="center">
-            <Grid item xs={12}>
-              <PyatchStage />
-            </Grid>
-            <Grid item xs={12}>
-              <PyatchSpriteArea />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </PyatchProvider>*/
