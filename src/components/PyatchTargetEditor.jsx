@@ -17,19 +17,19 @@ import SaveIcon from '@mui/icons-material/Save';
 import { pyatchVM } from './provider/PyatchProvider.jsx';
 
 export function PyatchTargetEditor(props) {
-    const { pyatchEditor } = useContext(pyatchContext);
+    const { setChangesSinceLastSave } = useContext(pyatchContext);
     const { target } = props;
     const threads = target.threads;
 
 
     const onAddThread = () => {
         target.addThread("", "event_whenflagclicked", "");
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
 
     const onDeleteThread = (threadId) => {
         target.deleteThread(threadId);
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
 
     return(
@@ -43,7 +43,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { pyatchEditor } = useContext(pyatchContext);
+    const { setChangesSinceLastSave } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [scriptText, setScriptText] = useState("");
     const [threadSaved, setThreadSaved] = useState(true);
@@ -55,23 +55,23 @@ function ThreadEditor(props) {
 
     const handleCodeChange = (newValue) => {
         setScriptText(newValue);
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
         setThreadSaved(false);
     }
 
     const handleEventChange = (event, newValue) => {
         thread.updateThreadTriggerEvent(newValue.id)
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
     
     const handleEventOptionChange = (event, newValue) => {
         thread.updateThreadTriggerEventOption(newValue.id)
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
 
     const handleEventOptionBroadcastChange = (event) => {
         pyatchVM.updateThreadTriggerEventOption(threadId, event.target.value);
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
 
     const eventMap = pyatchVM.getEventLabels();

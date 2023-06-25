@@ -8,7 +8,7 @@ import { Typography } from '@mui/material';
 
 const PyatchEditor = () => {
     const { pyatchVM } = useContext(pyatchContext);
-    const targets = pyatchVM.getAllRenderedTargets();
+    const targets = pyatchVM ? pyatchVM.getAllRenderedTargets() : [];
     return (targets.length===0 ? <NoSprites/> : <FilteredTargetEditor/>);
 }
 

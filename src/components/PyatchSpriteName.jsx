@@ -4,12 +4,12 @@ import TextField from '@mui/material/TextField';
 
 
 export function PyatchSpriteName(props) {
-    const { pyatchEditor, pyatchVM } = useContext(pyatchContext);
+    const { pyatchVM, setChangesSinceLastSave } = useContext(pyatchContext);
     const { target } = props;
 
     const updateName = (name) => {
         pyatchVM.getTargetById(target.id).sprite.name = name.target.value;
-        pyatchEditor.setChangesSinceLastSave(true);
+        setChangesSinceLastSave(true);
     }
 
     return(

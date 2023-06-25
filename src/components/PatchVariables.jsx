@@ -38,7 +38,7 @@ export default function PatchVariables() {
   }
 
 function PlusButton(){
-    const { pyatchEditor, pyatchVM } = useContext(PyatchContext);
+    const { setGlobalVariables, pyatchVM } = useContext(PyatchContext);
 
     const handleClick = (event) =>{
         let name = varName.value;
@@ -47,7 +47,7 @@ function PlusButton(){
             value = parseInt(value);
         }
         pyatchVM.updateGlobalVariable(name, value)
-        pyatchEditor.setGlobalVariables(pyatchVM.getGlobalVariables());
+        setGlobalVariables(pyatchVM.getGlobalVariables());
 
     };
 
@@ -72,9 +72,9 @@ function VarLine(props) {
 }
 
 function VarList() {
-    const { pyatchEditor } = useContext(PyatchContext);
+    const { globalVariables } = useContext(PyatchContext);
     return(
-        <Grid item xs={12}>{pyatchEditor.globalVariables.map((variable) => {
+        <Grid item xs={12}>{globalVariables.map((variable) => {
             return <VarLine key = {variable.name} name={variable.name} value={variable.value}/>
         })}</Grid>
     );

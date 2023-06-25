@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PyatchAddSprite } from "./PyatchAddSprite.jsx"; //plus button
 import { PyatchDeleteSprite } from "./PatchDeleteSprite.jsx"; //clear button
 import { PyatchSelectSprite } from "./PyatchSelectSprite.jsx"; //sprite name button
@@ -9,7 +9,10 @@ import Grid from '@mui/material/Grid';
 
 export default function PyatchSpriteArea(){
     const { pyatchVM } = useContext(pyatchContext);
-    const targets = pyatchVM.getAllRenderedTargets();
+    const vmTargets = pyatchVM ? pyatchVM.getAllRenderedTargets() : [];
+    const [targets, setTargets] = useState(vmTargets);
+    const vmEditingTarget = pyatchVM ? pyatchVM.editingTarget : null;
+    const [editingTarget, setEditingTarget] = useState(vmEditingTarget);
 
     
     return(
@@ -20,10 +23,10 @@ export default function PyatchSpriteArea(){
                 </Grid>
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>
-                <Grid item xs={12}>
-                    <PyatchSpriteName target={pyatchVM.editingTarget}/>
+                 {editingTarget && <Grid item xs={12}>
+                    <PyatchSpriteName target={editingTarget}/>
                     <PyatchDeleteSprite/>
-                </Grid>
+                </Grid>}
             </Grid>
             <Grid container>
                 <Grid item xs={12}>

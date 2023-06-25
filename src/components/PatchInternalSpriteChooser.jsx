@@ -53,14 +53,13 @@ export function SpriteItem(props) {
 }
 
 export function PatchInternalSpriteChooser(props) {
-    const { pyatchVM } = props;
-    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, pyatchEditor, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const {pyatchVM, showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
 
     const onClickFunc = (sprite) => {
         if (internalChooserAdd) {
-            pyatchEditor.onAddSprite(sprite);
+            onAddSprite(sprite);
         } else {
-            pyatchEditor.handleAddCostumesToActiveTarget(sprite.costumes, true);
+            handleAddCostumesToActiveTarget(sprite.costumes, true);
         }
 
         setShowInternalChooser(false);

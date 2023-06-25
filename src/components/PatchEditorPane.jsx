@@ -102,7 +102,7 @@ function ItemCard(props) {
 }
 
 function AddCostumeButton(props) {
-    const { pyatchEditor, showInternalChooser, setShowInternalChooser, internalChooserAdd, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -141,14 +141,14 @@ function AddCostumeButton(props) {
             }}
         >
             <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
-            <MenuItem id="upload" onClick={() => { pyatchEditor.handleUploadCostume(); handleClose(); }}>From Upload</MenuItem>
+            <MenuItem id="upload" onClick={() => { handleUploadCostume(); handleClose(); }}>From Upload</MenuItem>
         </Menu>
     </>
 }
 
 function PatchSpriteInspector(props) {
-    const { pyatchVM, activeSprite, costumesUpdate } = useContext(pyatchContext);
-    let selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+    const { pyatchVM, editingTargetId, costumesUpdate } = useContext(pyatchContext);
+    let selectedTarget = pyatchVM.runtime.getTargetById(editingTargetId);
     let currentCostume = selectedTarget.getCurrentCostume();
 
     let [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
@@ -169,11 +169,11 @@ function PatchSpriteInspector(props) {
     const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
 
     useEffect(() => {
-        selectedTarget = pyatchVM.runtime.getTargetById('target' + activeSprite);
+        selectedTarget = pyatchVM.runtime.getTargetById('target' + editingTargetId);
         currentCostume = selectedTarget.getCurrentCostume();
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumes(selectedTarget.getCostumes());
-    }, [activeSprite, costumesUpdate]);
+    }, [editingTargetId, costumesUpdate]);
 
     return (<>
         <div class="costumesHolder">

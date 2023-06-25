@@ -6,57 +6,92 @@ import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
 import backdrops from '../../assets/backdrops.json';
+import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
 
 import SplashScreen from "../SplashScreen.jsx";
 
-
-import sprite3ArrBuffer from '../../assets/cat.sprite3';
-
 import { Buffer } from 'buffer-es6'
-import PatchTopBar from "../PatchTopBar.jsx";
-import { Typography } from "@mui/material";
 
 window.Buffer = Buffer;
 
-const pyatchEditor = {};
-
+let globalPatchIDEState = {};
+const addToGlobalState = (map) => {
+  globalPatchIDEState = { ...globalPatchIDEState, ...map };
+}
 export let pyatchVM = null;
 
-let nextSpriteID = 1;
-
-let persistentActiveSprite = 1;
-
-let audioEngine = null;
-
-let currentId = 0;
-
-let noBackground = true;
-
 const PyatchProvider = props => {
-  let [sprites, setSprites] = useState([]);
+  //  -------- Patch Editor Global State --------
+  const [targetIds, setTargetIds] = useState([]);
+  const [editingTargetId, setEditingTargetId] = useState(null);
 
-  let [activeSprite, setActiveSpriteState] = useState(1);
-  let [activeSpriteName, setActiveSpriteName] = useState();
+  const [editingTargetX, setEditingTargetX] = useState(0);
+  const [editingTargetY, setEditingTargetY] = useState(0);
+  const [editingTargetSize, setEditingTargetSize] = useState(0);
+  const [editingTargetDirection, setEditingTargetDirection] = useState(0);
 
-  let [spriteX, setSpriteX] = useState(0);
-  let [spriteY, setSpriteY] = useState(0);
-  let [spriteSize, setSpriteSize] = useState(100);
-  let [spriteDirection, setSpriteDirection] = useState(90);
+  const [patchEditorTab, setPatchEditorTab] = useState(0);
+  const [errorList, setErrorList] = useState([]);
 
-  let [errorList, setErrorList] = useState([]);
+  const [costumesUpdate, setCostumesUpdate] = useState(false);
 
-  let [costumesUpdate, setCostumesUpdate] = useState(false);
-
-  let [showInternalChooser, setShowInternalChooser] = useState(false);
-  let [internalChooserAdd, setInternalChooserAdd] = useState(false);
-  let [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
+  const [showInternalChooser, setShowInternalChooser] = useState(false);
+  const [internalChooserAdd, setInternalChooserAdd] = useState(false);
+  const [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
 
   const [vmLoaded, setVmLoaded] = useState(false);
+  const [globalVariables, setGlobalVariables] = useState([]);
+  const [changesSinceLastSave, setChangesSinceLastSave] = useState(false);
+
+  const [eventLabels, setEventLabels] = useState({});
+  const [eventOptionsMap, setEventOptionsMap] = useState({});
+
+  addToGlobalState({
+    targetIds,
+    setTargetIds,
+    editingTargetId,
+    setEditingTargetId,
+    editingTargetX,
+    setEditingTargetX,
+    editingTargetY,
+    setEditingTargetY,
+    editingTargetSize,
+    setEditingTargetSize,
+    editingTargetDirection,
+    setEditingTargetDirection,
+    patchEditorTab,
+    setPatchEditorTab,
+    errorList,
+    setErrorList,
+    costumesUpdate,
+    setCostumesUpdate,
+    showInternalChooser,
+    setShowInternalChooser,
+    internalChooserAdd,
+    setInternalChooserAdd,
+    internalChooserUpdate,
+    setInternalChooserUpdate,
+    vmLoaded,
+    setVmLoaded,
+    globalVariables,
+    setGlobalVariables,
+    changesSinceLastSave,
+    setChangesSinceLastSave,
+    eventLabels,
+    setEventLabels,
+    eventOptionsMap,
+    setEventOptionsMap,
+  });
+
+
+
+  // -------- Error Handling --------
 
   //returns array with each line of code for given sprite id
-  pyatchEditor.getCodeLines = (sprite) => {
+  /*
+  const getCodeLines = (sprite) => {
     let linesOfCode = [];
     let prev = 0;
     if (!pyatchEditor.editorText[sprite]) {
@@ -98,51 +133,42 @@ const PyatchProvider = props => {
     return currentError;
 
   }
+  */
 
-  const pyatchSpriteValues = {
-    x: spriteX,
-    y: spriteY,
-    size: spriteSize,
-    direction: spriteDirection
-  };
-  function changeSpriteValues(eventSource = null) {
+  // -------- Sprite Values --------
+
+  const changeSpriteValues = (eventSource = null) => {
     // only update the attributes if the active sprite has changes
     if (eventSource) {
-      if (eventSource.id !== 'target' + persistentActiveSprite) {
+      if (eventSource.id !== editingTargetId) {
         return;
       }
     }
 
-    let activeSpriteLoc = 0;
-    for (let i = 0; i < pyatchVM.runtime.targets.length; i++) {
-      if (pyatchVM.runtime.targets[i].id == ('target' + activeSprite)) {
-        activeSpriteLoc = i;
-      }
-    }
-    if (pyatchVM && pyatchVM.runtime.targets[activeSpriteLoc]) {
-      setSpriteX(pyatchVM.runtime.targets[activeSpriteLoc].x);
-      setSpriteY(pyatchVM.runtime.targets[activeSpriteLoc].y);
-      setSpriteSize(pyatchVM.runtime.targets[activeSpriteLoc].size);
-      setSpriteDirection(pyatchVM.runtime.targets[activeSpriteLoc].direction);
+    const editingTarget = pyatchVM.getTargetById(editingTargetId);
+
+    if (editingTarget) {
+      setEditingTargetX(editingTarget.x);
+      setEditingTargetY(editingTarget.y);
+      setEditingTargetSize(editingTarget.size);
+      setEditingTargetDirection(editingTarget.direction);
     }
 
   }
 
-  [pyatchEditor.editorText, pyatchEditor.setEditorText] = useState([""]);
-  [pyatchEditor.globalVariables, pyatchEditor.setGlobalVariables] = useState([]);
+  addToGlobalState({changeSpriteValues});
 
-  [pyatchEditor.executionState, pyatchEditor.setExecutionState] = useState(PYATCH_EXECUTION_STATES.PRE_LOAD);
+  // -------- Saving State --------
 
-  [pyatchEditor.changesSinceLastSave, pyatchEditor.setChangesSinceLastSave] = useState(false);
   useEffect(() => {
-    pyatchEditor.setChangesSinceLastSave(true);
-  }, [sprites]);
+    setChangesSinceLastSave(true);
+  }, [targetIds]);
 
   //https://dev.to/zachsnoek/creating-custom-react-hooks-useconfirmtabclose-eno
   const confirmationMessage = "You have unsaved changes. Continue?";
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (pyatchEditor.changesSinceLastSave) {
+      if (changesSinceLastSave) {
         event.returnValue = confirmationMessage;
         return confirmationMessage;
       }
@@ -151,7 +177,9 @@ const PyatchProvider = props => {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [pyatchEditor.changesSinceLastSave]);
+  }, [changesSinceLastSave]);
+
+  // -------- Costume Picking --------
 
   const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
     const costumes = Array.isArray(costume) ? costume : [costume];
@@ -169,7 +197,7 @@ const PyatchProvider = props => {
     return returnval;
   }
 
-  pyatchEditor.handleUploadCostume = (targetName) => {
+  const handleUploadCostume = (targetId) => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
@@ -182,10 +210,10 @@ const PyatchProvider = props => {
             costume.name = `${fileName}${i ? i + 1 : ''}`;
           });
 
-          if (targetName == undefined || targetName == null) {
-            handleNewCostume(vmCostumes, false, 'target' + activeSprite);
+          if (targetId == undefined || targetId == null) {
+            handleNewCostume(vmCostumes, false, editingTargetId);
           } else {
-            handleNewCostume(vmCostumes, false, targetName);
+            handleNewCostume(vmCostumes, false, targetId);
           }
 
           // await handleNewCostume if you want to do anything here
@@ -196,52 +224,47 @@ const PyatchProvider = props => {
     input.click();
   };
 
-  pyatchEditor.handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
+  const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
     console.warn(costumes);
     handleNewCostume(costumes, fromCostumeLibrary, 'target' + activeSprite);
   }
 
-  pyatchEditor.startupBackground = async () => {
+  addToGlobalState({ 
+    handleAddCostumesToActiveTarget, 
+    handleUploadCostume, 
+    handleNewCostume
+  });
+
+  // -------- Default Project intialization --------
+
+  const onBackgroundChange = (index) => {
+    pyatchVM.changeBackground(index);
+  }
+
+  const addDefaultBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
-    pyatchEditor.onBackgroundChange(12);
+    onBackgroundChange(12);
   }
 
-  pyatchEditor.generateExecutionObject = () => {
-    const executionObject = {};
-    setErrorList([]);
+  const addSprite = async (sprite) => {
+    await pyatchVM.addSprite(sprite);
+    const targets = pyatchVM.getAllRenderedTargets();
+    const newTarget = targets[targets.length - 1];
 
-    if (sprites) sprites.forEach((sprite) => {
-      const targetEventMap = {};
-      const spriteThreads = pyatchEditor.editorText[sprite];
+    setTargetIds(() => [...targetIds, newTarget.id]);
+    pyatchVM.setEditingTarget(newTarget.id);
+    setEditingTargetId(newTarget.id);
 
-      if (spriteThreads) spriteThreads.forEach((thread) => {
-        if (thread.option === "") {
-          targetEventMap[thread.eventId] = [...(targetEventMap[thread.eventId] ?? []), thread.code];
-        } else {
-          targetEventMap[thread.eventId] = {};
-          targetEventMap[thread.eventId][thread.option] = [...(targetEventMap[thread.eventId][thread.option] ?? []), thread.code];
-        }
-      });
-      executionObject['target' + sprite] = targetEventMap;
-    });
-
-    return executionObject;
+    newTarget.on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
   }
 
-  pyatchEditor.onRunPress = async () => {
-    const executionObject = pyatchEditor.generateExecutionObject();
+  const initializeDefaultProject = async () => {
+    await addDefaultBackground();
+    await addSprite(sprites[0]);
 
-    await pyatchVM.loadScripts(executionObject);
-    await pyatchVM.startHats("event_whenflagclicked");
-
+    pyatchVM.runtime.draw();
   }
 
-  pyatchEditor.pyatchMessage = useMemo(() => PYATCH_LOADING_MESSAGES[pyatchEditor.executionState], [pyatchEditor.executionState]);
-  pyatchEditor.runDisabled = false;
-  pyatchEditor.addSpriteDisabled = false;
-  pyatchEditor.stopDisabled = useMemo(() => pyatchEditor.executionState != PYATCH_EXECUTION_STATES.RUNNING, [pyatchEditor.executionState]);
-
-  const [patchEditorTab, setPatchEditorTab] = useState(0);
 
   const pyatchStage = {
     canvas: document.createElement('canvas'),
@@ -249,10 +272,9 @@ const PyatchProvider = props => {
     width: 600,
   };
 
-  [pyatchEditor.eventLabels, pyatchEditor.setEventLabels] = useState({});
-  [pyatchEditor.eventOptionsMap, pyatchEditor.setEventOptionsMap] = useState({});
+  addToGlobalState({ pyatchVM, pyatchStage });
 
-  // runs once on window render
+  // -------- Patch VM & Project Setup --------
   useEffect(() => {
     function useAsyncEffect() {
 
@@ -265,14 +287,14 @@ const PyatchProvider = props => {
       
       pyatchVM.runtime.draw();
       pyatchVM.start();
-      
-      pyatchVM.on("VM READY", () => {
-        setVmLoaded(true);
-      });
 
-      // if (!pyatchEditor.loadFromLocalStorage()) {
-      //   pyatchEditor.onAddSprite();
-      // }
+      if (!hasLocalStorageProject()) {
+        initializeDefaultProject();
+      } else {
+        loadFromLocalStorage();
+      }
+
+      // -------- Patch Listeners --------
 
       /*Pass in an array of error objects with the folowing properties:
       * {
@@ -287,97 +309,45 @@ const PyatchProvider = props => {
         }
         setErrorList(errorList.concat(newErrs));
       });
+
+      pyatchVM.on("VM READY", () => {
+        setVmLoaded(true);
+      });
     }
     useAsyncEffect();
 
   }, []);
 
-  pyatchEditor.onStopPress = () => {
+  // -------- Global Functions --------
 
-  }
-
-  function setActiveSprite(spriteID) {
-    persistentActiveSprite = spriteID;
-    setActiveSpriteState(spriteID);
-  }
-
-  pyatchEditor.onBackgroundChange = (index) => {
-    pyatchVM.changeBackground(index);
-  }
-
-  pyatchEditor.onAddSprite = async (sprite) => {
-    const sprite3 = (sprite != null && sprite != undefined) ? sprite : Buffer.from(sprite3ArrBuffer);
-
-    if (noBackground) {
-      await pyatchEditor.startupBackground();
-      noBackground = false;
+  const onAddSpriteClick = async (sprite) => {
+    if (pyatchVM.runtime.audioEngine) {
+      pyatchVM.attachAudioEngine(new AudioEngine());
     }
-    if (!audioEngine) {
-      audioEngine = new AudioEngine();
-      pyatchVM.attachAudioEngine(audioEngine);
-    }
-
-    await pyatchVM.addSprite(sprite3);
-    pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].sprite.name = 'Sprite' + nextSpriteID;
-
-    // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-    if (pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1]) pyatchVM.runtime.targets[pyatchVM.runtime.targets.length - 1].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
-
-    setSprites(() => [...sprites, nextSpriteID]);
-
-    pyatchEditor.setEditorText(() => [...pyatchEditor.editorText, [{ code: "", eventId: "event_whenflagclicked", option: "" }]]);
-
-    setActiveSprite(nextSpriteID);
-
-    nextSpriteID++;
-    pyatchVM.runtime.draw();
-
-    return nextSpriteID - 1;
+    await addSprite(sprite);
   }
 
-
-  pyatchEditor.onSelectSprite = (spriteID) => {
-    setActiveSprite(spriteID);
-
-    changeSpriteValues();
-  }
-
-
-  pyatchEditor.getSerializedProject = async () => {
-    // update scripts so changes since last run will persist
-    const executionObject = pyatchEditor.generateExecutionObject();
-
-    await pyatchVM.loadScripts(executionObject);
+  const getSerializedProject = async () => {
     if (pyatchVM) {
       return await pyatchVM.serializeProject();
-    } else {
-      return null;
     }
   }
-  pyatchEditor.downloadProject = async () => {
-    // update scripts so changes since last run will persist
-    const executionObject = pyatchEditor.generateExecutionObject();
 
-    await pyatchVM.loadScripts(executionObject);
+  const downloadProject = async () => {
     return pyatchVM.downloadProject();
   }
 
-  pyatchEditor.loadSerializedProject = async (vmState) => {
+  const loadSerializedProject = async (vmState) => {
     if (pyatchVM) {
       /* TODO: clear out old targets first */
 
-      var oldTargets = pyatchVM.runtime.targets;
-      var oldExecutableTargets = pyatchVM.runtime.executableTargets;
-      var oldEventMap = pyatchVM.runtime.pyatchWorker._eventMap;
-      var oldGlobalVariables = pyatchVM.runtime._globalVariables;
+      const oldTargets = pyatchVM.runtime.targets;
+      const oldExecutableTargets = pyatchVM.runtime.executableTargets;
+      const oldGlobalVariables = pyatchVM.runtime._globalVariables;
 
       pyatchVM.runtime.targets = [];
       pyatchVM.runtime.executableTargets = [];
-      pyatchVM.runtime.pyatchWorker._eventMap = null;
       pyatchVM.runtime._globalVariables = {};
-
-      nextSpriteID = 1;
-      await pyatchEditor.startupBackground();
 
       var result = await pyatchVM.loadProject(vmState);
 
@@ -386,102 +356,24 @@ const PyatchProvider = props => {
 
         pyatchVM.runtime.targets = oldTargets;
         pyatchVM.runtime.executableTargets = oldExecutableTargets;
-        pyatchVM.runtime.pyatchWorker._eventMap = oldEventMap;
         pyatchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
 
         return;
       }
 
-      pyatchEditor.setGlobalVariables(result.json.globalVariables);
+      setGlobalVariables(result.json.globalVariables);
+      onBackgroundChange(result.json.background);
+      setTargetIds(result.json.targets);
+      setEditingTargetId(pyatchVM.editingTarget.id);
+      changeSpriteValues(editingTargetId);
 
-      pyatchEditor.onBackgroundChange(result.json.background);
-
-      noBackground = false;
-
-      var newTargetsCount = result.importedProject.targets.length;
-
-      if (!audioEngine) {
-        audioEngine = new AudioEngine();
-        pyatchVM.attachAudioEngine(audioEngine);
-      }
-
-      let newSprites = [];
-      let newText = [];
-
-      newText.push({});
-
-      for (var i = 0; i < newTargetsCount; i++) {
-        // when RenderedTarget emits this event (anytime position, size, etc. changes), change sprite values
-        await pyatchVM.runtime.targets[nextSpriteID].on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
-
-        pyatchVM.runtime.targets[nextSpriteID].id = 'target' + nextSpriteID;
-
-        newSprites.push(nextSpriteID);
-
-        let notPushed = false;
-
-        // Time to generate code.
-        if (result.json.code) {
-          let smallJSON = result.json.code['target' + nextSpriteID];
-          if (smallJSON != null) {
-            let threads = [];
-            /*let flagClick = smallJSON['event_whenflagclicked'];
-            if (flagClick != null && flagClick.forEach instanceof Function) {
-              var threadCount = flagClick.length;
-              for (var j = 0; j < threadCount; j++) {
-                threads[j] = {code: flagClick[j], eventId: 'event_whenflagclicked'};
-              }
-              /*flagClick.forEach(thread => {
-                threads.push({code: thread, eventId: 'event_whenflagclicked'});
-              });*//*
-        }*/
-            let keys = Object.keys(smallJSON);
-            if (Array.isArray(keys)) {
-              var keyCount = keys.length;
-              for (var j = 0; j < keyCount; j++) {
-                if (Array.isArray(smallJSON[keys[j]])) {
-                  smallJSON[keys[j]].forEach(code => {
-                    threads.push({ code: code, eventId: keys[j], option: '' });
-                  });
-                } else {
-                  let optionKeys = Object.keys(smallJSON[keys[j]]);
-                  optionKeys.forEach(realKey => {
-                    //threads.push({code: realCode, eventId: keys[j], option: code});
-                    smallJSON[keys[j]][realKey].forEach(realCode => {
-                      threads.push({ code: realCode, eventId: keys[j], option: realKey });
-                    })
-                  });
-                }
-              }
-            }
-            newText.push(threads);
-          } else {
-            notPushed = true;
-          }
-        } else {
-          notPushed = true;
-        }
-        if (notPushed) {
-          newText.push([{ code: '', eventId: 'event_whenflagclicked', option: '' }]);
-        }
-
-        nextSpriteID++;
-      }
-
-      setSprites(() => newSprites);
-      pyatchEditor.setEditorText(() => newText);
-
-      setActiveSprite(1);
-
-      pyatchEditor.setChangesSinceLastSave(false);
-    } else {
-      //return null;
+      setChangesSinceLastSave(false);
     }
   }
 
-  pyatchEditor.saveToLocalStorage = async () => {
+  const saveToLocalStorage = async () => {
     // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
-    let proj = await pyatchEditor.getSerializedProject();
+    let proj = await getSerializedProject();
     var reader = new FileReader();
     reader.readAsDataURL(proj);
     reader.onloadend = function () {
@@ -495,7 +387,7 @@ const PyatchProvider = props => {
       /* TODO: display a "saved" dialog somewhere */
       console.log("Saved.");
     }
-    pyatchEditor.setChangesSinceLastSave(false);
+    setChangesSinceLastSave(false);
   }
 
   // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
@@ -520,12 +412,16 @@ const PyatchProvider = props => {
     return blob;
   }
 
-  pyatchEditor.loadFromLocalStorage = () => {
+  const hasLocalStorageProject = () => {
+    return !!localStorage.getItem("proj");
+  }
+
+  const loadFromLocalStorage = () => {
     let text = localStorage.getItem("proj");
     if (text) {
       console.log("Loading from localStorage...");
       let proj = b64dataurltoBlob(text, 'application/zip');
-      pyatchEditor.loadSerializedProject(proj);
+      loadSerializedProject(proj);
       console.log("Loaded from localStorage...");
       return true;
     } else {
@@ -534,12 +430,23 @@ const PyatchProvider = props => {
     }
   }
 
+  addToGlobalState({
+    onAddSpriteClick,
+    getSerializedProject,
+    downloadProject,
+    loadSerializedProject,
+    saveToLocalStorage,
+    hasLocalStorageProject,
+    loadFromLocalStorage,
+  });
+
   return (
     <>
       <PyatchContext.Provider
-        value={{ pyatchEditor, pyatchStage, pyatchSpriteValues, sprites, activeSprite, activeSpriteName, errorList, pyatchVM, patchEditorTab, costumesUpdate, showInternalChooser, internalChooserAdd, internalChooserUpdate, setShowInternalChooser, setInternalChooserAdd, setPatchEditorTab, setInternalChooserUpdate }}
+        value={{ ...globalPatchIDEState }}
       >
-        {(pyatchVM && vmLoaded) ? props.children : <SplashScreen/>}
+        {!(pyatchVM && vmLoaded) && <SplashScreen/>}
+        <div style={{display: (pyatchVM && vmLoaded) ? "block" : "none"}}>{props.children}</div>
       </PyatchContext.Provider>
     </>
   );
