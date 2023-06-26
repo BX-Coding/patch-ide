@@ -85,9 +85,7 @@ function ThreadEditor(props) {
     const eventMap = pyatchVM.getEventLabels();
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
     let eventOptionsList;
-    console.log(thread.triggerEvent);
     if (thread.triggerEvent !== "event_whenbroadcastreceived") {
-        console.log(pyatchVM.getEventOptionsMap(triggerEvent));
         eventOptionsList = (pyatchVM.getEventOptionsMap(triggerEvent) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
     }
     return (
