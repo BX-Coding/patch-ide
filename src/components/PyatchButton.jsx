@@ -8,7 +8,7 @@ export function PyatchStartButton(props) {
     const { pyatchVM } = useContext(pyatchContext);
 
     return(
-        <Button variant="contained" onClick={() => {pyatchVM.startHats("event_whenflagclicked")}}><FlagIcon/></Button>
+        <Button variant="contained" onClick={() => {pyatchVM.runtime.greenFlag()}}><FlagIcon/></Button>
     );
 }
 
