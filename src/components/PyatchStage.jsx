@@ -8,7 +8,7 @@ const PyatchStage = () => {
     const [rect, setRect] = useState(null);
     const boundingRef = useRef(null);
     const updateRect = () => {
-        console.log("UPDATING", boundingRef.current.getBoundingClientRect());
+        // console.log("UPDATING", boundingRef.current.getBoundingClientRect());
         setRect(boundingRef.current.getBoundingClientRect());
     }
 
@@ -23,7 +23,7 @@ const PyatchStage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height
             };
-            console.log(coordinates);
+            // console.log(coordinates);
             pyatchVM.postIOData('mouse', coordinates);
         }
     }
