@@ -265,8 +265,9 @@ const PyatchProvider = props => {
   }
 
   const initializeDefaultProject = async () => {
-    await addDefaultBackground();
-    await addSprite(sprites[0]);
+    // Quick fix to BXC-144 is commenting out below line:
+    // await addDefaultBackground();
+    await addSprite(sprites[38]);
 
     pyatchVM.runtime.draw();
   }
