@@ -51,6 +51,8 @@ function ThreadEditor(props) {
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [scriptText, setScriptText] = useState("");
     const [threadSaved, setThreadSaved] = useState(true);
+    const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
+    const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
 
     const handleSave = () => {
         thread.updateThreadScript(scriptText);
@@ -65,24 +67,28 @@ function ThreadEditor(props) {
 
     const handleEventChange = (event, newValue) => {
         thread.updateThreadTriggerEvent(newValue.id)
+        setTriggerEvent(newValue.id);
         setChangesSinceLastSave(true);
     }
     
     const handleEventOptionChange = (event, newValue) => {
         thread.updateThreadTriggerEventOption(newValue.id)
+        setTriggerEventOption(newValue.id);
         setChangesSinceLastSave(true);
     }
 
     const handleEventOptionBroadcastChange = (event) => {
-        pyatchVM.updateThreadTriggerEventOption(threadId, event.target.value);
+        thread.updateThreadTriggerEventOption(event.target.value);
         setChangesSinceLastSave(true);
     }
 
     const eventMap = pyatchVM.getEventLabels();
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
     let eventOptionsList;
+    console.log(thread.triggerEvent);
     if (thread.triggerEvent !== "event_whenbroadcastreceived") {
-        eventOptionsList = (pyatchVM.getEventOptionsMap(thread.triggerEvent) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
+        console.log(pyatchVM.getEventOptionsMap(triggerEvent));
+        eventOptionsList = (pyatchVM.getEventOptionsMap(triggerEvent) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
     }
     return (
         <>
@@ -116,7 +122,7 @@ function ThreadEditor(props) {
                     disableClearable
                     id="event-thread-option-selection"
                     options={eventOptionsList}
-                    defaultValue={{id: thread.triggerEvent, label: thread.triggerEvent}}
+                    defaultValue={{id: thread.triggerEventOption, label: thread.triggerEventOption}}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     hiddenLabel
                     onChange={handleEventOptionChange}
@@ -131,7 +137,7 @@ function ThreadEditor(props) {
                 {thread.triggerEvent === "event_whenbroadcastreceived" && <TextField
                     id="event-thread-broadcost-option-text-input"
                     onChange={handleEventOptionBroadcastChange}
-                    defaultValue={thread.triggerEvent}
+                    defaultValue={thread.triggerEventOption}
                     variant="outlined"  
                     size="small"
                     sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}

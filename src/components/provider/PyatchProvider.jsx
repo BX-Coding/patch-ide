@@ -285,6 +285,7 @@ const PyatchProvider = props => {
     function useAsyncEffect() {
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
+      console.log("CANVAS", pyatchStage.canvas.getBoundingClientRect());
 
       pyatchVM = new VirtualMachine();
       pyatchVM.attachStorage(makeTestStorage());
