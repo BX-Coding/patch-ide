@@ -11,7 +11,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 export default {
   entry: path.join(__dirname, "playground", "main.jsx"),
   output: {
-    path: path.join(__dirname, "/playground/public/assets"),
+    path: path.join(__dirname, "/build"),
   },
   mode: "development",
   devServer: {
