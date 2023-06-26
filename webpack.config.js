@@ -14,12 +14,6 @@ export default {
     path: path.join(__dirname, "/build"),
   },
   mode: "development",
-  devServer: {
-    headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
-    },
-  },
   module: {
     rules: [
       {
