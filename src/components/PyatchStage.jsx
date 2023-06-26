@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import DOMElementRenderer from '../util/dom-element-renderer.jsx';
 import { getEventXY } from '../util/touch-utils.js';
@@ -6,13 +6,15 @@ import { getEventXY } from '../util/touch-utils.js';
 const PyatchStage = () => {
     const { pyatchStage, pyatchVM } = useContext(pyatchContext);
     const [rect, setRect] = useState(null);
+    const boundingRef = useRef(null);
     const updateRect = () => {
-        setRect(pyatchStage.canvas.getBoundingClientRect());
+        console.log("UPDATING", boundingRef.current.getBoundingClientRect());
+        setRect(boundingRef.current.getBoundingClientRect());
     }
 
     const onMouseMove = (e) => {
         // TODO: Stop mystery function calling this with rect rect.width && height === 0
-        if (rect && rect.width > 0) {
+        if (rect && rect.width && rect.height) {
             const {x, y} = getEventXY(e);
             const mousePosition = [x - rect.left, y - rect.top];
             const coordinates = {
@@ -21,12 +23,12 @@ const PyatchStage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height
             };
-            // console.log(coordinates);
+            console.log(coordinates);
             pyatchVM.postIOData('mouse', coordinates);
         }
     }
     const onMouseUp = (e) => {
-        if (rect && rect.width > 0) {
+        if (rect && rect.width && rect.height) {
             const {x, y} = getEventXY(e);
             const data = {
                 isDown: false,
@@ -40,7 +42,7 @@ const PyatchStage = () => {
         }
     }
     const onMouseDown = (e) => {
-        if (rect && rect.width > 0) {
+        if (rect && rect.width && rect.height) {
             updateRect();
             const {x, y} = getEventXY(e);
             const mousePosition = [x - rect.left, y - rect.top];
@@ -51,13 +53,13 @@ const PyatchStage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height
             };
-            console.log(data);
+            // console.log(data);
             pyatchVM.postIOData('mouse', data);
         }
     }
 
     const handleKeyDown = (e) => {
-        if (rect && rect.width > 0) {
+        if (rect) {
             // Don't capture keys intended for Blockly inputs.
             if (e.target !== document && e.target !== document.body) return;
 
@@ -76,7 +78,7 @@ const PyatchStage = () => {
     }
 
     const handleKeyUp = (e) => {
-        if (rect && rect.width > 0) {
+        if (rect) {
             // Always capture up events,
             // even those that have switched to other targets.
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
@@ -106,20 +108,21 @@ const PyatchStage = () => {
     useEffect(() => {
         if (pyatchStage.canvas) {
             console.log("attaching");
-            attachMouseEvents(pyatchStage.canvas);
+            attachMouseEvents();
             attachKeyboardEvents();
             updateRect();
         }
     }, [pyatchStage.canvas])
 
-    return (
-        !!pyatchStage.canvas && <DOMElementRenderer
+    return (<div ref={boundingRef}>
+        {!!pyatchStage.canvas && <DOMElementRenderer
             domElement={pyatchStage.canvas}
             style={{
                 height: pyatchStage.height,
                 width: pyatchStage.width
             }}
-        />
+        />}
+        </div>
     );
 }
 
