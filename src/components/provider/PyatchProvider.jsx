@@ -375,7 +375,9 @@ const PyatchProvider = props => {
       setGlobalVariables(result.json.globalVariables);
       onBackgroundChange(result.json.background);
       setTargetIds(pyatchVM.getAllRenderedTargets().map(target => target.id));
-      setEditingTargetId(pyatchVM.editingTarget.id);
+      const editingTargetId = pyatchVM?.editingTarget?.id ?? pyatchVM.runtime.targets[0].id;
+      pyatchVM.setEditingTarget(editingTargetId);
+      setEditingTargetId(editingTargetId);
       changeSpriteValues(editingTargetId);
 
       setChangesSinceLastSave(false);
