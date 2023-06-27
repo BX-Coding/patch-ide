@@ -232,7 +232,7 @@ const PyatchProvider = props => {
 
   const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
     console.warn(costumes);
-    handleNewCostume(costumes, fromCostumeLibrary, 'target' + activeSprite);
+    handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
   }
 
   addToGlobalState({ 
