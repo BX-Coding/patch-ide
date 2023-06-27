@@ -19,10 +19,10 @@ function NoSprites(){
 }
 
 function FilteredTargetEditor(){
-    let { pyatchVM } = useContext(pyatchContext);
-    return(
-        <PyatchTargetEditor key={pyatchVM.editingTarget.id} target={pyatchVM.editingTarget}/>
-    );
+    let { pyatchVM, editingTargetId } = useContext(pyatchContext);
+    return<>
+        {editingTargetId && <PyatchTargetEditor key={editingTargetId} target={pyatchVM.editingTarget}/>}
+    </>;
 }
 
 export default PyatchEditor;
