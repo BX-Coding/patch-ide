@@ -18,7 +18,7 @@
     "file-loader": "^6.2.0",
     "lodash.omit": "^4.5.0",
     "omggif": "^1.0.10",
-    "pyatch-vm": "^1.1.2",
+    "pyatch-vm": "^1.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-split-pane": "^2.0.3",
