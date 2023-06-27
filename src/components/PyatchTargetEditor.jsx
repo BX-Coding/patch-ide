@@ -47,22 +47,20 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
-    const [scriptText, setScriptText] = useState("");
-    const [threadSaved, setThreadSaved] = useState(true);
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
 
     const handleSave = () => {
-        thread.updateThreadScript(scriptText);
-        setThreadSaved(true);
+        thread.updateThreadScript(threadsText[thread.id]);
+        setSavedThreads({...savedThreads, [thread.id]: true});
     }
 
     const handleCodeChange = (newValue) => {
-        setScriptText(newValue);
+        setThreadsText({...threadsText, [thread.id]: newValue});
+        setSavedThreads({...savedThreads, [thread.id]: false});
         setChangesSinceLastSave(true);
-        setThreadSaved(false);
     }
 
     const handleEventChange = (event, newValue) => {
@@ -140,7 +138,7 @@ function ThreadEditor(props) {
                     size="small"
                     sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
                 />}
-                <Button variant="contained" color="success" onClick={handleSave} disabled={threadSaved}><SaveIcon/></Button>
+                <Button variant="contained" color="success" onClick={handleSave} disabled={savedThreads[thread.id]}><SaveIcon/></Button>
                 {!first && <Button variant="contained" color="primary" onClick={onDeleteThread}><DeleteIcon/></Button>}
                 {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
             </Grid>

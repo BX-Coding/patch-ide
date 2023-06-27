@@ -32,6 +32,9 @@ const PyatchProvider = props => {
   const [editingTargetSize, setEditingTargetSize] = useState(0);
   const [editingTargetDirection, setEditingTargetDirection] = useState(0);
 
+  const [threadsText, setThreadsText] = useState({});
+  const [savedThreads, setSavedThreads] = useState({});
+
   const [patchEditorTab, setPatchEditorTab] = useState(0);
   const [errorList, setErrorList] = useState([]);
 
@@ -61,6 +64,10 @@ const PyatchProvider = props => {
     setEditingTargetSize,
     editingTargetDirection,
     setEditingTargetDirection,
+    threadsText,
+    setThreadsText,
+    savedThreads,
+    setSavedThreads,
     patchEditorTab,
     setPatchEditorTab,
     errorList,
@@ -279,6 +286,21 @@ const PyatchProvider = props => {
     width: 600,
   };
 
+  const initializeThreadGlobalState = () => {
+    const threadsText = {};
+    const threadsSaved = {};
+    pyatchVM.getAllRenderedTargets().forEach(target => {
+      console.log("TARGET", target);
+      target.getThreads().forEach(thread => {
+        threadsText[thread.id] = thread.script;
+        threadsSaved[thread.id] = true;
+      });
+    });
+    console.log("THREADS", threadsText);
+    setThreadsText(threadsText);
+    setSavedThreads(threadsSaved);
+  }
+
   addToGlobalState({ pyatchVM, pyatchStage, onBackgroundChange });
 
   // -------- Patch VM & Project Setup --------
@@ -341,6 +363,15 @@ const PyatchProvider = props => {
     setTargetIds(targetIds.filter(id => id !== targetId));
     setEditingTargetId(pyatchVM.editingTarget.id);
   }
+
+  const saveAllThreads = () => {
+    Object.keys(threadsText).forEach(threadId => {
+      if (!savedThreads[threadId]) {
+        pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
+        setSavedThreads({ ...savedThreads, [threadId]: true });
+      }
+    });
+  }
   
   const downloadProject = async () => {
     return pyatchVM.downloadProject();
@@ -379,6 +410,7 @@ const PyatchProvider = props => {
       pyatchVM.setEditingTarget(editingTargetId);
       setEditingTargetId(editingTargetId);
       changeSpriteValues(editingTargetId);
+      initializeThreadGlobalState();
 
       setChangesSinceLastSave(false);
     }
@@ -446,6 +478,7 @@ const PyatchProvider = props => {
   addToGlobalState({
     onAddSprite,
     onDeleteSprite,
+    saveAllThreads,
     downloadProject,
     loadSerializedProject,
     saveToLocalStorage,
