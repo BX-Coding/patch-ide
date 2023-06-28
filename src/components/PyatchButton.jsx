@@ -5,10 +5,11 @@ import FlagIcon from '@mui/icons-material/Flag';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 
 export function PyatchStartButton(props) {
-    const { pyatchVM, saveAllThreads } = useContext(pyatchContext);
+    const { pyatchVM, saveAllThreads, setRuntimeErrorList } = useContext(pyatchContext);
 
     const onClick = () => {
         saveAllThreads();
+        setRuntimeErrorList([]);
         pyatchVM.runtime.greenFlag();
     }
 

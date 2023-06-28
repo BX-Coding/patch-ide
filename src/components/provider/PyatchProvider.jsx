@@ -36,7 +36,7 @@ const PyatchProvider = props => {
   const [savedThreads, setSavedThreads] = useState({});
 
   const [patchEditorTab, setPatchEditorTab] = useState(0);
-  const [errorList, setErrorList] = useState([]);
+  const [runtimeErrorList, setRuntimeErrorList] = useState([]);
 
   const [costumesUpdate, setCostumesUpdate] = useState(false);
 
@@ -70,8 +70,8 @@ const PyatchProvider = props => {
     setSavedThreads,
     patchEditorTab,
     setPatchEditorTab,
-    errorList,
-    setErrorList,
+    runtimeErrorList,
+    setRuntimeErrorList,
     costumesUpdate,
     setCostumesUpdate,
     showInternalChooser,
@@ -325,19 +325,8 @@ const PyatchProvider = props => {
       }
 
       // -------- Patch Listeners --------
-
-      /*Pass in an array of error objects with the folowing properties:
-      * {
-      *   "name" : the error text
-      *   "line" : the integer of the line the error happended on
-      *   "sprite" : the integer of the sprite the error happened on
-      * }*/
-      pyatchVM.on('ERROR_CAUGHT', (errors) => {
-        let newErrs = [];
-        for (let i = 0; i < errors.length; i++) {
-          newErrs.push(generateError(errors[i]));
-        }
-        setErrorList(errorList.concat(newErrs));
+      pyatchVM.on('RUNTIME ERROR', (threadId, message, lineNumber) => {
+        setRuntimeErrorList([...runtimeErrorList, { threadId, message, lineNumber }]);
       });
 
       pyatchVM.on("VM READY", () => {
