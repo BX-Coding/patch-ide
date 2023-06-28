@@ -47,7 +47,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -145,7 +145,7 @@ function ThreadEditor(props) {
             <Grid marginTop="4px">
                 <CodeMirror
                     value={thread.script}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo())]}), pythonLinter(console.log), lintGutter()]}
+                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo())]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"

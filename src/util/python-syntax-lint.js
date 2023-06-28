@@ -1,11 +1,13 @@
 import {syntaxTree} from "@codemirror/language"
 import {linter} from "@codemirror/lint"
 
-let isErrorFree = true;
+let isSyntaxErrorFree = true;
 
-const pythonLinter = (syntaxThreadCallback) => { return linter(view => {
+const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return linter(view => {
+  console.log(pyatchVM.getRuntimeErrors());
+  const runtimeErrors = pyatchVM.getRuntimeErrors().filter((error) => error.threadId === threadId);
   let diagnostics = []
-  isErrorFree = true;
+  isSyntaxErrorFree = true;
   syntaxTree(view.state).cursor().iterate(node => {
     if (node.type.isError) diagnostics.push({
       from: node.from,
@@ -14,10 +16,21 @@ const pythonLinter = (syntaxThreadCallback) => { return linter(view => {
       message: "Syntax Error",
     })
     if (diagnostics.length > 0) {
-        isErrorFree = false
+        isSyntaxErrorFree = false
     }
   })
-  syntaxThreadCallback(isErrorFree);
+  let doc = view.state.doc;
+  const runtimeErrorDiagnostics = runtimeErrors.map((error) => {
+    const shiftedLineNumber = Math.min(error.lineNumber - 1, doc.lines);
+    return {
+      from: doc.line(shiftedLineNumber).from,
+      to: doc.line(shiftedLineNumber).to,
+      severity: "error",
+      message: error.message,
+      }
+  });
+  diagnostics = diagnostics.concat(runtimeErrorDiagnostics);
+  syntaxThreadCallback(isSyntaxErrorFree);
 
   return diagnostics
 })
