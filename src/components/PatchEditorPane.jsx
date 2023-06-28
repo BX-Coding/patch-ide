@@ -13,6 +13,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Typography, Box } from '@mui/material';
 import PatchCodeEditor from './PatchCodeEditor.jsx'
 
@@ -43,6 +44,9 @@ export function PatchSpriteEditor(props) {
         <Grid container marginTop="8px">
             <Grid item>
                 <PatchSpriteInspector />
+            </Grid>
+            <Grid item>
+                <PatchSoundInspector />
             </Grid>
             <Grid item>
                 <PatchGlobalVariables />
@@ -146,6 +150,36 @@ function AddCostumeButton(props) {
     </>
 }
 
+function PatchSoundInspector(props) {
+    const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
+    let selectedTarget = pyatchVM.editingTarget;
+    let targtSounds = selectedTarget.getSounds();
+
+    const [soundIndex, setSoundIndex] = useState(Math.min(targtSounds.length - 1, 0));
+
+    const handleClick = (index, soundName) => () => {
+        // Copy name to clipboard
+        // navigator.clipboard.writeText(soundName);
+        setSoundIndex(index);
+    }
+
+    const copyButton = (soundName) => <Button sx={{color: 'white'}} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
+
+    return (
+        <div class="assetHolder">
+            {targtSounds.map((sound, i) =>
+                <ItemCard
+                    imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
+                    title={sound.name}
+                    selected={i === soundIndex}
+                    onClick={handleClick(i, sound.name)}
+                    actionButtons={[copyButton(sound.name)]}
+                    key={sound.name}
+                />)}
+        </div>
+    );
+}
+
 function PatchSpriteInspector(props) {
     const { pyatchVM, editingTargetId, costumesUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
@@ -175,8 +209,8 @@ function PatchSpriteInspector(props) {
         setCostumes(selectedTarget.getCostumes());
     }, [editingTargetId, costumesUpdate]);
 
-    return (<>
-        <div class="costumesHolder">
+    return (
+        <div class="assetHolder">
             {costumes.map((costume, i) =>
                 <ItemCard
                     imageSrc={getCostumeUrl(costume.asset)}
@@ -188,5 +222,5 @@ function PatchSpriteInspector(props) {
                 />)}
             <AddCostumeButton targetId={selectedTarget.id} setCostumeIndex={setCostumeIndex} />
         </div>
-    </>);
+    );
 }
