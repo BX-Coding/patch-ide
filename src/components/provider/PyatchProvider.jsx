@@ -313,6 +313,7 @@ const PyatchProvider = props => {
       pyatchVM = new VirtualMachine();
       pyatchVM.attachStorage(makeTestStorage());
       pyatchVM.attachRenderer(scratchRenderer);
+      pyatchVM.attachAudioEngine(new AudioEngine());
       pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
       
       pyatchVM.runtime.draw();
@@ -339,10 +340,13 @@ const PyatchProvider = props => {
 
   // -------- Global Functions --------
 
+  const onFlagPressed = () => {
+    saveAllThreads();
+    setRuntimeErrorList([]);
+    pyatchVM.runtime.greenFlag();
+  }
+  
   const onAddSprite = async (sprite = sprites[0]) => {
-    if (pyatchVM.runtime.audioEngine) {
-      pyatchVM.attachAudioEngine(new AudioEngine());
-    }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
   }
@@ -473,6 +477,7 @@ const PyatchProvider = props => {
     saveToLocalStorage,
     hasLocalStorageProject,
     loadFromLocalStorage,
+    onFlagPressed,
   });
 
   return (
