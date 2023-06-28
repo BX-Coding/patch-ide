@@ -4,7 +4,6 @@ import {linter} from "@codemirror/lint"
 let isSyntaxErrorFree = true;
 
 const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return linter(view => {
-  console.log(pyatchVM.getRuntimeErrors());
   const runtimeErrors = pyatchVM.getRuntimeErrors().filter((error) => error.threadId === threadId);
   let diagnostics = []
   isSyntaxErrorFree = true;
