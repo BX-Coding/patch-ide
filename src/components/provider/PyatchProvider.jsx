@@ -10,6 +10,8 @@ import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
 
+import defaulPatchProject from '../../assets/defaultProject.ptch1';
+
 import SplashScreen from "../SplashScreen.jsx";
 
 import { Buffer } from 'buffer-es6'
@@ -45,6 +47,7 @@ const PyatchProvider = props => {
   const [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
 
   const [vmLoaded, setVmLoaded] = useState(false);
+  const [patchReady, setPatchReady] = useState(false);
   const [globalVariables, setGlobalVariables] = useState([]);
   const [changesSinceLastSave, setChangesSinceLastSave] = useState(false);
 
@@ -80,8 +83,8 @@ const PyatchProvider = props => {
     setInternalChooserAdd,
     internalChooserUpdate,
     setInternalChooserUpdate,
-    vmLoaded,
-    setVmLoaded,
+    patchReady,
+    setPatchReady,
     globalVariables,
     setGlobalVariables,
     changesSinceLastSave,
@@ -250,13 +253,9 @@ const PyatchProvider = props => {
 
   // -------- Default Project intialization --------
 
-  const onBackgroundChange = (index) => {
-    pyatchVM.changeBackground(index);
-  }
-
   const addDefaultBackground = async () => {
     await pyatchVM.addSprite(backdrops[0]);
-    onBackgroundChange(12);
+    pyatchVM.getAllRenderedTargets()[0].isStage = true;
   }
 
   const addSprite = async (sprite) => {
@@ -272,13 +271,17 @@ const PyatchProvider = props => {
   }
 
   const initializeDefaultProject = async () => {
-    // Quick fix to BXC-144 is commenting out below line:
-    // await addDefaultBackground();
-    await addSprite(sprites[38]);
-
-    pyatchVM.runtime.draw();
+    loadSerializedProject(defaulPatchProject);
   }
 
+  const initializePatchProject = async () => {
+    if (hasLocalStorageProject()) {
+      await loadFromLocalStorage();
+    } else {
+      await initializeDefaultProject();
+    }
+    setPatchReady(true);
+  }
 
   const pyatchStage = {
     canvas: document.createElement('canvas'),
@@ -290,18 +293,16 @@ const PyatchProvider = props => {
     const threadsText = {};
     const threadsSaved = {};
     pyatchVM.getAllRenderedTargets().forEach(target => {
-      console.log("TARGET", target);
       target.getThreads().forEach(thread => {
         threadsText[thread.id] = thread.script;
         threadsSaved[thread.id] = true;
       });
     });
-    console.log("THREADS", threadsText);
     setThreadsText(threadsText);
     setSavedThreads(threadsSaved);
   }
 
-  addToGlobalState({ pyatchVM, pyatchStage, onBackgroundChange });
+  addToGlobalState({ pyatchVM, pyatchStage });
 
   // -------- Patch VM & Project Setup --------
   useEffect(() => {
@@ -319,11 +320,9 @@ const PyatchProvider = props => {
       pyatchVM.runtime.draw();
       pyatchVM.start();
 
-      if (!hasLocalStorageProject()) {
-        initializeDefaultProject();
-      } else {
-        loadFromLocalStorage();
-      }
+      initializePatchProject().then(() => {
+        setPatchReady(true);
+      });
 
       // -------- Patch Listeners --------
       pyatchVM.on('RUNTIME ERROR', (threadId, message, lineNumber) => {
@@ -378,11 +377,9 @@ const PyatchProvider = props => {
       const oldExecutableTargets = pyatchVM.runtime.executableTargets;
       const oldGlobalVariables = pyatchVM.runtime._globalVariables;
 
-      pyatchVM.runtime.targets = [];
-      pyatchVM.runtime.executableTargets = [];
+      // pyatchVM.runtime.targets = [];
+      // pyatchVM.runtime.executableTargets = [];
       pyatchVM.runtime._globalVariables = {};
-
-      await addDefaultBackground();
 
       const result = await pyatchVM.loadProject(vmState);
 
@@ -397,7 +394,6 @@ const PyatchProvider = props => {
       }
 
       setGlobalVariables(result.json.globalVariables);
-      onBackgroundChange(result.json.background);
       setTargetIds(pyatchVM.getAllRenderedTargets().map(target => target.id));
       const editingTargetId = pyatchVM?.editingTarget?.id ?? pyatchVM.runtime.targets[0].id;
       pyatchVM.setEditingTarget(editingTargetId);
@@ -454,12 +450,12 @@ const PyatchProvider = props => {
     return !!localStorage.getItem("proj");
   }
 
-  const loadFromLocalStorage = () => {
+  const loadFromLocalStorage = async () => {
     let text = localStorage.getItem("proj");
     if (text) {
       console.log("Loading from localStorage...");
       let proj = b64dataurltoBlob(text, 'application/zip');
-      loadSerializedProject(proj);
+      await loadSerializedProject(proj);
       console.log("Loaded from localStorage...");
       return true;
     } else {
@@ -485,8 +481,8 @@ const PyatchProvider = props => {
       <PyatchContext.Provider
         value={{ ...globalPatchIDEState }}
       >
-        {!(pyatchVM && vmLoaded) && <SplashScreen/>}
-        <div style={{display: (pyatchVM && vmLoaded) ? "block" : "none"}}>{props.children}</div>
+        {!(pyatchVM && patchReady) && <SplashScreen/>}
+        <div style={{display: (pyatchVM && patchReady) ? "block" : "none"}}>{props.children}</div>
       </PyatchContext.Provider>
     </>
   );

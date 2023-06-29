@@ -7,6 +7,13 @@ import { PyatchSpriteName } from "./PyatchSpriteName.jsx"; //textfeild
 import pyatchContext from './provider/PyatchContext.js';
 import Grid from '@mui/material/Grid';
 
+function StageButton() {
+    const { pyatchVM } = useContext(pyatchContext);
+    const stageTarget = pyatchVM.runtime.getTargetForStage();
+
+    return <>{stageTarget && <PyatchSelectSprite key={stageTarget.id} target={stageTarget}/>}</>;
+}
+
 export default function PyatchSpriteArea(){
     const { pyatchVM, targetIds, editingTargetId } = useContext(pyatchContext);
     if (!pyatchVM) {
@@ -32,13 +39,16 @@ export default function PyatchSpriteArea(){
                 <Grid item xs={12}>
                     {targetIds.map((targetId) => {
                         const target = pyatchVM.runtime.getTargetById(targetId);
-                        return (target.isSprite() && target.sprite.name !== "Background") && <PyatchSelectSprite key={target.id} target={target}/>
+                        return (target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>
                     })}
                 </Grid>
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <PyatchAddSprite/>
+                </Grid>
+                <Grid item xs={6}>
+                    <StageButton/>
                 </Grid>
             </Grid>
         </Grid>

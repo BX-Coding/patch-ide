@@ -69,30 +69,6 @@ export function PyatchAddSprite(props) {
                 <MenuItem key="existing" onClick={handleClick3}>Use existing costume</MenuItem>
                 <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
             </Menu>
-            <Button
-                variant="contained"
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick} sx={{ m: "1vh" }}>Change Background</Button>
-            <Menu
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                PaperProps={{
-                    style: {
-                        maxHeight: '20ch',
-                    }
-                }}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                {costumes.map((costume, i) => {
-                    return <MenuItem key={i} onClick={() => onBackgroundChange(i)}>{costume.name}</MenuItem>
-                })}
-
-            </Menu>
             <PatchInternalSpriteChooser pyatchVM={pyatchVM}/>
         </Grid>
     );

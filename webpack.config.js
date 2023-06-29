@@ -43,7 +43,11 @@ export default {
         type: 'asset/resource'
       },
       {
-        test: /\.sprite3$/,
+        test: /\.svg$/,
+        type: 'asset/resource'
+      },
+      {
+        test: /\.ptch1$/,
         use: ['arraybuffer-loader'],
       },
     ]

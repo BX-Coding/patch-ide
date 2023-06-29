@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import pyatchContext from './provider/PyatchContext.js';
 import AddIcon from '@mui/icons-material/Add';
@@ -68,7 +68,7 @@ export function PatchInternalSpriteChooser(props) {
 
     let [spriteItems, setSpriteItems] = useState(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}></div>);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setSpriteItems(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
