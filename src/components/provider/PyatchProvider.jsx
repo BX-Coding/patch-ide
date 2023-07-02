@@ -280,7 +280,6 @@ const PyatchProvider = props => {
     } else {
       await initializeDefaultProject();
     }
-    setPatchReady(true);
   }
 
   const pyatchStage = {
@@ -307,9 +306,9 @@ const PyatchProvider = props => {
   // -------- Patch VM & Project Setup --------
   useEffect(() => {
     function useAsyncEffect() {
+      setPatchReady(false);
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
-      console.log("CANVAS", pyatchStage.canvas.getBoundingClientRect());
 
       pyatchVM = new VirtualMachine();
       pyatchVM.attachStorage(makeTestStorage());
@@ -320,9 +319,7 @@ const PyatchProvider = props => {
       pyatchVM.runtime.draw();
       pyatchVM.start();
 
-      initializePatchProject().then(() => {
-        setPatchReady(true);
-      });
+      initializePatchProject();
 
       // -------- Patch Listeners --------
       pyatchVM.on('RUNTIME ERROR', (threadId, message, lineNumber) => {
@@ -371,6 +368,7 @@ const PyatchProvider = props => {
 
   const loadSerializedProject = async (vmState) => {
     if (pyatchVM) {
+      setPatchReady(false);
       /* TODO: clear out old targets first */
 
       const oldTargets = pyatchVM.runtime.targets;
@@ -402,6 +400,7 @@ const PyatchProvider = props => {
       initializeThreadGlobalState();
 
       setChangesSinceLastSave(false);
+      setPatchReady(true);
     }
   }
 
@@ -481,8 +480,8 @@ const PyatchProvider = props => {
       <PyatchContext.Provider
         value={{ ...globalPatchIDEState }}
       >
-        {!(pyatchVM && patchReady) && <SplashScreen/>}
-        <div style={{display: (pyatchVM && patchReady) ? "block" : "none"}}>{props.children}</div>
+        {!(pyatchVM && vmLoaded && patchReady) && <SplashScreen/>}
+        <div style={{display: (pyatchVM && vmLoaded && patchReady) ? "block" : "none"}}>{props.children}</div>
       </PyatchContext.Provider>
     </>
   );
