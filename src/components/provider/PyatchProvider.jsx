@@ -266,21 +266,32 @@ const PyatchProvider = props => {
     var input = document.createElement('input');
     input.type = 'file';
     // TODO: change this to audio file types instead of image types
-    input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
+    input.accept = 'audio/*';
 
-    input.onchange = e => {
-      handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-        soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
-          if (targetId == undefined || targetId == null) {
-            pyatchVM.addSound({...vmSound, name: fileName });
-          } else {
-            pyatchVM.addSound({...vmSound, name: fileName }, targetId);
-          }
-        }, console.log);
-      }, console.log);
-    }
+    const result = new Promise((resolve, reject) => {
+        input.onchange = e => {
+          handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
+            soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
+              if (targetId == undefined || targetId == null) {
+                pyatchVM.addSound({...vmSound, name: fileName });
+              } else {
+                pyatchVM.addSound({...vmSound, name: fileName }, targetId);
+              }
+
+              resolve();
+            }, console.log);
+          }, console.log);
+        }
+
+        input.onabort = () => {
+          resolve();
+        }
+      }
+    );
 
     input.click();
+
+    return result;
   };
 
   const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {

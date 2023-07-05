@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Typography, Box } from '@mui/material';
@@ -188,14 +189,14 @@ function AddSoundButton(props) {
                 'aria-labelledby': 'basic-button',
             }}
         >
-            <MenuItem id="upload" onClick={() => { handleUploadSound(); handleClose(); reloadSoundEditor(); }}>From Upload</MenuItem>
-        </Menu>
+            <MenuItem id="upload" onClick={() => { handleUploadSound().then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
+    </Menu >
     </>
 }
 
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
-    let [ selectedTarget, setSelectedTarget ] = useState(pyatchVM.editingTarget);
+    let [selectedTarget, setSelectedTarget] = useState(pyatchVM.editingTarget);
     let [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
 
     let [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
@@ -222,25 +223,90 @@ function PatchSoundInspector(props) {
         console.log(newSounds);
     }
 
+    //https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
+    window.onload = initAudioContext;
+    var context;    // Audio context
+    var buf;        // Audio buffer
+
+    function initAudioContext() {
+        if (!window.AudioContext) {
+            if (!window.webkitAudioContext) {
+                alert("Your browser does not support any AudioContext and cannot play back this audio.");
+                return;
+            }
+            window.AudioContext = window.webkitAudioContext;
+        }
+
+        context = new AudioContext();
+    }
+
+    function playByteArray(byteArray) {
+        if (!context) {
+            initAudioContext();
+        }
+
+        var arrayBuffer = new ArrayBuffer(byteArray.length);
+        var bufferView = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < byteArray.length; i++) {
+            bufferView[i] = byteArray[i];
+        }
+
+        context.decodeAudioData(arrayBuffer, function (buffer) {
+            buf = buffer;
+            play();
+        });
+    }
+
+    // Play the loaded file
+    function play() {
+        // Create a source node from the buffer
+        var source = context.createBufferSource();
+        source.buffer = buf;
+        // Connect to the final output node (the speakers)
+        source.connect(context.destination);
+        // Play immediately
+        source.start(0);
+    }
+
+    const handlePlayClick = (i) => {
+        console.log(targetSounds[i]);
+        //https://stackoverflow.com/questions/34934862/how-to-replay-an-audio-blob-in-javascript
+        playByteArray(targetSounds[i].asset.data);
+    }
+
     // TODO: add a sound picker to choose from internal sounds, similar to how you can
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
+    const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
     const deleteButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
 
+    const reloadSoundEditor = () => {
+        let newSounds = pyatchVM.editingTarget.getSounds();
+        setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0);
+        setTargetSounds([]);
+        setTargetSounds(newSounds);
+        console.warn(newSounds);
+    }
+
+    useEffect(() => {
+        console.warn("test2");
+    }, [targetSounds]);
+
     return (
         <div class="assetHolder">
+            <audio id="soundPreview" src="" type="" />
             {targetSounds.map((sound, i) =>
                 <ItemCard
                     imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
                     title={sound.name}
                     selected={i === soundIndex}
                     onClick={handleClick(i, sound.name)}
-                    actionButtons={[copyButton(sound.name), deleteButton(i)]}
+                    actionButtons={[copyButton(sound.name), deleteButton(i), playButton(i)]}
                     key={sound.name}
                     imgWidth={20}
                 />)}
-            <AddSoundButton reloadSoundEditor={() => { let newSounds = selectedTarget.getSounds(); setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0); setTargetSounds(newSounds); }} />
+            <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
         </div>
     );
 }
