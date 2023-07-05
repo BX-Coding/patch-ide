@@ -336,8 +336,8 @@ const PyatchProvider = props => {
 
   // -------- Global Functions --------
 
-  const onFlagPressed = () => {
-    saveAllThreads();
+  const onFlagPressed = async () => {
+    await saveAllThreads();
     setRuntimeErrorList([]);
     pyatchVM.runtime.greenFlag();
   }
@@ -353,10 +353,10 @@ const PyatchProvider = props => {
     setEditingTargetId(pyatchVM.editingTarget.id);
   }
 
-  const saveAllThreads = () => {
-    Object.keys(threadsText).forEach(threadId => {
+  const saveAllThreads = async () => {
+   await Object.keys(threadsText).forEach(async threadId => {
       if (!savedThreads[threadId]) {
-        pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
+        await pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
         setSavedThreads({ ...savedThreads, [threadId]: true });
       }
     });
