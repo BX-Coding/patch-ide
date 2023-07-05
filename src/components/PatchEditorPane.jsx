@@ -74,7 +74,7 @@ function PatchGlobalVariables(props) {
 }
 
 function ItemCard(props) {
-    const { imageSrc, title, selected, onClick, actionButtons } = props;
+    const { imageSrc, title, selected, onClick, actionButtons, imgWidth } = props;
     return (
         <Box sx={{
             backgroundColor: selected ? 'primary.dark' : 'none',
@@ -94,7 +94,7 @@ function ItemCard(props) {
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
-            }}><img src={imageSrc} width={100} /></Box>
+            }}><img src={imageSrc} width={imgWidth} /></Box>
             <Grid display='flex' justifyContent='space-between' alignItems='center' sx={{
                 backgroundColor: 'primary.dark',
                 padding: 1,
@@ -151,6 +151,7 @@ function AddCostumeButton(props) {
 }
 
 function AddSoundButton(props) {
+    const { reloadSoundEditor } = props;
     const { handleUploadSound } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -187,7 +188,7 @@ function AddSoundButton(props) {
                 'aria-labelledby': 'basic-button',
             }}
         >
-            <MenuItem id="upload" onClick={() => { handleUploadSound(); handleClose(); }}>From Upload</MenuItem>
+            <MenuItem id="upload" onClick={() => { handleUploadSound(); handleClose(); reloadSoundEditor(); }}>From Upload</MenuItem>
         </Menu>
     </>
 }
@@ -195,9 +196,9 @@ function AddSoundButton(props) {
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
-    let targtSounds = selectedTarget.getSounds();
+    let targetSounds = selectedTarget.getSounds();
 
-    const [soundIndex, setSoundIndex] = useState(Math.min(targtSounds.length - 1, 0));
+    const [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
 
     const handleClick = (index, soundName) => () => {
         // Copy name to clipboard
@@ -205,15 +206,23 @@ function PatchSoundInspector(props) {
         setSoundIndex(index);
     }
 
+    const handleDeleteClick = (costumeName) => {
+        selectedTarget.deleteSound(soundIndex);
+        targetSounds = selectedTarget.getSounds();
+        if (soundIndex >= targetSounds.length) {
+            setSoundIndex((targetSounds.length > 0) ? targetSounds.length - 1 : 0);
+        }
+    }
+
     // TODO: maybe add a sound picker to choose from internal sounds, similar to how you can
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
-    const copyButton = (soundName) => <Button sx={{color: 'white'}} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
-    const deleteButton = (soundName) => <Button sx={{color: 'white'}} onClick={() => {  }}><DeleteIcon /></Button>
+    const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
+    const deleteButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handleDeleteClick(); }}><DeleteIcon /></Button>
 
     return (
         <div class="assetHolder">
-            {targtSounds.map((sound, i) =>
+            {targetSounds.map((sound, i) =>
                 <ItemCard
                     imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
                     title={sound.name}
@@ -221,8 +230,9 @@ function PatchSoundInspector(props) {
                     onClick={handleClick(i, sound.name)}
                     actionButtons={[copyButton(sound.name), deleteButton(sound.name)]}
                     key={sound.name}
+                    imgWidth={20}
                 />)}
-            <AddSoundButton />
+            <AddSoundButton reloadSoundEditor={() => { targetSounds = selectedTarget.getSounds(); setSoundIndex((targetSounds.length > 0) ? targetSounds.length - 1 : 0); }} />
         </div>
     );
 }
@@ -237,13 +247,13 @@ function PatchSpriteInspector(props) {
 
     const handleClick = (costumeName) => {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
-        selectedTarget.setCostume(newCostumeIndex)
+        selectedTarget.setCostume(newCostumeIndex);
         setCostumeIndex(newCostumeIndex);
     }
 
     const handleDeleteClick = (costumeName) => {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
-        selectedTarget.deleteCostume(newCostumeIndex)
+        selectedTarget.deleteCostume(newCostumeIndex);
         setCostumeIndex(selectedTarget.currentCostume);
     }
 
@@ -266,6 +276,7 @@ function PatchSpriteInspector(props) {
                     onClick={handleClick}
                     actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
                     key={costume.name}
+                    imgWidth={100}
                 />)}
             <AddCostumeButton />
         </div>
