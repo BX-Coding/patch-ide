@@ -365,11 +365,17 @@ const PyatchProvider = props => {
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
   }
 
   const onDeleteSprite = async (targetId) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await pyatchVM.deleteSprite(targetId);
     setTargetIds(targetIds.filter(id => id !== targetId));
     setEditingTargetId(pyatchVM.editingTarget.id);
