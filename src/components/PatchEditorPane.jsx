@@ -150,6 +150,48 @@ function AddCostumeButton(props) {
     </>
 }
 
+function AddSoundButton(props) {
+    const { handleUploadSound } = useContext(pyatchContext);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = (event) => {
+        setAnchorEl(null);
+    };
+
+    const handleBuiltIn = () => {
+        handleClose();
+        console.error("The built-in sound picker hasn't been implemented yet.");
+    }
+
+    return <>
+        <Button
+            id='addNewSound'
+            varient='contained'
+            color='primary'
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}>
+            Add New Costume
+        </Button>
+        <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+                'aria-labelledby': 'basic-button',
+            }}
+        >
+            <MenuItem id="upload" onClick={() => { handleUploadSound(); handleClose(); }}>From Upload</MenuItem>
+        </Menu>
+    </>
+}
+
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
@@ -163,7 +205,11 @@ function PatchSoundInspector(props) {
         setSoundIndex(index);
     }
 
+    // TODO: maybe add a sound picker to choose from internal sounds, similar to how you can
+    // choose from uploading a sprite or using an existing one when adding a new sprite/costume
+
     const copyButton = (soundName) => <Button sx={{color: 'white'}} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
+    const deleteButton = (soundName) => <Button sx={{color: 'white'}} onClick={() => {  }}><DeleteIcon /></Button>
 
     return (
         <div class="assetHolder">
@@ -173,9 +219,10 @@ function PatchSoundInspector(props) {
                     title={sound.name}
                     selected={i === soundIndex}
                     onClick={handleClick(i, sound.name)}
-                    actionButtons={[copyButton(sound.name)]}
+                    actionButtons={[copyButton(sound.name), deleteButton(sound.name)]}
                     key={sound.name}
                 />)}
+            <AddSoundButton />
         </div>
     );
 }
@@ -220,7 +267,7 @@ function PatchSpriteInspector(props) {
                     actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
                     key={costume.name}
                 />)}
-            <AddCostumeButton targetId={selectedTarget.id} setCostumeIndex={setCostumeIndex} />
+            <AddCostumeButton />
         </div>
     );
 }

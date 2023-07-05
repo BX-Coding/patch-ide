@@ -240,6 +240,28 @@ const PyatchProvider = props => {
     input.click();
   };
 
+  // -------- Sound Picking --------
+  const handleUploadSound = (targetId) => {
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
+
+    input.onchange = e => {
+      handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
+        soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
+          if (targetId == undefined || targetId == null) {
+            pyatchVM.addSound(vmSound);
+          } else {
+            pyatchVM.addSound(vmSound, targetId);
+          }
+        }, console.log);
+      }, console.log);
+    }
+
+    input.click();
+  };
+
   const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
     console.warn(costumes);
     handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
@@ -248,6 +270,7 @@ const PyatchProvider = props => {
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 
     handleUploadCostume, 
+    handleUploadSound, 
     handleNewCostume
   });
 
