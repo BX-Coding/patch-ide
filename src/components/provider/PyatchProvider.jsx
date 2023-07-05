@@ -267,6 +267,8 @@ const PyatchProvider = props => {
 
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 
+    handleSaveThread, 
+    handleSaveTargetThreads, 
     handleUploadCostume, 
     handleNewCostume
   });
