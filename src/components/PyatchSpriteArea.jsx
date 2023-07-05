@@ -39,7 +39,7 @@ export default function PyatchSpriteArea(){
                 <Grid item xs={12}>
                     {targetIds.map((targetId) => {
                         const target = pyatchVM.runtime.getTargetById(targetId);
-                        return (target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>
+                        return (target ? ((target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>) : <></>)
                     })}
                 </Grid>
             </Grid>
