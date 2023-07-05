@@ -193,6 +193,26 @@ const PyatchProvider = props => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [changesSinceLastSave]);
 
+  useEffect(() => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
+  }, [patchEditorTab]);
+
+  const handleSaveThread = (thread) => {
+    thread.updateThreadScript(threadsText[thread.id]);
+    setSavedThreads({...savedThreads, [thread.id]: true});
+  }
+
+  const handleSaveTargetThreads = (target) => {
+    const editingThreadIds = Object.keys(target.threads);
+
+    editingThreadIds.forEach(threadId => {
+      const thread = target.getThread(threadId);
+      handleSaveThread(thread);
+    });
+  }
+
   // -------- Costume Picking --------
 
   const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
