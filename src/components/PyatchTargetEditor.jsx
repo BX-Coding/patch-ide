@@ -47,14 +47,13 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
 
     const handleSave = () => {
-        thread.updateThreadScript(threadsText[thread.id]);
-        setSavedThreads({...savedThreads, [thread.id]: true});
+        handleSaveThread(thread);
     }
 
     const handleCodeChange = (newValue) => {

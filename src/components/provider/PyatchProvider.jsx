@@ -193,6 +193,26 @@ const PyatchProvider = props => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [changesSinceLastSave]);
 
+  useEffect(() => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
+  }, [patchEditorTab]);
+
+  const handleSaveThread = (thread) => {
+    thread.updateThreadScript(threadsText[thread.id]);
+    setSavedThreads({...savedThreads, [thread.id]: true});
+  }
+
+  const handleSaveTargetThreads = (target) => {
+    const editingThreadIds = Object.keys(target.threads);
+
+    editingThreadIds.forEach(threadId => {
+      const thread = target.getThread(threadId);
+      handleSaveThread(thread);
+    });
+  }
+
   // -------- Costume Picking --------
 
   const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
@@ -247,6 +267,8 @@ const PyatchProvider = props => {
 
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 
+    handleSaveThread, 
+    handleSaveTargetThreads, 
     handleUploadCostume, 
     handleNewCostume
   });
@@ -343,11 +365,17 @@ const PyatchProvider = props => {
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
   }
 
   const onDeleteSprite = async (targetId) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await pyatchVM.deleteSprite(targetId);
     setTargetIds(targetIds.filter(id => id !== targetId));
     setEditingTargetId(pyatchVM.editingTarget.id);
