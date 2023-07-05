@@ -8,7 +8,7 @@ import AudioEngine from 'scratch-audio';
 import backdrops from '../../assets/backdrops.json';
 import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
-import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
+import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader.js'
 
 import defaulPatchProject from '../../assets/defaultProject.ptch1';
 
@@ -193,6 +193,26 @@ const PyatchProvider = props => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [changesSinceLastSave]);
 
+  useEffect(() => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
+  }, [patchEditorTab]);
+
+  const handleSaveThread = (thread) => {
+    thread.updateThreadScript(threadsText[thread.id]);
+    setSavedThreads({...savedThreads, [thread.id]: true});
+  }
+
+  const handleSaveTargetThreads = (target) => {
+    const editingThreadIds = Object.keys(target.threads);
+
+    editingThreadIds.forEach(threadId => {
+      const thread = target.getThread(threadId);
+      handleSaveThread(thread);
+    });
+  }
+
   // -------- Costume Picking --------
 
   const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
@@ -245,15 +265,16 @@ const PyatchProvider = props => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
+    // TODO: change this to audio file types instead of image types
     input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
 
     input.onchange = e => {
       handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
         soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
           if (targetId == undefined || targetId == null) {
-            pyatchVM.addSound(vmSound);
+            pyatchVM.addSound({...vmSound, name: fileName });
           } else {
-            pyatchVM.addSound(vmSound, targetId);
+            pyatchVM.addSound({...vmSound, name: fileName }, targetId);
           }
         }, console.log);
       }, console.log);
@@ -269,6 +290,8 @@ const PyatchProvider = props => {
 
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 
+    handleSaveThread, 
+    handleSaveTargetThreads, 
     handleUploadCostume, 
     handleUploadSound, 
     handleNewCostume
@@ -366,11 +389,17 @@ const PyatchProvider = props => {
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
   }
 
   const onDeleteSprite = async (targetId) => {
+    if (pyatchVM && pyatchVM.editingTarget) {
+      handleSaveTargetThreads(pyatchVM.editingTarget);
+    }
     await pyatchVM.deleteSprite(targetId);
     setTargetIds(targetIds.filter(id => id !== targetId));
     setEditingTargetId(pyatchVM.editingTarget.id);

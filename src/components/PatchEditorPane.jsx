@@ -177,7 +177,7 @@ function AddSoundButton(props) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}>
-            Add New Costume
+            Add New Sound
         </Button>
         <Menu
             anchorEl={anchorEl}
