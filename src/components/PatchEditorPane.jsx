@@ -196,7 +196,8 @@ function AddSoundButton(props) {
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
-    let targetSounds = selectedTarget.getSounds();
+    //let targetSounds = selectedTarget.getSounds();
+    const [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
 
     const [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
 
@@ -208,10 +209,13 @@ function PatchSoundInspector(props) {
 
     const handleDeleteClick = (costumeName) => {
         selectedTarget.deleteSound(soundIndex);
-        targetSounds = selectedTarget.getSounds();
-        if (soundIndex >= targetSounds.length) {
-            setSoundIndex((targetSounds.length > 0) ? targetSounds.length - 1 : 0);
+
+        const newSounds = selectedTarget.getSounds();
+
+        if (soundIndex >= newSounds.length) {
+            setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0);
         }
+        setTargetSounds(newSounds);
     }
 
     // TODO: maybe add a sound picker to choose from internal sounds, similar to how you can
@@ -232,7 +236,7 @@ function PatchSoundInspector(props) {
                     key={sound.name}
                     imgWidth={20}
                 />)}
-            <AddSoundButton reloadSoundEditor={() => { targetSounds = selectedTarget.getSounds(); setSoundIndex((targetSounds.length > 0) ? targetSounds.length - 1 : 0); }} />
+            <AddSoundButton reloadSoundEditor={() => { const newSounds = selectedTarget.getSounds(); setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0); setTargetSounds(newSounds); }} />
         </div>
     );
 }
