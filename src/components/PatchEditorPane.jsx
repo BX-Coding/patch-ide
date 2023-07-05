@@ -195,11 +195,10 @@ function AddSoundButton(props) {
 
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
-    let selectedTarget = pyatchVM.editingTarget;
-    //let targetSounds = selectedTarget.getSounds();
-    const [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
+    let [ selectedTarget, setSelectedTarget ] = useState(pyatchVM.editingTarget);
+    let [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
 
-    const [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
+    let [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
 
     const handleClick = (index, soundName) => () => {
         // Copy name to clipboard
@@ -207,22 +206,27 @@ function PatchSoundInspector(props) {
         setSoundIndex(index);
     }
 
-    const handleDeleteClick = (costumeName) => {
-        selectedTarget.deleteSound(soundIndex);
+    useEffect(() => {
+        setSelectedTarget(pyatchVM.editingTarget);
+        setSoundIndex(0);
+        setTargetSounds(pyatchVM.editingTarget.getSounds());
+    }, [editingTargetId]);
 
-        const newSounds = selectedTarget.getSounds();
+    const handleDeleteClick = (i) => {
+        selectedTarget.deleteSound(i);
 
-        if (soundIndex >= newSounds.length) {
-            setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0);
-        }
+        let newSounds = selectedTarget.getSounds();
+
+        setSoundIndex((i - 1 >= 0) ? (i - 1) : (0));
         setTargetSounds(newSounds);
+        console.log(newSounds);
     }
 
-    // TODO: maybe add a sound picker to choose from internal sounds, similar to how you can
+    // TODO: add a sound picker to choose from internal sounds, similar to how you can
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
-    const deleteButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handleDeleteClick(); }}><DeleteIcon /></Button>
+    const deleteButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
 
     return (
         <div class="assetHolder">
@@ -232,11 +236,11 @@ function PatchSoundInspector(props) {
                     title={sound.name}
                     selected={i === soundIndex}
                     onClick={handleClick(i, sound.name)}
-                    actionButtons={[copyButton(sound.name), deleteButton(sound.name)]}
+                    actionButtons={[copyButton(sound.name), deleteButton(i)]}
                     key={sound.name}
                     imgWidth={20}
                 />)}
-            <AddSoundButton reloadSoundEditor={() => { const newSounds = selectedTarget.getSounds(); setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0); setTargetSounds(newSounds); }} />
+            <AddSoundButton reloadSoundEditor={() => { let newSounds = selectedTarget.getSounds(); setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0); setTargetSounds(newSounds); }} />
         </div>
     );
 }
