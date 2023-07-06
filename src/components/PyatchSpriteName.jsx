@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 
 
 export function PyatchSpriteName(props) {
-    const { pyatchVM, editingTargetId, setChangesSinceLastSave } = useContext(pyatchContext);
+    const { pyatchVM, targetIds, editingTargetId, setChangesSinceLastSave } = useContext(pyatchContext);
     const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
     const [nameSaved, setNameSaved] = useState(true);
     const [name, setName] = useState(editingTarget.sprite.name);
@@ -34,7 +34,8 @@ export function PyatchSpriteName(props) {
             fullWidth
             sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
             size="small"
+            disabled={targetIds[0] == editingTargetId}
         />
-        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved} sx={{m:"1vh"}}><SaveIcon/></Button>
+        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved || (targetIds[0] == editingTargetId)} sx={{m:"1vh"}}><SaveIcon/></Button>
     </Grid>);
 }

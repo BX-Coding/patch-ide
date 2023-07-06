@@ -377,7 +377,9 @@ const PyatchProvider = props => {
       handleSaveTargetThreads(pyatchVM.editingTarget);
     }
     await pyatchVM.deleteSprite(targetId);
+    const index = targetIds.indexOf(targetId);
     setTargetIds(targetIds.filter(id => id !== targetId));
+    pyatchVM.setEditingTarget(targetIds[index > 1 ? index - 1 : 0]);
     setEditingTargetId(pyatchVM.editingTarget.id);
   }
 
