@@ -181,7 +181,7 @@ function PatchSoundInspector(props) {
 }
 
 function PatchSpriteInspector(props) {
-    const { pyatchVM, editingTargetId, costumesUpdate } = useContext(pyatchContext);
+    const { pyatchVM, editingTargetId, costumesUpdate, setCostumesUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
     let currentCostume = selectedTarget.getCurrentCostume();
 
@@ -198,6 +198,7 @@ function PatchSpriteInspector(props) {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
         selectedTarget.deleteCostume(newCostumeIndex)
         setCostumeIndex(selectedTarget.currentCostume);
+        setCostumesUpdate(!costumesUpdate);
     }
 
     const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
