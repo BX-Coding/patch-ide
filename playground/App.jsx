@@ -10,26 +10,29 @@ import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton } from 
 function App() {
   return (
     <PyatchProvider>
-      <Grid container item direction="row" width={'100%'} height={'100%'} spacing={"8px"} sx={{
+      <Grid container item direction="row" width={'100%'} spacing={"8px"} style={{
         position: "absolute",
         width: "100%",
-        height: "100%",
-        top: "0",
-        left: "0",
-        right: "0",
-        bottom: "0",
-        padding: "8px"
-      }} style={{zIndex: -1}}>
-        <Grid container direction="row" xs={12} margin={"8px 8px 0px 8px"} maxHeight={"48px"}>
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        padding: 0,
+        margin: 0,
+        paddingBottom: 8,
+        paddingRight: 8,
+        zIndex: -1
+      }}>
+        <Grid container direction="row" xs={12} style={{ marginTop: 8, marginRight: 0, marginBottom: 0, marginLeft: 8, maxHeight: 48 }}>
           <PatchTopBar />
         </Grid>
         <Grid item class="leftContainer">
           <Grid container spacing="4px" marginBottom="4px">
-            <Grid item><PatchCodeEditorTabButton/></Grid>
-            <Grid item><PatchSpriteTabButton/></Grid>
+            <Grid item><PatchCodeEditorTabButton /></Grid>
+            <Grid item><PatchSpriteTabButton /></Grid>
           </Grid>
           <Grid item>
-            <PatchEditorPane/>
+            <PatchEditorPane />
           </Grid>
         </Grid>
         <Grid item class="rightContainer">
@@ -51,9 +54,9 @@ function App() {
           </Grid>
         </Grid>
       </Grid>
-      <div id="testItem" style={{zIndex: 2}}>
-        
-        </div>
+      <div id="testItem" style={{ zIndex: 2 }}>
+
+      </div>
     </PyatchProvider>
   );
 }
