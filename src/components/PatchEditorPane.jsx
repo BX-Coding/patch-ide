@@ -18,8 +18,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Typography, Box } from '@mui/material';
 import PatchCodeEditor from './PatchCodeEditor.jsx'
 
-import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
-
 export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
@@ -153,9 +151,11 @@ function AddCostumeButton(props) {
 
 function AddSoundButton(props) {
     const { reloadSoundEditor } = props;
-    const { handleUploadSound } = useContext(pyatchContext);
+    const { handleUploadSound, showInternalSoundChooser, setShowInternalSoundChooser, setInternalSoundChooserUpdate, internalSoundChooserUpdate } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+
+    let update = false;
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -167,8 +167,17 @@ function AddSoundButton(props) {
 
     const handleBuiltIn = () => {
         handleClose();
-        console.error("The built-in sound picker hasn't been implemented yet.");
+        update = true;
+        setShowInternalSoundChooser(true);
+        setInternalSoundChooserUpdate(!internalSoundChooserUpdate);
     }
+
+    useEffect(() => {
+        if (update && !showInternalSoundChooser) {
+            reloadSoundEditor();
+            update = false;
+        }
+    }, [showInternalSoundChooser])
 
     return <>
         <Button
@@ -189,6 +198,7 @@ function AddSoundButton(props) {
                 'aria-labelledby': 'basic-button',
             }}
         >
+            <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
             <MenuItem id="upload" onClick={() => { handleUploadSound().then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
     </Menu >
     </>
@@ -196,10 +206,10 @@ function AddSoundButton(props) {
 
 function PatchSoundInspector(props) {
     const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
-    let [selectedTarget, setSelectedTarget] = useState(pyatchVM.editingTarget);
-    let [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
+    const [selectedTarget, setSelectedTarget] = useState(pyatchVM.editingTarget);
+    const [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
 
-    let [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
+    const [soundIndex, setSoundIndex] = useState(Math.min(targetSounds.length - 1, 0));
 
     const handleClick = (index, soundName) => () => {
         // Copy name to clipboard
@@ -219,9 +229,10 @@ function PatchSoundInspector(props) {
         let newSounds = selectedTarget.getSounds();
 
         setSoundIndex((i - 1 >= 0) ? (i - 1) : (0));
-        setTargetSounds(newSounds);
-        console.log(newSounds);
+        setTargetSounds([...newSounds]);
     }
+
+    // -------- Audio Playing --------
 
     //https://stackoverflow.com/questions/24151121/how-to-play-wav-audio-byte-array-via-javascript-html5
     window.onload = initAudioContext;
@@ -270,28 +281,23 @@ function PatchSoundInspector(props) {
 
     const handlePlayClick = (i) => {
         console.log(targetSounds[i]);
-        //https://stackoverflow.com/questions/34934862/how-to-replay-an-audio-blob-in-javascript
         playByteArray(targetSounds[i].asset.data);
     }
 
     // TODO: add a sound picker to choose from internal sounds, similar to how you can
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
+    // -------- Action Buttons --------
+
     const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
     const deleteButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
 
     const reloadSoundEditor = () => {
-        let newSounds = pyatchVM.editingTarget.getSounds();
+        const newSounds = pyatchVM.editingTarget.getSounds();
         setSoundIndex((newSounds.length > 0) ? newSounds.length - 1 : 0);
-        setTargetSounds([]);
-        setTargetSounds(newSounds);
-        console.warn(newSounds);
+        setTargetSounds([...newSounds]);
     }
-
-    useEffect(() => {
-        console.warn("test2");
-    }, [targetSounds]);
 
     return (
         <div class="assetHolder">
@@ -316,8 +322,8 @@ function PatchSpriteInspector(props) {
     let selectedTarget = pyatchVM.editingTarget;
     let currentCostume = selectedTarget.getCurrentCostume();
 
-    let [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
-    let [costumes, setCostumes] = useState(selectedTarget.getCostumes());
+    const [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
+    const [costumes, setCostumes] = useState(selectedTarget.getCostumes());
 
     const handleClick = (costumeName) => {
         const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
@@ -337,8 +343,12 @@ function PatchSpriteInspector(props) {
         selectedTarget = pyatchVM.runtime.getTargetById(editingTargetId);
         currentCostume = selectedTarget.getCurrentCostume();
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
-        setCostumes(selectedTarget.getCostumes());
+        setCostumes([...selectedTarget.getCostumes()]);
     }, [editingTargetId, costumesUpdate]);
+
+    useEffect(() => {
+        console.warn("costumes updated");
+    }, [costumes])
 
     return (
         <div class="assetHolder">

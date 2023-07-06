@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import backdrops from '../assets/backdrops.json';
 import sprites from '../assets/sprites.json';
 import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
+import { PatchInternalSoundChooser } from './PatchInternalSoundChooser.jsx';
 
 export function PyatchAddSprite(props) {
     const { onAddSprite, handleUploadCostume, onBackgroundChange, pyatchVM, setShowInternalChooser, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
@@ -70,6 +71,7 @@ export function PyatchAddSprite(props) {
                 <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
             </Menu>
             <PatchInternalSpriteChooser pyatchVM={pyatchVM}/>
+            <PatchInternalSoundChooser pyatchVM={pyatchVM}/>
         </Grid>
     );
 }
