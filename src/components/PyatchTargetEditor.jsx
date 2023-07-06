@@ -6,6 +6,7 @@ import { python } from '@codemirror/lang-python';
 import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
 import pythonLinter from '../util/python-syntax-lint.js';
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 
 import SplitPane, { Pane } from 'react-split-pane-next';
 
@@ -144,7 +145,7 @@ function ThreadEditor(props) {
             <Grid marginTop="4px">
                 <CodeMirror
                     value={thread.script}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo())]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter()]}
+                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo())]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"
