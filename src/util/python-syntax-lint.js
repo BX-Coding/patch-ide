@@ -5,6 +5,8 @@ let isSyntaxErrorFree = true;
 
 const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return linter(view => {
   const runtimeErrors = pyatchVM.getRuntimeErrors().filter((error) => error.threadId === threadId);
+  const compileTimeErrors = pyatchVM.getCompileTimeErrors().filter((error) => error.threadId === threadId);
+  const vmErrors = runtimeErrors.concat(compileTimeErrors);
   let diagnostics = []
   isSyntaxErrorFree = true;
   syntaxTree(view.state).cursor().iterate(node => {
@@ -19,8 +21,8 @@ const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return lint
     }
   })
   let doc = view.state.doc;
-  const runtimeErrorDiagnostics = runtimeErrors.map((error) => {
-    const shiftedLineNumber = Math.min(error.lineNumber - 1, doc.lines);
+  const runtimeErrorDiagnostics = vmErrors.map((error) => {
+    const shiftedLineNumber = Math.min(error.lineNumber, doc.lines);
     return {
       from: doc.line(shiftedLineNumber).from,
       to: doc.line(shiftedLineNumber).to,
