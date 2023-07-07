@@ -21,7 +21,8 @@ function App() {
         margin: 0,
         paddingBottom: 8,
         paddingRight: 8,
-        zIndex: -1
+        zIndex: -1,
+        overflowY: "scroll"
       }}>
         <Grid container direction="row" xs={12} style={{ marginTop: 8, marginRight: 0, marginBottom: 0, marginLeft: 8, maxHeight: 48 }}>
           <PatchTopBar />
