@@ -12,7 +12,7 @@ import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 import { PatchInternalSoundChooser } from './PatchInternalSoundChooser.jsx';
 
 export function PyatchAddSprite(props) {
-    const { onAddSprite, handleUploadCostume, pyatchVM, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
+    const { onAddSprite, handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
 
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);

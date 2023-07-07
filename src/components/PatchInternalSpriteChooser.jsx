@@ -10,12 +10,9 @@ import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
 
 export function SpriteItem(props) {
-    const { sprite, onClickFunc } = props;
-    const {pyatchVM} = useContext(pyatchContext);
+    const { sprite, onClickFunc, pyatchVM } = props;
 
-    //const imageSrc = "";
     const selected = false;
-    const actionButtons = "";
 
     const [imageSrc, setImageSrc] = useState("");
 
@@ -52,7 +49,7 @@ export function SpriteItem(props) {
 }
 
 export function PatchInternalSpriteChooser(props) {
-    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget } = useContext(pyatchContext);
+    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(pyatchContext);
 
     const onClickFunc = (sprite) => {
         if (internalChooserAdd) {
@@ -67,10 +64,13 @@ export function PatchInternalSpriteChooser(props) {
     // These hold the sprite items
     const [spriteItems, setSpriteItems] = useState([]);
 
-    // Tell the picker to generate the sprites if this is the first time it's been open
+    // Generate the default sprites to fill the picker (if not already done). Doing this when the sprite
+    // picker first appears (instead of when patch first loads) reduces initial loading time for Patch
     useEffect(() => {
-        if (showInternalChooser && spriteItems.length === 0) {
-            setSpriteItems(sprites);
+        if ((showInternalChooser == true) && (spriteItems.length == 0)) {
+            setSpriteItems(sprites.map((sprite, i) => {
+                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM}/>
+            }));
         }
     }, [showInternalChooser]);
 
@@ -79,9 +79,7 @@ export function PatchInternalSpriteChooser(props) {
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
             </center>
-            {spriteItems.map((sprite, i) => {
-                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite}/>
-            })}
+            {spriteItems}
         </div>
     );
 }
