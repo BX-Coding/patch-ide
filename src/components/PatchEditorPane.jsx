@@ -154,8 +154,6 @@ function AddSoundButton(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    let update = false;
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -166,14 +164,12 @@ function AddSoundButton(props) {
 
     const handleBuiltIn = () => {
         handleClose();
-        update = true;
         setShowInternalSoundChooser(true);
     }
 
     useEffect(() => {
-        if (update && !showInternalSoundChooser) {
+        if (!showInternalSoundChooser) {
             reloadSoundEditor();
-            update = false;
         }
     }, [showInternalSoundChooser])
 
