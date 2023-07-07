@@ -278,7 +278,6 @@ function PatchSoundInspector(props) {
     }
 
     const handlePlayClick = (i) => {
-        console.log(targetSounds[i]);
         playByteArray(targetSounds[i].asset.data);
     }
 
@@ -343,10 +342,6 @@ function PatchSpriteInspector(props) {
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumes([...selectedTarget.getCostumes()]);
     }, [editingTargetId, costumesUpdate]);
-
-    useEffect(() => {
-        console.warn("costumes updated");
-    }, [costumes])
 
     return (
         <div class="assetHolder">

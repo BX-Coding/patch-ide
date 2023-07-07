@@ -67,13 +67,10 @@ export function PatchInternalSpriteChooser(props) {
     // These hold the sprite items
     const [spriteItems, setSpriteItems] = useState([]);
 
-    // Generate the default sprites to fill the picker (if not already done). Doing this when the sprite
-    // picker first appears (instead of when patch first loads) reduces initial loading time for Patch
+    // Tell the picker to generate the sprites if this is the first time it's been open
     useEffect(() => {
         if (showInternalChooser && spriteItems.length === 0) {
-            setSpriteItems(sprites.map((sprite, i) => {
-                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite}/>
-            }));
+            setSpriteItems(sprites);
         }
     }, [showInternalChooser]);
 
@@ -82,7 +79,9 @@ export function PatchInternalSpriteChooser(props) {
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
             </center>
-            {spriteItems}
+            {spriteItems.map((sprite, i) => {
+                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite}/>
+            })}
         </div>
     );
 }
