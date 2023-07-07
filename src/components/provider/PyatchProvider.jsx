@@ -376,6 +376,7 @@ const PyatchProvider = props => {
     if (pyatchVM && pyatchVM.editingTarget) {
       handleSaveTargetThreads(pyatchVM.editingTarget);
     }
+    pyatchVM.runtime.emit("targetWasRemoved", pyatchVM.getTargetById(targetId));
     await pyatchVM.deleteSprite(targetId);
     setTargetIds(targetIds.filter(id => id !== targetId));
     setEditingTargetId(pyatchVM.editingTarget.id);
