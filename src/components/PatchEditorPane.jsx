@@ -105,7 +105,7 @@ function ItemCard(props) {
 }
 
 function AddCostumeButton(props) {
-    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -121,7 +121,6 @@ function AddCostumeButton(props) {
         handleClose();
         setInternalChooserAdd(false);
         setShowInternalChooser(true);
-        setInternalChooserUpdate(!internalChooserUpdate);
     }
 
     return <>
@@ -151,7 +150,7 @@ function AddCostumeButton(props) {
 
 function AddSoundButton(props) {
     const { reloadSoundEditor } = props;
-    const { handleUploadSound, showInternalSoundChooser, setShowInternalSoundChooser, setInternalSoundChooserUpdate, internalSoundChooserUpdate } = useContext(pyatchContext);
+    const { handleUploadSound, showInternalSoundChooser, setShowInternalSoundChooser } = useContext(pyatchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -169,7 +168,6 @@ function AddSoundButton(props) {
         handleClose();
         update = true;
         setShowInternalSoundChooser(true);
-        setInternalSoundChooserUpdate(!internalSoundChooserUpdate);
     }
 
     useEffect(() => {

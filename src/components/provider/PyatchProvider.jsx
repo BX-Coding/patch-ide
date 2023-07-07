@@ -44,10 +44,8 @@ const PyatchProvider = props => {
 
   const [showInternalChooser, setShowInternalChooser] = useState(false);
   const [internalChooserAdd, setInternalChooserAdd] = useState(false);
-  const [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
 
   const [showInternalSoundChooser, setShowInternalSoundChooser] = useState(false);
-  const [internalSoundChooserUpdate, setInternalSoundChooserUpdate] = useState(false);
 
   const [vmLoaded, setVmLoaded] = useState(false);
   const [patchReady, setPatchReady] = useState(false);
@@ -84,12 +82,8 @@ const PyatchProvider = props => {
     setShowInternalChooser,
     internalChooserAdd,
     setInternalChooserAdd,
-    internalChooserUpdate,
-    setInternalChooserUpdate,
     showInternalSoundChooser,
     setShowInternalSoundChooser,
-    internalSoundChooserUpdate,
-    setInternalSoundChooserUpdate,
     patchReady,
     setPatchReady,
     globalVariables,

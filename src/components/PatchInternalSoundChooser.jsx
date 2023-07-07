@@ -10,10 +10,9 @@ import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
 
 export function SoundItem(props) {
-    const { sound, keyThing, pyatchVM, onClickFunc } = props;
+    const { sound, onClickFunc } = props;
 
     const selected = false;
-    const actionButtons = "";
 
     return (
         <Box sx={{
@@ -46,32 +45,20 @@ export function SoundItem(props) {
 }
 
 export function PatchInternalSoundChooser(props) {
-    const {pyatchVM, showInternalSoundChooser, setShowInternalSoundChooser, handleAddSoundToActiveTarget, internalSoundChooserUpdate, setInternalSoundChooserUpdate } = useContext(pyatchContext);
+    const {showInternalSoundChooser, setShowInternalSoundChooser, handleAddSoundToActiveTarget } = useContext(pyatchContext);
 
     const onClickFunc = (sound) => {
-        handleAddSoundToActiveTarget(sound, true).then(() => { setShowInternalSoundChooser(false); setInternalSoundChooserUpdate(!internalSoundChooserUpdate); });
+        handleAddSoundToActiveTarget(sound, true).then(() => { setShowInternalSoundChooser(false); });
     }
 
-    let [soundItems, setSoundItems] = useState(<div class="soundSelectorHolder" style={{ display: showInternalSoundChooser ? "block" : "none" }}></div>);
-
-    useEffect(() => {
-        setSoundItems(<div class="soundSelectorHolder" style={{ display: showInternalSoundChooser ? "block" : "none" }}>
+    return (
+        <div class="soundSelectorHolder" style={{ display: showInternalSoundChooser ? "block" : "none" }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Sound</Typography>
             </center>
             {sounds.map((sound, i) => {
-                if (pyatchVM != null) {
-                    return <SoundItem keyThing={i} onClickFunc={onClickFunc} sound={sound} pyatchVM={pyatchVM}></SoundItem>
-                } else {
-                    return <></>
-                }
+                return <SoundItem onClickFunc={onClickFunc} sound={sound}></SoundItem>
             })}
-        </div>);
-    }, [internalSoundChooserUpdate]);
-
-    return (
-        <>
-        { soundItems }
-        </>
+        </div>
     );
 }
