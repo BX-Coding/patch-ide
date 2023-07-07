@@ -36,6 +36,6 @@ export function PyatchSpriteName(props) {
             size="small"
             disabled={targetIds[0] == editingTargetId}
         />
-        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved || (targetIds[0] == editingTargetId)} sx={{m:"1vh"}}><SaveIcon/></Button>
+        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{m:"1vh"}}><SaveIcon/></Button>
     </Grid>);
 }
