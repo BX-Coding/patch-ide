@@ -10,7 +10,7 @@ import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
 
-import defaulPatchProject from '../../assets/defaultProject.ptch1';
+import defaultPatchProject from '../../assets/defaultProject.ptch1';
 
 import SplashScreen from "../SplashScreen.jsx";
 
@@ -293,7 +293,7 @@ const PyatchProvider = props => {
   }
 
   const initializeDefaultProject = async () => {
-    loadSerializedProject(defaulPatchProject);
+    loadSerializedProject(defaultPatchProject);
   }
 
   const initializePatchProject = async () => {
