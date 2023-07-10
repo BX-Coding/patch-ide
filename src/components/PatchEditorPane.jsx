@@ -282,7 +282,7 @@ function PatchSoundInspector(props) {
 
     // -------- Action Buttons --------
 
-    const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
+    const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} disabled={targetSounds[i].rate != 44100} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
     const deleteButton = (i) => <Button color='error' sx={{ width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
 
