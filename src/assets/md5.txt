@@ -1,0 +1,3 @@
+patch penguin png md5: 94b695b8ef1123544cf202aa95af32f0
+patch penguin svg (unscaled) md5: 474350b67cb87a10441efe72fd541e62
+patch penguin svg (new, scaled) md5: 307b06ba69d71d2845aaa55649fb9f1b

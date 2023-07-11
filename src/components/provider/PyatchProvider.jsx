@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, createContext } from "react";
 import PyatchContext from "./PyatchContext.js";
 import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
-import makeTestStorage from "../../util/make-test-storage.mjs";
+import makePatchStorage from "../../util/make-patch-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
 import backdrops from '../../assets/backdrops.json';
@@ -28,7 +28,7 @@ const PyatchProvider = props => {
   //  -------- Patch Editor Global State --------
   const [targetIds, setTargetIds] = useState([]);
   const [editingTargetId, setEditingTargetId] = useState(null);
-  
+
   const [editingTargetX, setEditingTargetX] = useState(0);
   const [editingTargetY, setEditingTargetY] = useState(0);
   const [editingTargetSize, setEditingTargetSize] = useState(0);
@@ -265,11 +265,11 @@ const PyatchProvider = props => {
     handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
   }
 
-  addToGlobalState({ 
-    handleAddCostumesToActiveTarget, 
-    handleSaveThread, 
-    handleSaveTargetThreads, 
-    handleUploadCostume, 
+  addToGlobalState({
+    handleAddCostumesToActiveTarget,
+    handleSaveThread,
+    handleSaveTargetThreads,
+    handleUploadCostume,
     handleNewCostume
   });
 
@@ -333,11 +333,11 @@ const PyatchProvider = props => {
       const scratchRenderer = new Renderer(pyatchStage.canvas);
 
       pyatchVM = new VirtualMachine();
-      pyatchVM.attachStorage(makeTestStorage());
+      pyatchVM.attachStorage(makePatchStorage());
       pyatchVM.attachRenderer(scratchRenderer);
       pyatchVM.attachAudioEngine(new AudioEngine());
       pyatchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-      
+
       pyatchVM.runtime.draw();
       pyatchVM.start();
 
@@ -363,7 +363,7 @@ const PyatchProvider = props => {
     setRuntimeErrorList([]);
     pyatchVM.runtime.greenFlag();
   }
-  
+
   const onAddSprite = async (sprite = sprites[0]) => {
     if (pyatchVM && pyatchVM.editingTarget) {
       handleSaveTargetThreads(pyatchVM.editingTarget);
@@ -382,14 +382,14 @@ const PyatchProvider = props => {
   }
 
   const saveAllThreads = async () => {
-   await Object.keys(threadsText).forEach(async threadId => {
+    await Object.keys(threadsText).forEach(async threadId => {
       if (!savedThreads[threadId]) {
         await pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
         setSavedThreads({ ...savedThreads, [threadId]: true });
       }
     });
   }
-  
+
   const downloadProject = async () => {
     return pyatchVM.downloadProject();
   }
@@ -397,14 +397,11 @@ const PyatchProvider = props => {
   const loadSerializedProject = async (vmState) => {
     if (pyatchVM) {
       setPatchReady(false);
-      /* TODO: clear out old targets first */
 
       const oldTargets = pyatchVM.runtime.targets;
       const oldExecutableTargets = pyatchVM.runtime.executableTargets;
       const oldGlobalVariables = pyatchVM.runtime._globalVariables;
 
-      // pyatchVM.runtime.targets = [];
-      // pyatchVM.runtime.executableTargets = [];
       pyatchVM.runtime._globalVariables = {};
 
       const result = await pyatchVM.loadProject(vmState);
@@ -508,8 +505,8 @@ const PyatchProvider = props => {
       <PyatchContext.Provider
         value={{ ...globalPatchIDEState }}
       >
-        {!(pyatchVM && vmLoaded && patchReady) && <SplashScreen/>}
-        <div style={{display: (pyatchVM && vmLoaded && patchReady) ? "block" : "none"}}>{props.children}</div>
+        {!(pyatchVM && vmLoaded && patchReady) && <SplashScreen />}
+        <div style={{ display: (pyatchVM && vmLoaded && patchReady) ? "block" : "none" }}>{props.children}</div>
       </PyatchContext.Provider>
     </>
   );

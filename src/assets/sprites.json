@@ -1,5 +1,31 @@
 [
     {
+        "name": "Patch the Penguin",
+        "tags": [
+            "animals",
+            "antarctica",
+            "arctic",
+            "cold",
+            "patch",
+            "penguin"
+        ],
+        "isStage": false,
+        "variables": {},
+        "costumes": [
+            {
+                "assetId": "307b06ba69d71d2845aaa55649fb9f1b",
+                "name": "patch-penguin",
+                "bitmapResolution": 1,
+                "md5ext": "307b06ba69d71d2845aaa55649fb9f1b.svg",
+                "dataFormat": "svg",
+                "rotationCenterX": 48,
+                "rotationCenterY": 50
+            }
+        ],
+        "sounds": [],
+        "blocks": {}
+    },
+    {
         "name": "Abby",
         "tags": [
             "people",
