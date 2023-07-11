@@ -10,16 +10,12 @@ import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
 
 export function SpriteItem(props) {
-    const { sprite, keyThing, pyatchVM, onClickFunc } = props;
+    const { sprite, onClickFunc, pyatchVM } = props;
 
-    //const imageSrc = "";
     const selected = false;
-    const actionButtons = "";
 
     const [imageSrc, setImageSrc] = useState("");
 
-    //const { pyatchVM } = useContext(pyatchContext);
-    // function (md5ext, costume, runtime, optVersion)
     pyatchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], pyatchVM.runtime).then((result) => { setImageSrc(getCostumeUrl(result.asset)) });
 
     return (
@@ -53,7 +49,7 @@ export function SpriteItem(props) {
 }
 
 export function PatchInternalSpriteChooser(props) {
-    const {pyatchVM, showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
+    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(pyatchContext);
 
     const onClickFunc = (sprite) => {
         if (internalChooserAdd) {
@@ -63,29 +59,27 @@ export function PatchInternalSpriteChooser(props) {
         }
 
         setShowInternalChooser(false);
-        setInternalChooserUpdate(!internalChooserUpdate);
     }
 
-    let [spriteItems, setSpriteItems] = useState(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}></div>);
+    // These hold the sprite items
+    const [spriteItems, setSpriteItems] = useState([]);
 
+    // Generate the default sprites to fill the picker (if not already done). Doing this when the sprite
+    // picker first appears (instead of when patch first loads) reduces initial loading time for Patch
     useEffect(() => {
-        setSpriteItems(<div class="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
+        if ((showInternalChooser == true) && (spriteItems.length == 0)) {
+            setSpriteItems(sprites.map((sprite, i) => {
+                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM}/>
+            }));
+        }
+    }, [showInternalChooser]);
+
+    return (
+        <div className="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
             </center>
-            {sprites.map((sprite, i) => {
-                if (pyatchVM != null) {
-                    return <SpriteItem keyThing={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM}></SpriteItem>
-                } else {
-                    return <></>
-                }
-            })}
-        </div>);
-    }, [internalChooserUpdate]);
-
-    return (
-        <>
-        { spriteItems }
-        </>
+            {spriteItems}
+        </div>
     );
 }
