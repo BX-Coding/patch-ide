@@ -32,11 +32,17 @@
 
 .leftContainer {
     background-color: rgba(255, 255, 255, 0.05);
-    width: calc(100vw - 664px);
-    height: calc(100vh - 76px);
+    width: 100%;
+    height: calc(100vh - 77px);
     margin: 8px 0px 0px 8px;
     border-radius: 8px;
     padding: 8px;
+}
+
+@media screen and (min-width: 1080px) {
+    .leftContainer {
+        width: calc(100% - 648px);
+    }
 }
 
 .spriteChooserImage {
