@@ -281,8 +281,7 @@ function PatchSoundInspector(props) {
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
     // -------- Action Buttons --------
-
-    console.log(targetSounds);
+    
     const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} disabled={targetSounds[i].rate === 22050} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
     const deleteButton = (i) => <Button color='error' sx={{ width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
