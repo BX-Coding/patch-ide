@@ -414,6 +414,7 @@ const PyatchProvider = props => {
       handleSaveTargetThreads(pyatchVM.editingTarget);
     }
     await addSprite(sprite);
+    setCostumesUpdate(!costumesUpdate);
     return pyatchVM.editingTarget.id;
   }
 

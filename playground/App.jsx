@@ -5,12 +5,14 @@ import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
 import Grid from '@mui/material/Grid';
 import './App.css'
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton } from '../src/components/PatchEditorPane.jsx';
+import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton, PatchSoundTabButton } from '../src/components/PatchEditorPane.jsx';
+
+import { PatchHorizontalButtons } from '../src/components/PatchTemplates.jsx';
 
 function App() {
   return (
     <PyatchProvider>
-      <Grid container item direction="row" width={'100%'} spacing={"8px"} style={{
+      <Grid container item direction="row" width={'100%'} style={{
         position: "absolute",
         width: "100%",
         top: 0,
@@ -19,40 +21,26 @@ function App() {
         bottom: 0,
         padding: 0,
         margin: 0,
-        paddingBottom: 8,
-        paddingRight: 8,
+        padding: "8px",
         zIndex: -1,
         overflowY: "scroll"
       }}>
-        <Grid container direction="row" xs={12} style={{ marginTop: 8, marginRight: 0, marginBottom: 0, marginLeft: 8, maxHeight: 48 }}>
-          <PatchTopBar />
-        </Grid>
+        <PatchTopBar />
         <Grid item class="leftContainer">
-          <Grid container spacing="4px" marginBottom="4px">
-            <Grid item><PatchCodeEditorTabButton /></Grid>
-            <Grid item><PatchSpriteTabButton /></Grid>
-          </Grid>
-          <Grid item>
-            <PatchEditorPane />
-          </Grid>
+          <PatchHorizontalButtons>
+            <PatchCodeEditorTabButton />
+            <PatchSpriteTabButton />
+            <PatchSoundTabButton />
+          </PatchHorizontalButtons>
+          <PatchEditorPane />
         </Grid>
         <Grid item class="rightContainer">
-          <Grid container spacing={2} direction="row">
-            <Grid item>
-              <PyatchStartButton />
-            </Grid>
-            <Grid item>
-              <PyatchStopButton />
-            </Grid>
-          </Grid>
-          <Grid container justifyContent="center">
-            <Grid item xs={12}>
-              <PyatchStage />
-            </Grid>
-            <Grid item xs={12}>
-              <PyatchSpriteArea />
-            </Grid>
-          </Grid>
+          <PatchHorizontalButtons>
+            <PyatchStartButton />
+            <PyatchStopButton />
+          </PatchHorizontalButtons>
+          <PyatchStage />
+          <PyatchSpriteArea />
         </Grid>
       </Grid>
       <div id="testItem" style={{ zIndex: 2 }}>
