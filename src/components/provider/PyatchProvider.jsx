@@ -54,6 +54,7 @@ const PyatchProvider = props => {
 
   const [eventLabels, setEventLabels] = useState({});
   const [eventOptionsMap, setEventOptionsMap] = useState({});
+  const [broadcastMessageIds, setBroadcastMessageIds] = useState({});
 
   addToGlobalState({
     targetIds,
@@ -94,6 +95,8 @@ const PyatchProvider = props => {
     setEventLabels,
     eventOptionsMap,
     setEventOptionsMap,
+    broadcastMessageIds,
+    setBroadcastMessageIds,
   });
 
 
