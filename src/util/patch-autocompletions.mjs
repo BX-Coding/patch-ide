@@ -6,8 +6,8 @@ const apply = (key, functionInfo) => (view, completion, from, to) => {
     view.dispatch(insertCompletionText(view.state, text.value, from, to));
     view.dispatch({
         selection: {
-          anchor: text.from,
-          head: text.to,
+          anchor: from + text.from,
+          head: from + text.to,
         },
     });
 }
