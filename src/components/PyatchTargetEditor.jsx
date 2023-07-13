@@ -15,6 +15,8 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
+import completions from '../util/patch-autocompletions.mjs';
+
 export function PyatchTargetEditor(props) {
     const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(pyatchContext);
     const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
@@ -153,23 +155,4 @@ function ThreadEditor(props) {
             </Grid>
         </>
     );
-}
-
-const completions = (patchPythonApiInfo) => (context) => {
-    let word = context.matchBefore(/\w*/);
-    if (word.length>0)
-        return {options:[{autoCloseBrackets: true}]};
-    if (word.from == word.to)
-        return null;
-    return {
-        from: word.from,
-        options: Object.keys(patchPythonApiInfo).map((key) => {
-            const info = patchPythonApiInfo[key];
-            return {
-                label: key,
-                detail: `${key}(${info.parameters.join(", ")})`,
-                apply: `${key}(${info.parameters.map((param) => info.exampleParameters[param]).join(", ")})`
-            };
-        })
-    };
 }
