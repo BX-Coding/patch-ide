@@ -117,10 +117,10 @@ const PyatchStage = () => {
     return (<div ref={boundingRef}>
         {!!pyatchStage.canvas && <DOMElementRenderer
             domElement={pyatchStage.canvas}
-            style={{
+            /*style={{
                 height: pyatchStage.height,
                 width: pyatchStage.width
-            }}
+            }}*/
         />}
         </div>
     );

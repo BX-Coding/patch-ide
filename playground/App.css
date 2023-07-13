@@ -14,31 +14,76 @@
 }
 
 .assetHolder {
-    border-radius: 8px;
-    border-width: 2px;
+    border-width: 0px;
     border-style: solid;
-    /*background-color: rgba(255, 255, 255, 0.05);*/
     max-height: calc(100vh - 140px);
 }
 
 .rightContainer {
-    width: 600px;
+    width: 100%;
     /*background-color: rgba(255, 255, 255, 0.05);*/
+    height: calc(100vh - 56px);
     margin: 0px;
+    margin-top: 16px;
 }
 
 .leftContainer {
     /*background-color: rgba(255, 255, 255, 0.05);*/
     width: 100%;
-    height: calc(100vh - 77px);
+    height: calc(100vh - 56px);
     margin: 0px;
+    margin-top: 16px;
+}
+
+canvas, .canvasBox {
+    width: 600px;
+    height: 400px;
 }
 
 @media screen and (min-width: 1080px) {
     .leftContainer {
-        width: calc(100% - 600px);
+        width: calc(100% - 617px);
+        margin-top: 0px;
+    }
+    .rightContainer {
+        width: 617px;
+        margin-top: 0px;
     }
 }
+
+/*@media screen and (min-width: 1500px) {
+    .leftContainer {
+        width: calc(100% - 917px);
+        margin-top: 0px;
+    }
+    .rightContainer {
+        width: 917px;
+        margin-top: 0px;
+    }
+    canvas, .canvasBox {
+        width: 900px;
+        height: 600px;
+    }
+}*/
+
+/*@media screen and (min-width: 1080px) {
+    :root {
+        --canvas-width: calc(30vw + 276px);
+        --canvas-height: calc(var(--canvas-width) * 2 / 3);
+    }
+    .leftContainer {
+        width: calc(100% - 17px - var(--canvas-width));
+        margin-top: 0px;
+    }
+    .rightContainer {
+        width: 17px + var(--canvas-width);
+        margin-top: 0px;
+    }
+    canvas, .canvasBox {
+        width: var(--canvas-width);
+        height: var(--canvas-height);
+    }
+}*/
 
 .spriteChooserImage {
     width: 64px;
@@ -58,10 +103,4 @@
     /*border-color: #000000;*/
     /*background-color: rgba(60, 60, 60, 1);*/
     z-index: 20;
-}
-
-.patchTopBar {
-    max-height: 48px;
-    margin: 0px;
-    padding: 0px;
 }

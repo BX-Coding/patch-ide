@@ -19,14 +19,30 @@ import { Typography, Box } from '@mui/material';
 import PatchCodeEditor from './PatchCodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
-import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons } from './PatchTemplates.jsx';
+import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, ItemCard } from './PatchTemplates.jsx';
 
 export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
-    return <div class="tabContent">
-        {[<PatchCodeEditor />, <PatchSpriteEditor />, <PatchSoundEditor />][patchEditorTab]}
+    return <div class="tabContent" style={{
+        height: "calc(100% - 51px)"
+    }}>
+        {[<PatchCodeEditorWrapper />, <PatchSpriteEditor />, <PatchSoundEditor />][patchEditorTab]}
     </div>
+}
+
+export function PatchCodeEditorWrapper(props) {
+    return (
+        <Grid container direction="column" className="assetHolder" sx={{
+            backgroundColor: 'panel.default',
+            borderColor: 'divider',
+            minHeight: "100%",
+            marginBottom: "0px",
+            padding: "8px"
+        }}>
+            <PatchCodeEditor />
+        </Grid>
+    );
 }
 
 export function PatchCodeEditorTabButton(props) {
@@ -67,11 +83,7 @@ export function PatchSoundTabButton(props) {
 
 export function PatchSpriteEditor(props) {
     return (
-        <Grid container>
-            <Grid item xs={12}>
-                <PatchSpriteInspector />
-            </Grid>
-        </Grid>
+        <PatchSpriteInspector />
     );
     /*return (
         <Grid container marginTop="8px">
@@ -102,67 +114,6 @@ function PatchGlobalVariables(props) {
     return <>
         <Grid><PatchVariables /></Grid>
     </>;
-}
-
-function ItemCard(props) {
-    const { imageSrc, title, selected, onClick, actionButtons, width, height } = props;
-
-    const imgHeight = height - 40;
-
-    return (
-        <Box onClick={() => { onClick(title) }} sx={{
-            backgroundColor: selected ? 'primary.dark' : 'none',
-            borderColor: 'primary.dark',
-            borderStyle: 'solid',
-            borderWidth: 3,
-            borderRadius: 1,
-            '&:hover': {
-                backgroundColor: 'primary.main',
-                opacity: [0.9, 0.8, 0.7],
-            },
-            width: width,
-            height: height,
-        }}>
-                <img src={imageSrc} width={width} height={imgHeight}/>
-            <Grid container direction="row">
-                <Typography>{title}</Typography>
-                {actionButtons ? (actionButtons.map((button, i) => {
-                    return (
-                        <Grid item>{button}</Grid>
-                    );
-                })) : null}
-            </Grid>
-        </Box>
-    );
-    /*const { imageSrc, title, selected, onClick, actionButtons, imgWidth, imgHeight } = props;
-    return (
-        <Box sx={{
-            backgroundColor: selected ? 'primary.dark' : 'none',
-            borderColor: 'primary.dark',
-            borderStyle: 'solid',
-            borderWidth: 3,
-            borderRadius: 1,
-            marginBottom: "4px",
-            '&:hover': {
-                backgroundColor: 'primary.main',
-                opacity: [0.9, 0.8, 0.7],
-            },
-        }}
-
-            onClick={() => { onClick(title) }}
-        >
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}><img src={imageSrc} width={imgWidth} maxHeight={imgHeight} /></Box>
-            <Grid display='flex' justifyContent='space-between' alignItems='center' sx={{
-                backgroundColor: 'primary.dark',
-                padding: 1,
-            }}>
-                <Typography>{title}</Typography>
-                {actionButtons}
-            </Grid>
-        </Box>)*/
 }
 
 /*function AddCostumeButton(props) {
@@ -410,7 +361,7 @@ function PatchSoundInspector(props) {
 }
 
 function PatchSpriteDetails(props) {
-    const { costumeIndex, selectedTarget, costumes, width, height } = props;
+    const { costumeIndex, costumes, width, height } = props;
     const { pyatchVM } = useContext(pyatchContext);
 
     return (
@@ -429,7 +380,7 @@ function PatchSpriteDetails(props) {
 }
 
 function PatchSpriteInspector(props) {
-    const { pyatchVM, editingTargetId, costumesUpdate, setCostumesUpdate } = useContext(pyatchContext);
+    /*const { pyatchVM, editingTargetId, costumesUpdate, setCostumesUpdate } = useContext(pyatchContext);
     let selectedTarget = pyatchVM.editingTarget;
     let currentCostume = selectedTarget.getCurrentCostume();
 
@@ -463,13 +414,43 @@ function PatchSpriteInspector(props) {
         currentCostume = selectedTarget.getCurrentCostume();
         setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
         setCostumes([...selectedTarget.getCostumes()]);
-    }, [editingTargetId, costumesUpdate]);
+        console.warn("updating costumes");
+    }, [editingTargetId, costumesUpdate]);*/
+    const { pyatchVM, editingTargetId, currentCostumes, setCurrentCostumes, currentCostumeIndex, setCurrentCostumeIndex } = useContext(pyatchContext);
+
+    const handleClick = (costumeName) => {
+        const newCostumeIndex = pyatchVM.editingTarget.getCostumeIndexByName(costumeName);
+        pyatchVM.editingTarget.setCostume(newCostumeIndex);
+        setCurrentCostumeIndex(newCostumeIndex);
+    }
+
+    const handleDeleteClick = (costumeName) => {
+        const newCostumeIndex = pyatchVM.editingTarget.getCostumeIndexByName(costumeName);
+        pyatchVM.editingTarget.deleteCostume(newCostumeIndex);
+        setCurrentCostumeIndex(pyatchVM.editingTarget.currentCostume);
+        setCurrentCostumes([...pyatchVM.editingTarget.getCostumes()]);
+    }
+
+    const handleDeleteCurrentClick = () => {
+        handleDeleteClick(currentCostumes[currentCostumeIndex].name);
+    }
+
+    //const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
+    const deleteCostumeButton = (costumeName) => <PatchDeleteButton red={true} onClick={handleDeleteClick} onClickArgs={[costumeName]} />
+
+    const deleteCurrentCostumeButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
 
     return (
-        <Box className="assetHolder" sx={{
-            backgroundColor: 'action.selected',
+        <Grid container direction="column" className="assetHolder" sx={{
+            backgroundColor: 'panel.default',
             borderColor: 'divider',
+            borderTopRightRadius: "0px",
+            borderBottomRightRadius: "0px",
+            borderRightWidth: "1px",
+            minHeight: "100%",
+            marginBottom: "0px"
         }}>
+            <Grid item xs>
             <PatchHorizontalButtons sx={{
                 marginLeft: "4px",
                 marginTop: "4px"
@@ -477,24 +458,28 @@ function PatchSpriteInspector(props) {
                 <Grid item>{deleteCurrentCostumeButton()}</Grid>
                 <Grid item><AddCostumeButton /></Grid>
             </PatchHorizontalButtons>
-            <PatchSpriteDetails width={"100%"} height={"calc(100vh - 480px)"} costumeIndex={costumeIndex} selectedTarget={selectedTarget} costumes={costumes} />
+            </Grid>
+            <Grid item xs>
+            <PatchSpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
+            </Grid>
+            <Grid item xs>
+            <Box sx={{overflowY: "scroll", maxHeight: "280px"}}>
             <Grid container direction="row" spacing={1} sx={{
                 margin: "0px",
-                backgroundColor: 'action.selected',
+                backgroundColor: 'panel.default',
                 borderTopWidth: "2px",
                 borderTopStyle: "solid",
                 borderTopColor: 'divider',
                 padding: "4px",
-                overflowY: "scroll",
                 width: "100%",
-                bottom: "4px"
+                marginBottom: "8px",
             }}>
-                {costumes.map((costume, i) =>
+                {currentCostumes.map((costume, i) =>
                     <Grid item>
                         <ItemCard
                             imageSrc={getCostumeUrl(costume.asset)}
                             title={costume.name}
-                            selected={i === costumeIndex}
+                            selected={i === currentCostumeIndex}
                             onClick={handleClick}
                             //actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
                             key={costume.name}
@@ -504,6 +489,8 @@ function PatchSpriteInspector(props) {
                     </Grid>
                 )}
             </Grid>
-        </Box>
+            </Box>
+            </Grid>
+        </Grid>
     );
 }

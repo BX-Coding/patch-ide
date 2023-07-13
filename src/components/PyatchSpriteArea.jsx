@@ -5,7 +5,11 @@ import { PyatchSelectSprite } from "./PyatchSelectSprite.jsx"; //sprite name but
 import { PyatchSpriteAttributes } from "./PyatchSpriteAttributes.jsx"; //height and stuff
 import { PyatchSpriteName } from "./PyatchSpriteName.jsx"; //textfeild
 import pyatchContext from './provider/PyatchContext.js';
+
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+
+import { ItemCard } from './PatchTemplates.jsx';
 
 function StageButton() {
     const { pyatchVM } = useContext(pyatchContext);
@@ -21,7 +25,6 @@ export default function PyatchSpriteArea(){
     }
     const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
 
-    
     return(
         <Grid>
             <Grid container justifyContent = "center">
@@ -35,13 +38,15 @@ export default function PyatchSpriteArea(){
                     <PyatchDeleteSprite/>
                 </Grid>}
             </Grid>
-            <Grid container>
-                <Grid item xs={12}>
-                    {targetIds.map((targetId) => {
-                        const target = pyatchVM.runtime.getTargetById(targetId);
-                        return (target ? ((target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>) : <></>)
-                    })}
-                </Grid>
+            <Grid container item direction="row" spacing={"8px"} xs={12}>
+                {targetIds.map((targetId) => {
+                    const target = pyatchVM.runtime.getTargetById(targetId);
+                    return (
+                        <Grid item>
+                            {target ? ((target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>) : <></>}
+                        </Grid>
+                    );
+                })}
             </Grid>
             <Grid container sx={{ alignItems: 'center' }}>
                 <Grid item xs={6}>

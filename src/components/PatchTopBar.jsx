@@ -7,26 +7,33 @@ import Grid from '@mui/material/Grid';
 import * as PyatchProvider from './provider/PyatchProvider.jsx';
 import pyatchContext from './provider/PyatchContext.js';
 
+import { PatchHorizontalButtons, PatchTextButton } from './PatchTemplates.jsx';
+
 export default function PatchTopBar(){
     return(
-        <>
-        <Grid container item direction = "row" xs = {8} spacing={2} className="patchTopBar">
-          <Grid item>
-            <PatchFileButton/>
+        <Grid container item direction="row" sx={{
+          width: "100vw",
+          padding: "8px",
+          maxHeight: "56px",
+          backgroundColor: 'primary.dark',
+        }}>
+          <Grid container item direction = "row" xs = {8} spacing={2} className="patchTopBar">
+            <Grid item>
+              <PatchFileButton/>
+            </Grid>
+            <Grid item xs={6}>
+              <PatchFileName/>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <PatchFileName/>
+          <Grid container item direction = "row" xs = {4} spacing={2} justifyContent = "flex-end">
+            <Grid item>
+              <PatchProjectButton/>
+            </Grid>
+            <Grid item>
+              <PatchSignOutButton/>
+            </Grid>
           </Grid>
         </Grid>
-        <Grid container item direction = "row" xs = {4} spacing={2} justifyContent = "flex-end">
-          <Grid item>
-            <PatchProjectButton/>
-          </Grid>
-          <Grid item>
-            <PatchSignOutButton/>
-          </Grid>
-        </Grid>
-        </>
     );
 }
 
@@ -36,7 +43,7 @@ export function PatchSignOutButton() {
     };
   
     return (
-        <Button id="signOut" variant="contained" onClick={handleClick}>Sign Out</Button>
+        <PatchTextButton sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
     );
 }
 
@@ -46,7 +53,7 @@ export function PatchProjectButton() {
     };
     
     return (
-        <Button id = "project" variant="contained" onClick={handleClick}>Projects</Button>
+        <Button sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}} id = "project" variant="contained" onClick={handleClick}>Projects</Button>
     );
 }
 
@@ -66,7 +73,8 @@ export function PatchFileName() {
             variant="outlined"  
             size="small"
             fullWidth
-            sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+            sx={{marginLeft: "-16px"}}
+            //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
         />
         </>
     );
@@ -130,18 +138,18 @@ export function PatchFileButton() {
   }
 
   return (
-    <>
-      <Button
+    <PatchHorizontalButtons>
+      <PatchTextButton
         id="file"
         variant="contained"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
-      >
-        File
-      </Button>
-      <Button id="saveNow" variant={changesSinceLastSave ? "contained" : "outlined"} style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>{changesSinceLastSave ? "Save" : "Saved"}</Button>
+        text="File"
+        sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}}
+      />
+      <PatchTextButton sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -156,6 +164,6 @@ export function PatchFileButton() {
         <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
       </Menu>
-    </>
+    </PatchHorizontalButtons>
   );
   }

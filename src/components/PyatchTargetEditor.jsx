@@ -88,7 +88,7 @@ function ThreadEditor(props) {
     }
     return (
         <>
-            <Grid display="flex" flexDirection="row" spacing={2} marginTop="4px">
+            <Grid display="flex" flexDirection="row" spacing={2}>
                 <Autocomplete
                     disablePortal
                     disableClearable
@@ -101,7 +101,8 @@ function ThreadEditor(props) {
                     variant="outlined"  
                     size="small"
                     fullWidth
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    sx={{backgroundColor: 'panel.default'}}
                     componentsProps={{
                         paper: {
                           sx: {
@@ -125,7 +126,8 @@ function ThreadEditor(props) {
                     variant="outlined"  
                     size="small"
                     fullWidth
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    sx={{backgroundColor: 'panel.default'}}
                     renderInput={(params) => 
                         <TextField {...params}/>
                     }
@@ -136,7 +138,7 @@ function ThreadEditor(props) {
                     defaultValue={thread.triggerEventOption}
                     variant="outlined"  
                     size="small"
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+                    //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
                 />}
                 <Button variant="contained" color="success" onClick={handleSave} disabled={savedThreads[thread.id]}><SaveIcon/></Button>
                 {!first && <Button variant="contained" color="primary" onClick={onDeleteThread}><DeleteIcon/></Button>}

@@ -32,7 +32,7 @@ export function PyatchSpriteName(props) {
             value={name}
             onChange={onChange}
             fullWidth
-            sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
+            //sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
             size="small"
             disabled={targetIds[0] == editingTargetId}
         />

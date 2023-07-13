@@ -31,8 +31,8 @@ export function PyatchAddSprite(props) {
     };
 
     const handleExistingClick = (event) => {
-        setShowInternalChooser(true);
         setInternalChooserAdd(true);
+        setShowInternalChooser(true);
         handleMenuClose();
     };
 

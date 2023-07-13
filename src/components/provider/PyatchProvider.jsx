@@ -40,7 +40,11 @@ const PyatchProvider = props => {
   const [patchEditorTab, setPatchEditorTab] = useState(0);
   const [runtimeErrorList, setRuntimeErrorList] = useState([]);
 
-  const [costumesUpdate, setCostumesUpdate] = useState(false);
+  //const [costumesUpdate, setCostumesUpdate] = useState(false);
+  const costumesUpdate = false;
+  const setCostumesUpdate = () => {updateCostumes()};
+  const [currentCostumes, setCurrentCostumes] = useState([]);
+  const [currentCostumeIndex, setCurrentCostumeIndex] = useState(0);
 
   const [showInternalChooser, setShowInternalChooser] = useState(false);
   const [internalChooserAdd, setInternalChooserAdd] = useState(false);
@@ -78,6 +82,10 @@ const PyatchProvider = props => {
     setRuntimeErrorList,
     costumesUpdate,
     setCostumesUpdate,
+    currentCostumes,
+    setCurrentCostumes,
+    currentCostumeIndex,
+    setCurrentCostumeIndex,
     showInternalChooser,
     setShowInternalChooser,
     internalChooserAdd,
@@ -95,6 +103,16 @@ const PyatchProvider = props => {
     eventOptionsMap,
     setEventOptionsMap,
   });
+
+  const updateCostumes = () => {
+    if (!pyatchVM) {return;}
+    setCurrentCostumes([...pyatchVM.editingTarget.getCostumes()]);
+    setCurrentCostumeIndex(pyatchVM.editingTarget.getCostumeIndexByName(pyatchVM.editingTarget.getCurrentCostume().name));
+  }
+
+  useEffect(() => {
+    updateCostumes();
+  }, [costumesUpdate, vmLoaded, patchReady, editingTargetId]);
 
 
 
@@ -227,9 +245,7 @@ const PyatchProvider = props => {
 
         return pyatchVM.addCostume(c.md5, c, targetId);
       }
-    }));
-
-    setCostumesUpdate(!costumesUpdate);
+    })).then(() => {setCostumesUpdate(costumesUpdate ? false : true);});
 
     return returnval;
   }
@@ -262,7 +278,6 @@ const PyatchProvider = props => {
   };
 
   const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
-    console.warn(costumes);
     handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
   }
 
@@ -330,11 +345,13 @@ const PyatchProvider = props => {
     const targets = pyatchVM.getAllRenderedTargets();
     const newTarget = targets[targets.length - 1];
 
-    setTargetIds(() => [...targetIds, newTarget.id]);
+    //setTargetIds([...targetIds, newTarget.id]);
+    setTargetIds(targets.map(target => target.id));
     pyatchVM.setEditingTarget(newTarget.id);
     setEditingTargetId(newTarget.id);
 
     newTarget.on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    setCostumesUpdate(!costumesUpdate);
   }
 
   const initializeDefaultProject = async () => {
@@ -414,7 +431,6 @@ const PyatchProvider = props => {
       handleSaveTargetThreads(pyatchVM.editingTarget);
     }
     await addSprite(sprite);
-    setCostumesUpdate(!costumesUpdate);
     return pyatchVM.editingTarget.id;
   }
 
