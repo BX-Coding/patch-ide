@@ -1,8 +1,8 @@
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
 
-const apply = (key, functionInfo) => (view, completion, from, to) => {
-    const text = generateCompletionText(key, functionInfo);
+const apply = (key, functionInfo, pyatchVM) => (view, completion, from, to) => {
+    const text = generateCompletionText(key, functionInfo, pyatchVM);
     view.dispatch(insertCompletionText(view.state, text.value, from, to));
     view.dispatch({
         selection: {
@@ -12,16 +12,21 @@ const apply = (key, functionInfo) => (view, completion, from, to) => {
     });
 }
 
-const generateCompletionText = (key, functionInfo) => {
+const generateCompletionText = (key, functionInfo, pyatchVM) => {
     const { parameters, exampleParameters } = functionInfo;
     const args = parameters.map((param) => {
         const paramterOptions = exampleParameters[param];
+        let validParameter = paramterOptions;
         // Check if options is a list of strings
         if (Array.isArray(paramterOptions)) {
-            return `'${paramterOptions[0]}'`;
+            validParameter = `'${paramterOptions[0]}'`;
         } else {
-            return paramterOptions;
+            const dynamicValues = getDynamicOptions(paramterOptions, pyatchVM);
+            if (dynamicValues.length > 0) {
+                validParameter = `'${dynamicValues[0]}'`;
+            }
         }
+        return validParameter;
     });
     const value = `${key}(${args.join(", ")})`;
     let from = value.length;
@@ -57,18 +62,18 @@ const reorderOptions = (options, word) => {
     return optionsWithScore;
 };
 
-const getDynamicOptions = (paramterOptions, pyatchVM) => {
+const getDynamicOptions = (paramterOption, pyatchVM) => {
     let dynamicOptions = [];
-    if (paramterOptions === "TARGET_NAMES") {
+    if (paramterOption === "TARGET_NAMES") {
         dynamicOptions = pyatchVM.getAllRenderedTargets().filter((target) => !target.isStage);
         dynamicOptions = dynamicOptions.map((target) => target.getName());
-    } else if (paramterOptions === "BACKDROP_NAMES") {
+    } else if (paramterOption === "BACKDROP_NAMES") {
         dynamicOptions = pyatchVM.runtime.getTargetForStage().sprite.costumes.map((costume) => costume.name);
-    } else if (paramterOptions === "COSTUME_NAMES") {
+    } else if (paramterOption === "COSTUME_NAMES") {
         dynamicOptions = pyatchVM.editingTarget.sprite.costumes.map((costume) => costume.name);
-    } else if (paramterOptions === "SOUND_NAMES") {
+    } else if (paramterOption === "SOUND_NAMES") {
         dynamicOptions = pyatchVM.editingTarget.getSounds().map((sound) => sound.name);
-    } else if (paramterOptions === "MESSAGE_NAMES") {
+    } else if (paramterOption === "MESSAGE_NAMES") {
         dynamicOptions = pyatchVM.getAllBroadcastMessages();
     }
     return dynamicOptions;
@@ -139,7 +144,7 @@ const completions = (patchPythonApiInfo, pyatchVM) => (context) => {
             return {
                 label: key,
                 detail: `${key}(${functionInfo.parameters.join(", ")})`,
-                apply: apply(key, functionInfo),
+                apply: apply(key, functionInfo, pyatchVM),
             };
         })
     };
