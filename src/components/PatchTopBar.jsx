@@ -25,13 +25,11 @@ export default function PatchTopBar(){
               <PatchFileName/>
             </Grid>
           </Grid>
-          <Grid container item direction = "row" xs = {4} spacing={2} justifyContent = "flex-end">
-            <Grid item>
+          <Grid item>
+            <PatchHorizontalButtons>
               <PatchProjectButton/>
-            </Grid>
-            <Grid item>
               <PatchSignOutButton/>
-            </Grid>
+            </PatchHorizontalButtons>
           </Grid>
         </Grid>
     );
