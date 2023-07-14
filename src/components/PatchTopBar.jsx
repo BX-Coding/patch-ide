@@ -25,11 +25,13 @@ export default function PatchTopBar(){
               <PatchFileName/>
             </Grid>
           </Grid>
-          <Grid item>
-            <PatchHorizontalButtons>
-              <PatchProjectButton/>
-              <PatchSignOutButton/>
-            </PatchHorizontalButtons>
+          <Grid container item xs={4} justifyContent="flex-end">
+            <Grid item>
+              <PatchHorizontalButtons>
+                <PatchProjectButton/>
+                <PatchSignOutButton/>
+              </PatchHorizontalButtons>
+            </Grid>
           </Grid>
         </Grid>
     );
@@ -51,7 +53,7 @@ export function PatchProjectButton() {
     };
     
     return (
-        <Button sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}} id = "project" variant="contained" onClick={handleClick}>Projects</Button>
+        <PatchTextButton sx={{borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light"}} id = "project" variant="contained" onClick={handleClick} text="Projects" />
     );
 }
 
