@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import DOMElementRenderer from '../util/dom-element-renderer.jsx';
 import { getEventXY } from '../util/touch-utils.js';
+import { PatchQuestion } from './PatchQuestion.jsx';
+import { Box } from '@mui/material';
 
 const PyatchStage = () => {
-    const { pyatchStage, pyatchVM } = useContext(pyatchContext);
+    const { questionAsked, pyatchStage, pyatchVM } = useContext(pyatchContext);
     const [rect, setRect] = useState(null);
     const boundingRef = useRef(null);
     const updateRect = () => {
@@ -107,22 +109,36 @@ const PyatchStage = () => {
 
     useEffect(() => {
         if (pyatchStage.canvas) {
-            console.log("attaching");
             attachMouseEvents();
             attachKeyboardEvents();
             updateRect();
         }
     }, [pyatchStage.canvas])
 
-    return (<div ref={boundingRef}>
-        {!!pyatchStage.canvas && <DOMElementRenderer
-            domElement={pyatchStage.canvas}
-            style={{
-                height: pyatchStage.height,
-                width: pyatchStage.width
-            }}
-        />}
+    return (
+    <div>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            position: 'absolute', 
+            zIndex: 1, 
+            width: 600, 
+            height: pyatchStage.height,
+        }}>
+            { questionAsked !== null && <PatchQuestion/>}
+        </Box>
+        <div ref={boundingRef} style={{position: 'relative'}}>
+            {!!pyatchStage.canvas && <DOMElementRenderer
+                domElement={pyatchStage.canvas}
+                style={{
+                    height: pyatchStage.height,
+                    width: pyatchStage.width
+                }}
+            />}
         </div>
+    </div>
     );
 }
 
