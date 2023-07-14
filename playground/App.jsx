@@ -58,6 +58,12 @@ function App() {
         dark: '#01579b',
         contrastText: '#fff'
       },
+      success: {
+        main: '#2e7d32',
+        light: '#4caf50',
+        dark: '#1b5e20',
+        contrastText: 'rgba(0, 0, 0, 0.87)'
+      },
       text: {
         primary: '#fff',
         secondary: 'rgba(255, 255, 255, 0.7)',

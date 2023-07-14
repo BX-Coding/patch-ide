@@ -19,7 +19,7 @@ import { Typography, Box } from '@mui/material';
 import PatchCodeEditor from './PatchCodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
-import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, ItemCard } from './PatchTemplates.jsx';
+import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, PatchIconButton, ItemCard } from './PatchTemplates.jsx';
 
 export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
@@ -182,7 +182,7 @@ function AddCostumeButton(props) {
     return <>
         <PatchAddButton
             variant='contained'
-            onClick={handleClick}/>
+            onClick={handleClick} />
         <Menu
             anchorEl={anchorEl}
             open={open}
@@ -223,16 +223,12 @@ function AddSoundButton(props) {
     }, [showInternalSoundChooser])
 
     return <>
-        <Button
+        <PatchAddButton
             id='addNewSound'
-            varient='contained'
-            color='primary'
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}>
-            Add New Sound
-        </Button>
+            onClick={handleClick} />
         <Menu
             anchorEl={anchorEl}
             open={open}
@@ -243,8 +239,26 @@ function AddSoundButton(props) {
         >
             <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
             <MenuItem id="upload" onClick={() => { handleUploadSound().then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
-    </Menu >
+        </Menu >
     </>
+}
+
+function PatchSoundDetails(props) {
+    const { width, height } = props;
+
+    return (
+        <Grid container direction="row" spacing={2} sx={{
+            width: width,
+            height: height,
+        }}>
+            <Grid item xs={12} sx={{
+                maxWidth: width,
+                maxHeight: height
+            }}>
+                <img src={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"} width={"100%"} height={"100%"} />
+            </Grid>
+        </Grid>
+    );
 }
 
 function PatchSoundInspector(props) {
@@ -330,10 +344,15 @@ function PatchSoundInspector(props) {
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
     // -------- Action Buttons --------
-    
+
     const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} disabled={targetSounds[i].rate === 22050} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
     const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
     const deleteButton = (i) => <Button color='error' sx={{ width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
+
+    const handleDeleteCurrentClick = () => handleDeleteClick(soundIndex);
+
+    const deleteCurrentButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
+    const playCurrentButton = () => <PatchIconButton icon={<PlayArrowIcon />} sx={{disabled: targetSounds[soundIndex].rate === 22050}} onClick={() => { handlePlayClick(soundIndex); }} />
 
     const reloadSoundEditor = () => {
         const newSounds = pyatchVM.editingTarget.getSounds();
@@ -342,6 +361,62 @@ function PatchSoundInspector(props) {
     }
 
     return (
+        <Grid container direction="column" className="assetHolder" sx={{
+            backgroundColor: 'panel.default',
+            borderColor: 'divider',
+            borderTopRightRadius: "0px",
+            borderBottomRightRadius: "0px",
+            borderRightWidth: "1px",
+            minHeight: "calc(100% + 40px)",
+            marginBottom: "0px"
+        }}>
+            <Grid item xs>
+                <PatchHorizontalButtons sx={{
+                    marginLeft: "4px",
+                    marginTop: "4px"
+                }}>
+                    {deleteCurrentButton()}
+                    <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
+                    {playCurrentButton()}
+                </PatchHorizontalButtons>
+            </Grid>
+            <Grid item xs>
+                <PatchSoundDetails width={"100%"} height={"calc(100vh - 460px)"} />
+            </Grid>
+            <Grid item xs sx={{
+                borderTopWidth: "1px",
+                borderTopStyle: "solid",
+                borderTopColor: 'divider',
+            }}>
+                <Box sx={{ overflowY: "scroll", height: "280px", position: 'relative', bottom: 0 }}>
+                    <Grid container direction="row" spacing={1} sx={{
+                        margin: "0px",
+                        backgroundColor: 'panel.default',
+                        padding: "4px",
+                        width: "100%",
+                        minHeight: "100%"
+                    }}>
+                        {targetSounds.map((sound, i) =>
+                            <Grid item>
+                                <ItemCard
+                                // TODO: change this (and the icon in PatchSoundDetails) to a MUI icon
+                                    imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
+                                    title={sound.name}
+                                    selected={i === soundIndex}
+                                    onClick={handleClick(i, sound.name)}
+                                    key={sound.name}
+                                    width={120}
+                                    height={120}
+                                />
+                            </Grid>
+                        )}
+                    </Grid>
+                </Box>
+            </Grid>
+        </Grid>
+    );
+
+    /*return (
         <div class="assetHolder">
             <audio id="soundPreview" src="" type="" />
             {targetSounds.map((sound, i) =>
@@ -357,7 +432,7 @@ function PatchSoundInspector(props) {
                 />)}
             <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
         </div>
-    );
+    );*/
 }
 
 function PatchSpriteDetails(props) {
@@ -373,49 +448,13 @@ function PatchSpriteDetails(props) {
                 maxWidth: width,
                 maxHeight: height
             }}>
-                <img src={getCostumeUrl(costumes[costumeIndex].asset)} width={"100%"} height={"100%"}/>
+                <img src={getCostumeUrl(costumes[costumeIndex].asset)} width={"100%"} height={"100%"} />
             </Grid>
         </Grid>
     );
 }
 
 function PatchSpriteInspector(props) {
-    /*const { pyatchVM, editingTargetId, costumesUpdate, setCostumesUpdate } = useContext(pyatchContext);
-    let selectedTarget = pyatchVM.editingTarget;
-    let currentCostume = selectedTarget.getCurrentCostume();
-
-    const [costumeIndex, setCostumeIndex] = useState(selectedTarget.getCostumeIndexByName(currentCostume.name));
-    const [costumes, setCostumes] = useState(selectedTarget.getCostumes());
-
-    const handleClick = (costumeName) => {
-        const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
-        selectedTarget.setCostume(newCostumeIndex);
-        setCostumeIndex(newCostumeIndex);
-    }
-
-    const handleDeleteClick = (costumeName) => {
-        const newCostumeIndex = selectedTarget.getCostumeIndexByName(costumeName);
-        selectedTarget.deleteCostume(newCostumeIndex);
-        setCostumeIndex(selectedTarget.currentCostume);
-        setCostumesUpdate(!costumesUpdate);
-    }
-
-    const handleDeleteCurrentClick = () => {
-        handleDeleteClick(currentCostume.name);
-    }
-
-    //const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
-    const deleteCostumeButton = (costumeName) => <PatchDeleteButton red={true} onClick={handleDeleteClick} onClickArgs={[costumeName]} />
-
-    const deleteCurrentCostumeButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-
-    useEffect(() => {
-        selectedTarget = pyatchVM.runtime.getTargetById(editingTargetId);
-        currentCostume = selectedTarget.getCurrentCostume();
-        setCostumeIndex(selectedTarget.getCostumeIndexByName(currentCostume.name));
-        setCostumes([...selectedTarget.getCostumes()]);
-        console.warn("updating costumes");
-    }, [editingTargetId, costumesUpdate]);*/
     const { pyatchVM, editingTargetId, currentCostumes, setCurrentCostumes, currentCostumeIndex, setCurrentCostumeIndex } = useContext(pyatchContext);
 
     const handleClick = (costumeName) => {
@@ -435,9 +474,6 @@ function PatchSpriteInspector(props) {
         handleDeleteClick(currentCostumes[currentCostumeIndex].name);
     }
 
-    //const deleteCostumeButton = (costumeName) => <Button color='error' onClick={() => handleDeleteClick(costumeName)}><DeleteIcon /></Button>
-    const deleteCostumeButton = (costumeName) => <PatchDeleteButton red={true} onClick={handleDeleteClick} onClickArgs={[costumeName]} />
-
     const deleteCurrentCostumeButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
 
     return (
@@ -451,45 +487,45 @@ function PatchSpriteInspector(props) {
             marginBottom: "0px"
         }}>
             <Grid item xs>
-            <PatchHorizontalButtons sx={{
-                marginLeft: "4px",
-                marginTop: "4px"
-            }}>
-                <Grid item>{deleteCurrentCostumeButton()}</Grid>
-                <Grid item><AddCostumeButton /></Grid>
-            </PatchHorizontalButtons>
+                <PatchHorizontalButtons sx={{
+                    marginLeft: "4px",
+                    marginTop: "4px"
+                }}>
+                    <Grid item>{deleteCurrentCostumeButton()}</Grid>
+                    <Grid item><AddCostumeButton /></Grid>
+                </PatchHorizontalButtons>
             </Grid>
             <Grid item xs>
-            <PatchSpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
+                <PatchSpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
             </Grid>
-            <Grid item xs>
-            <Box sx={{overflowY: "scroll", maxHeight: "280px"}}>
-            <Grid container direction="row" spacing={1} sx={{
-                margin: "0px",
-                backgroundColor: 'panel.default',
-                borderTopWidth: "2px",
+            <Grid item xs sx={{
+                borderTopWidth: "1px",
                 borderTopStyle: "solid",
                 borderTopColor: 'divider',
-                padding: "4px",
-                width: "100%",
-                marginBottom: "8px",
             }}>
-                {currentCostumes.map((costume, i) =>
-                    <Grid item>
-                        <ItemCard
-                            imageSrc={getCostumeUrl(costume.asset)}
-                            title={costume.name}
-                            selected={i === currentCostumeIndex}
-                            onClick={handleClick}
-                            //actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
-                            key={costume.name}
-                            width={120}
-                            height={120}
-                        />
+                <Box sx={{ overflowY: "scroll", height: "280px", position: 'relative', bottom: 0 }}>
+                    <Grid container direction="row" spacing={1} sx={{
+                        margin: "0px",
+                        backgroundColor: 'panel.default',
+                        padding: "4px",
+                        width: "100%",
+                        minHeight: "100%"
+                    }}>
+                        {currentCostumes.map((costume, i) =>
+                            <Grid item>
+                                <ItemCard
+                                    imageSrc={getCostumeUrl(costume.asset)}
+                                    title={costume.name}
+                                    selected={i === currentCostumeIndex}
+                                    onClick={handleClick}
+                                    key={costume.name}
+                                    width={120}
+                                    height={120}
+                                />
+                            </Grid>
+                        )}
                     </Grid>
-                )}
-            </Grid>
-            </Box>
+                </Box>
             </Grid>
         </Grid>
     );

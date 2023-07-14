@@ -9,10 +9,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 export function PatchHorizontalButtons(props) {
-    const { children, sx } = props;
+    const { children, sx, spacing } = props;
 
     return (
-        <Grid container direction="row" spacing="4px" mb="4px" sx={sx}>
+        <Grid container direction="row" spacing={spacing ? spacing : "4px"} mb="4px" sx={sx}>
             {children.map((child, i) => {
                 return <Grid item key={i}>{child}</Grid>
             })}
@@ -28,8 +28,8 @@ const PatchIconTypes = {
 // TODO: make all buttons into 1 function that accepts an icon as an additional argument
 
 function PatchButton(props) {
-    const { onClick, onClickArgs, variant, color, textColor, icon, sx } = props;
-    return <Button sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} color={color}>{icon}</Button>
+    const { onClick, onClickArgs, variant, color, textColor, icon, sx, disabled } = props;
+    return <Button disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} color={color}>{icon}</Button>
 }
 
 export function PatchAddButton(props) {
@@ -40,6 +40,11 @@ export function PatchAddButton(props) {
 export function PatchDeleteButton(props) {
     const { red, onClick, onClickArgs, variant, sx } = props;
     return <PatchButton sx={sx} variant={variant ? variant : "contained"} color={red ? 'error' : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={PatchIconTypes.Delete} />
+}
+
+export function PatchIconButton(props) {
+    const { color, onClick, onClickArgs, variant, sx, icon, disabled } = props;
+    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} color={color ? color : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={icon} />
 }
 
 export function PatchTextButton(props) {
