@@ -56,6 +56,8 @@ const PyatchProvider = props => {
   const [eventOptionsMap, setEventOptionsMap] = useState({});
   const [broadcastMessageIds, setBroadcastMessageIds] = useState({});
 
+  const [questionAsked, setQuestionAsked] = useState(null);
+
   addToGlobalState({
     targetIds,
     setTargetIds,
@@ -97,6 +99,8 @@ const PyatchProvider = props => {
     setEventOptionsMap,
     broadcastMessageIds,
     setBroadcastMessageIds,
+    questionAsked,
+    setQuestionAsked,
   });
 
 
@@ -399,6 +403,8 @@ const PyatchProvider = props => {
       pyatchVM.on("VM READY", () => {
         setVmLoaded(true);
       });
+
+      pyatchVM.runtime.on("QUESTION", onQuestionAsked);
     }
     useAsyncEffect();
 
@@ -418,6 +424,16 @@ const PyatchProvider = props => {
     }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
+  }
+
+  const onAnswer = (text) => () => {
+    if (pyatchVM) {
+      pyatchVM.runtime.emit("ANSWER", text);
+    }
+  }
+
+  const onQuestionAsked = (question) => {
+    setQuestionAsked(question);
   }
 
   const onDeleteSprite = async (targetId) => {
@@ -553,6 +569,7 @@ const PyatchProvider = props => {
     hasLocalStorageProject,
     loadFromLocalStorage,
     onFlagPressed,
+    onAnswer,
   });
 
   return (
