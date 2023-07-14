@@ -75,11 +75,11 @@ export function PatchInternalSpriteChooser(props) {
     }, [showInternalChooser]);
 
     return (
-        <div className="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
+        <Box className="soundSelectorHolder" sx={{ display: showInternalSoundChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
             </center>
             {spriteItems}
-        </div>
+        </Box>
     );
 }

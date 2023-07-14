@@ -52,13 +52,13 @@ export function PatchInternalSoundChooser(props) {
     }
 
     return (
-        <div class="soundSelectorHolder" style={{ display: showInternalSoundChooser ? "block" : "none" }}>
+        <Box className="soundSelectorHolder" sx={{ display: showInternalSoundChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
                 <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Sound</Typography>
             </center>
             {sounds.map((sound, i) => {
                 return <SoundItem onClickFunc={onClickFunc} sound={sound}></SoundItem>
             })}
-        </div>
+        </Box>
     );
 }

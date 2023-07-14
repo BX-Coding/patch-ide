@@ -76,6 +76,7 @@ function App() {
       },
       panel: {
         default: 'rgba(0, 0, 0, 0.16)',
+        dark: 'rgba(24, 24, 24, 0.96)',
         contrast: '#FFFFFF'
       },
       outlinedButtonBorder: {
