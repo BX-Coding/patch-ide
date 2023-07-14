@@ -160,7 +160,7 @@ function ThreadEditor(props) {
                     extensions={[python(), autocompletion({ override: [completions(pyatchVM.getPatchPythonApiInfo())] }), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
-                    height="calc(100vh - 164px)"
+                    height="calc(100vh - 169px)"
                 />
             </Grid>
         </>

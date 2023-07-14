@@ -25,7 +25,6 @@ export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
     return <div class="tabContent" style={{
-        height: "calc(100% - 51px)"
     }}>
         {[<PatchCodeEditorWrapper />, <PatchSpriteEditor />, <PatchSoundEditor />][patchEditorTab]}
     </div>
@@ -36,7 +35,7 @@ export function PatchCodeEditorWrapper(props) {
         <Grid container direction="column" className="assetHolder" sx={{
             backgroundColor: 'panel.default',
             borderColor: 'divider',
-            minHeight: "100%",
+            minHeight: "calc(100% - 40px)",
             marginBottom: "0px",
             padding: "8px"
         }}>
@@ -83,7 +82,11 @@ export function PatchSoundTabButton(props) {
 
 export function PatchSpriteEditor(props) {
     return (
-        <PatchSpriteInspector />
+        <Grid container>
+            <Grid item xs={12}>
+                <PatchSpriteInspector />
+            </Grid>
+        </Grid>
     );
     /*return (
         <Grid container marginTop="8px">
@@ -483,7 +486,7 @@ function PatchSpriteInspector(props) {
             borderTopRightRadius: "0px",
             borderBottomRightRadius: "0px",
             borderRightWidth: "1px",
-            minHeight: "100%",
+            minHeight: "calc(100% + 40px)",
             marginBottom: "0px"
         }}>
             <Grid item xs>

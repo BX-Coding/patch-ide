@@ -16,7 +16,6 @@
 .assetHolder {
     border-width: 0px;
     border-style: solid;
-    max-height: calc(100vh - 140px);
 }
 
 .rightContainer {

@@ -11,6 +11,9 @@ import Box from '@mui/material/Box';
 
 import { ItemCard } from './PatchTemplates.jsx';
 
+import { PatchHorizontalButtons } from './PatchTemplates.jsx';
+import PyatchStage from './PyatchStage.jsx';
+
 function StageButton() {
     const { pyatchVM } = useContext(pyatchContext);
     const stageTarget = pyatchVM.runtime.getTargetForStage();
@@ -32,22 +35,41 @@ export default function PyatchSpriteArea(){
                     <PyatchSpriteAttributes/>
                 </Grid>
             </Grid>
-            <Grid container sx={{ alignItems: 'center' }}>
-                 {editingTarget && <Grid item xs={12}>
-                    <PyatchSpriteName target={editingTarget}/>
-                    <PyatchDeleteSprite/>
+            <Grid container direction="row" sx={{ alignItems: 'center', justifyItems: 'center' }}>
+                {editingTarget && <Grid item xs={12}>
+                    <PyatchSpriteName target={editingTarget} />
                 </Grid>}
             </Grid>
-            <Grid container item direction="row" spacing={"8px"} xs={12}>
+            <PatchHorizontalButtons sx={{borderWidth: '0px', marginLeft: '-8px', marginRight: '-8px', width: 'calc(100% + 16px)', padding: '4px', paddingBottom: '8px', marginBottom: '0px', borderTopWidth: '1px', borderBottomWidth: '1px', borderColor: 'divider', borderStyle: 'solid'}}>
+                {editingTarget && <PyatchDeleteSprite /> }
+                <PyatchAddSprite />
+            </PatchHorizontalButtons>
+            <Grid container direction="row" spacing={"8px"} xs={12} sx={{
+                backgroundColor: 'panel.default',
+                margin: '-8px',
+                marginTop: '0px',
+                minWidth: 'calc(100% + 16px)',
+                minHeight: '120px',
+                height: 'calc(100vh - 649px)',
+                maxHeight: 'calc(100vh - 649px)',
+                overflowY: 'scroll',
+                paddingBottom: '8px',
+                justifyContent: 'left',
+                alignContent: 'start'
+            }}>
                 {targetIds.map((targetId) => {
                     const target = pyatchVM.runtime.getTargetById(targetId);
                     return (
-                        <Grid item>
-                            {target ? ((target.isSprite() && !target.sprite.isStage) && <PyatchSelectSprite key={target.id} target={target}/>) : <></>}
-                        </Grid>
+                        target ? ((target.isSprite() && !target.sprite.isStage) && <Grid item sx={{maxWidth: '136px', maxHeight: '136px'}}><PyatchSelectSprite key={target.id} target={target} /></Grid>) : <></>
                     );
                 })}
+                <Grid item>
+                    <StageButton/>
+                </Grid>
             </Grid>
+        </Grid>
+    );
+            /*
             <Grid container sx={{ alignItems: 'center' }}>
                 <Grid item xs={6}>
                     <PyatchAddSprite/>
@@ -57,5 +79,5 @@ export default function PyatchSpriteArea(){
                 </Grid>
             </Grid>
         </Grid>
-    );
+    );*/
 }

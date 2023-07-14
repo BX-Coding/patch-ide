@@ -33,13 +33,13 @@ function PatchButton(props) {
 }
 
 export function PatchAddButton(props) {
-    const { onClick, onClickArgs, variant, sx } = props;
-    return <PatchButton sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} color={'primary'} icon={PatchIconTypes.Add} />
+    const { onClick, onClickArgs, variant, sx, disabled } = props;
+    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} color={'primary'} icon={PatchIconTypes.Add} />
 }
 
 export function PatchDeleteButton(props) {
-    const { red, onClick, onClickArgs, variant, sx } = props;
-    return <PatchButton sx={sx} variant={variant ? variant : "contained"} color={red ? 'error' : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={PatchIconTypes.Delete} />
+    const { red, onClick, onClickArgs, variant, sx, disabled } = props;
+    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} color={red ? 'error' : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={PatchIconTypes.Delete} />
 }
 
 export function PatchIconButton(props) {
@@ -48,8 +48,8 @@ export function PatchIconButton(props) {
 }
 
 export function PatchTextButton(props) {
-    const { onClick, onClickArgs, variant, text, textColor, sx } = props;
-    return <PatchButton sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} textColor={textColor ? textColor : ''} icon={text} />
+    const { onClick, onClickArgs, variant, text, textColor, sx, disabled } = props;
+    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} textColor={textColor ? textColor : ''} icon={text} />
 }
 
 export function ItemCard(props) {

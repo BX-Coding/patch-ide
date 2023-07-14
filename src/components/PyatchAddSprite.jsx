@@ -8,8 +8,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import backdrops from '../assets/backdrops.json';
 import sprites from '../assets/sprites.json';
+
 import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
 import { PatchInternalSoundChooser } from './PatchInternalSoundChooser.jsx';
+
+import { PatchAddButton } from './PatchTemplates.jsx';
 
 export function PyatchAddSprite(props) {
     const { onAddSprite, handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
@@ -38,7 +41,7 @@ export function PyatchAddSprite(props) {
 
     return (
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={handleButtonClick} sx={{ m: "1vh" }}>Add Sprite</Button>
+            <PatchAddButton onClick={handleButtonClick} />
             <Menu
                 open={menuOpen}
                 anchorEl={menuAnchorEl}
