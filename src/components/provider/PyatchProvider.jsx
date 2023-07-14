@@ -337,7 +337,7 @@ const PyatchProvider = props => {
     const targets = pyatchVM.getAllRenderedTargets();
     const newTarget = targets[targets.length - 1];
 
-    setTargetIds(() => [...targetIds, newTarget.id]);
+    setTargetIds(targets.map(target => target.id));
     pyatchVM.setEditingTarget(newTarget.id);
     setEditingTargetId(newTarget.id);
 
