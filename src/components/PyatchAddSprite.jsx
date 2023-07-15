@@ -9,54 +9,40 @@ import MenuItem from '@mui/material/MenuItem';
 import backdrops from '../assets/backdrops.json';
 import sprites from '../assets/sprites.json';
 import { PatchInternalSpriteChooser } from './PatchInternalSpriteChooser.jsx';
+import { PatchInternalSoundChooser } from './PatchInternalSoundChooser.jsx';
 
 export function PyatchAddSprite(props) {
-    const { onAddSprite, handleUploadCostume, onBackgroundChange, pyatchVM, setShowInternalChooser, setInternalChooserAdd, internalChooserUpdate, setInternalChooserUpdate } = useContext(pyatchContext);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const costumes = backdrops[0].costumes;
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = (event) => {
-        setAnchorEl(null);
+    const { onAddSprite, handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
+
+    const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+    const menuOpen = Boolean(menuAnchorEl);
+
+    const handleButtonClick = (event) => {
+        setMenuAnchorEl(event.currentTarget);
     };
 
-    const [anchorEl2, setAnchorEl2] = React.useState(null);
-    const open2 = Boolean(anchorEl2);
-    const handleClick2 = (event) => {
-        setAnchorEl2(event.currentTarget);
+    const handleMenuClose = (event) => {
+        setMenuAnchorEl(null);
     };
-    const handleClose2 = (event) => {
-        setAnchorEl2(null);
-    };
+
     const handleUploadNew = async (event) => {
         var newId = await onAddSprite();
         handleUploadCostume(newId);
     };
-    const handleSetCostumeEditor = (event) => {
 
-    };
-
-    const [anchorEl3, setAnchorEl3] = React.useState(null);
-    const open3 = Boolean(anchorEl3);
-    const handleClick3 = (event) => {
+    const handleExistingClick = (event) => {
         setShowInternalChooser(true);
         setInternalChooserAdd(true);
-        setInternalChooserUpdate(!internalChooserUpdate);
-        handleClose2();
-    };
-    const handleClose3 = (event) => {
-        
+        handleMenuClose();
     };
 
     return (
         <Grid container justifyContent="center">
-            <Button variant="contained" onClick={handleClick2} sx={{ m: "1vh" }}>Add Sprite</Button>
+            <Button variant="contained" onClick={handleButtonClick} sx={{ m: "1vh" }}>Add Sprite</Button>
             <Menu
-                open={open2}
-                anchorEl={anchorEl2}
-                onClose={handleClose2}
+                open={menuOpen}
+                anchorEl={menuAnchorEl}
+                onClose={handleMenuClose}
                 PaperProps={{
                     style: {
                         maxHeight: '20ch',
@@ -66,10 +52,11 @@ export function PyatchAddSprite(props) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem key="existing" onClick={handleClick3}>Use existing costume</MenuItem>
+                <MenuItem key="existing" onClick={handleExistingClick}>Use existing costume</MenuItem>
                 <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
             </Menu>
-            <PatchInternalSpriteChooser pyatchVM={pyatchVM}/>
+            <PatchInternalSpriteChooser/>
+            <PatchInternalSoundChooser/>
         </Grid>
     );
 }

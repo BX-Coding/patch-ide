@@ -8,7 +8,7 @@ import AudioEngine from 'scratch-audio';
 import backdrops from '../../assets/backdrops.json';
 import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
-import { handleFileUpload, costumeUpload } from '../../util/file-uploader.js'
+import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader.js'
 
 import defaulPatchProject from '../../assets/defaultProject.ptch1';
 
@@ -44,7 +44,8 @@ const PyatchProvider = props => {
 
   const [showInternalChooser, setShowInternalChooser] = useState(false);
   const [internalChooserAdd, setInternalChooserAdd] = useState(false);
-  const [internalChooserUpdate, setInternalChooserUpdate] = useState(false);
+
+  const [showInternalSoundChooser, setShowInternalSoundChooser] = useState(false);
 
   const [vmLoaded, setVmLoaded] = useState(false);
   const [patchReady, setPatchReady] = useState(false);
@@ -53,6 +54,10 @@ const PyatchProvider = props => {
 
   const [eventLabels, setEventLabels] = useState({});
   const [eventOptionsMap, setEventOptionsMap] = useState({});
+  const [broadcastMessageIds, setBroadcastMessageIds] = useState({});
+
+  const [questionAsked, setQuestionAsked] = useState(null);
+  const [runButtonDisabled, setRunButtonDisabled] = useState(false);
 
   addToGlobalState({
     targetIds,
@@ -81,8 +86,8 @@ const PyatchProvider = props => {
     setShowInternalChooser,
     internalChooserAdd,
     setInternalChooserAdd,
-    internalChooserUpdate,
-    setInternalChooserUpdate,
+    showInternalSoundChooser,
+    setShowInternalSoundChooser,
     patchReady,
     setPatchReady,
     globalVariables,
@@ -93,6 +98,12 @@ const PyatchProvider = props => {
     setEventLabels,
     eventOptionsMap,
     setEventOptionsMap,
+    broadcastMessageIds,
+    setBroadcastMessageIds,
+    questionAsked,
+    setQuestionAsked,
+    runButtonDisabled,
+    setRunButtonDisabled
   });
 
 
@@ -265,11 +276,55 @@ const PyatchProvider = props => {
     handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
   }
 
+  // -------- Sound Picking --------
+  const handleUploadSound = (targetId) => {
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    var input = document.createElement('input');
+    input.type = 'file';
+    // TODO: change this to audio file types instead of image types
+    input.accept = 'audio/*';
+
+    const result = new Promise((resolve, reject) => {
+        input.onchange = e => {
+          handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
+            soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
+              if (targetId == undefined || targetId == null) {
+                pyatchVM.addSound({...vmSound, name: fileName }).then(() => resolve());
+              } else {
+                pyatchVM.addSound({...vmSound, name: fileName }, targetId).then(() => resolve());
+              }
+
+              //resolve();
+            }, console.log);
+          }, console.log);
+        }
+
+        input.onabort = () => {
+          resolve();
+        }
+      }
+    );
+
+    input.click();
+
+    return result;
+  };
+
+  const handleAddSoundToActiveTarget = (sound, fromLibrary) => {
+    const result = new Promise((resolve, reject) => {
+      pyatchVM.addSound(fromLibrary ? {...sound, md5: sound.md5ext} : sound).then(() => resolve());
+    });
+
+    return result;
+  }
+
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 
+    handleAddSoundToActiveTarget, 
     handleSaveThread, 
     handleSaveTargetThreads, 
     handleUploadCostume, 
+    handleUploadSound, 
     handleNewCostume
   });
 
@@ -285,7 +340,7 @@ const PyatchProvider = props => {
     const targets = pyatchVM.getAllRenderedTargets();
     const newTarget = targets[targets.length - 1];
 
-    setTargetIds(() => [...targetIds, newTarget.id]);
+    setTargetIds(targets.map(target => target.id));
     pyatchVM.setEditingTarget(newTarget.id);
     setEditingTargetId(newTarget.id);
 
@@ -351,6 +406,8 @@ const PyatchProvider = props => {
       pyatchVM.on("VM READY", () => {
         setVmLoaded(true);
       });
+
+      pyatchVM.runtime.on("QUESTION", onQuestionAsked);
     }
     useAsyncEffect();
 
@@ -361,7 +418,9 @@ const PyatchProvider = props => {
   const onFlagPressed = async () => {
     await saveAllThreads();
     setRuntimeErrorList([]);
-    pyatchVM.runtime.greenFlag();
+    setRunButtonDisabled(true);
+    await pyatchVM.greenFlag();
+    setRunButtonDisabled(false);
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
@@ -370,6 +429,16 @@ const PyatchProvider = props => {
     }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
+  }
+
+  const onAnswer = (text) => () => {
+    if (pyatchVM) {
+      pyatchVM.runtime.emit("ANSWER", text);
+    }
+  }
+
+  const onQuestionAsked = (question) => {
+    setQuestionAsked(question);
   }
 
   const onDeleteSprite = async (targetId) => {
@@ -505,6 +574,7 @@ const PyatchProvider = props => {
     hasLocalStorageProject,
     loadFromLocalStorage,
     onFlagPressed,
+    onAnswer,
   });
 
   return (

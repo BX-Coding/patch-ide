@@ -50,7 +50,7 @@
     height: 64px;
 }
 
-.costumeSelectorHolder {
+.costumeSelectorHolder, .soundSelectorHolder {
     position: fixed;
     width: 80%;
     height: 60%;

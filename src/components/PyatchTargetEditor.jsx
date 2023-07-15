@@ -15,6 +15,8 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
+import completions from '../util/patch-autocompletions.mjs';
+
 export function PyatchTargetEditor(props) {
     const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(pyatchContext);
     const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
@@ -48,7 +50,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -77,6 +79,7 @@ function ThreadEditor(props) {
 
     const handleEventOptionBroadcastChange = (event) => {
         thread.updateThreadTriggerEventOption(event.target.value);
+        setBroadcastMessageIds({...broadcastMessageIds, [thread.id]: event.target.value})
         setChangesSinceLastSave(true);
     }
 
@@ -145,7 +148,7 @@ function ThreadEditor(props) {
             <Grid marginTop="4px">
                 <CodeMirror
                     value={thread.script}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo())]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
+                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo(), pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"
@@ -153,23 +156,4 @@ function ThreadEditor(props) {
             </Grid>
         </>
     );
-}
-
-const completions = (patchPythonApiInfo) => (context) => {
-    let word = context.matchBefore(/\w*/);
-    if (word.length>0)
-        return {options:[{autoCloseBrackets: true}]};
-    if (word.from == word.to)
-        return null;
-    return {
-        from: word.from,
-        options: Object.keys(patchPythonApiInfo).map((key) => {
-            const info = patchPythonApiInfo[key];
-            return {
-                label: key,
-                detail: `${key}(${info.parameters.join(", ")})`,
-                apply: `${key}(${info.parameters.map((param) => info.exampleParameters[param]).join(", ")})`
-            };
-        })
-    };
 }
