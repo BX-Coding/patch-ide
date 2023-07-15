@@ -57,6 +57,7 @@ const PyatchProvider = props => {
   const [broadcastMessageIds, setBroadcastMessageIds] = useState({});
 
   const [questionAsked, setQuestionAsked] = useState(null);
+  const [runButtonDisabled, setRunButtonDisabled] = useState(false);
 
   addToGlobalState({
     targetIds,
@@ -101,6 +102,8 @@ const PyatchProvider = props => {
     setBroadcastMessageIds,
     questionAsked,
     setQuestionAsked,
+    runButtonDisabled,
+    setRunButtonDisabled
   });
 
 
@@ -415,7 +418,9 @@ const PyatchProvider = props => {
   const onFlagPressed = async () => {
     await saveAllThreads();
     setRuntimeErrorList([]);
-    pyatchVM.runtime.greenFlag();
+    setRunButtonDisabled(true);
+    await pyatchVM.greenFlag();
+    setRunButtonDisabled(false);
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
