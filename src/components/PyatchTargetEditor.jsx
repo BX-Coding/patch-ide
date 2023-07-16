@@ -50,7 +50,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -67,6 +67,12 @@ function ThreadEditor(props) {
 
     const handleEventChange = (event, newValue) => {
         thread.updateThreadTriggerEvent(newValue.id)
+        // This Sprite Clicked has an implicit option of "this sprite"
+        if (newValue.id === "event_whenthisspriteclicked") {
+            thread.updateThreadTriggerEventOption(editingTargetId)
+        } else {
+            thread.updateThreadTriggerEventOption("");
+        }
         setTriggerEvent(newValue.id);
         setChangesSinceLastSave(true);
     }
