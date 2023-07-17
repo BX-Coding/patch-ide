@@ -60,7 +60,6 @@ function ThreadEditor(props) {
     }
 
     const handleCodeChange = (newValue) => {
-        console.warn("Code changed", newValue);
         setThreadsText({...threadsText, [thread.id]: newValue});
         setSavedThreads({...savedThreads, [thread.id]: false});
         setChangesSinceLastSave(true);
