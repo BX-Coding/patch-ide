@@ -154,7 +154,7 @@ function ThreadEditor(props) {
             <Grid marginTop="4px">
                 <CodeMirror
                     value={thread.script}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo(), pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
+                    extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"
