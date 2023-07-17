@@ -50,7 +50,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(pyatchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -60,6 +60,7 @@ function ThreadEditor(props) {
     }
 
     const handleCodeChange = (newValue) => {
+        console.warn("Code changed", newValue);
         setThreadsText({...threadsText, [thread.id]: newValue});
         setSavedThreads({...savedThreads, [thread.id]: false});
         setChangesSinceLastSave(true);
@@ -67,6 +68,12 @@ function ThreadEditor(props) {
 
     const handleEventChange = (event, newValue) => {
         thread.updateThreadTriggerEvent(newValue.id)
+        // This Sprite Clicked has an implicit option of "this sprite"
+        if (newValue.id === "event_whenthisspriteclicked") {
+            thread.updateThreadTriggerEventOption(editingTargetId)
+        } else {
+            thread.updateThreadTriggerEventOption("");
+        }
         setTriggerEvent(newValue.id);
         setChangesSinceLastSave(true);
     }
@@ -147,8 +154,8 @@ function ThreadEditor(props) {
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
-                    value={thread.script}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM.getPatchPythonApiInfo(), pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
+                    value={threadsText[thread.id]}
+                    extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 164px)"

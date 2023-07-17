@@ -1,8 +1,8 @@
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
 
-const apply = (key, functionInfo, pyatchVM) => (view, completion, from, to) => {
-    const text = generateCompletionText(key, functionInfo, pyatchVM);
+const apply = (key, pyatchVM) => (view, completion, from, to) => {
+    const text = generateCompletionText(key, pyatchVM);
     view.dispatch(insertCompletionText(view.state, text.value, from, to));
     view.dispatch({
         selection: {
@@ -12,19 +12,14 @@ const apply = (key, functionInfo, pyatchVM) => (view, completion, from, to) => {
     });
 }
 
-const generateCompletionText = (key, functionInfo, pyatchVM) => {
-    const { parameters, exampleParameters } = functionInfo;
+const generateCompletionText = (key, pyatchVM) => {
+    const { parameters, exampleParameters } = pyatchVM.getDynamicFunctionInfo(key);
     const args = parameters.map((param) => {
         const paramterOptions = exampleParameters[param];
         let validParameter = paramterOptions;
         // Check if options is a list of strings
         if (Array.isArray(paramterOptions)) {
             validParameter = `'${paramterOptions[0]}'`;
-        } else {
-            const dynamicValues = getDynamicOptions(paramterOptions, pyatchVM);
-            if (dynamicValues.length > 0) {
-                validParameter = `'${dynamicValues[0]}'`;
-            }
         }
         return validParameter;
     });
@@ -62,25 +57,8 @@ const reorderOptions = (options, word) => {
     return optionsWithScore;
 };
 
-const getDynamicOptions = (paramterOption, pyatchVM) => {
-    let dynamicOptions = [];
-    if (paramterOption === "TARGET_NAMES") {
-        dynamicOptions = pyatchVM.getAllRenderedTargets().filter((target) => !target.isStage);
-        dynamicOptions = dynamicOptions.map((target) => target.getName());
-    } else if (paramterOption === "BACKDROP_NAMES") {
-        dynamicOptions = pyatchVM.runtime.getTargetForStage().sprite.costumes.map((costume) => costume.name);
-    } else if (paramterOption === "COSTUME_NAMES") {
-        dynamicOptions = pyatchVM.editingTarget.sprite.costumes.map((costume) => costume.name);
-    } else if (paramterOption === "SOUND_NAMES") {
-        dynamicOptions = pyatchVM.editingTarget.getSounds().map((sound) => sound.name);
-    } else if (paramterOption === "MESSAGE_NAMES") {
-        dynamicOptions = pyatchVM.getAllBroadcastMessages();
-    }
-    return dynamicOptions;
-}
-
-const handleArgListCompletion = (word, argPosition, functionName, patchPythonApiInfo, inQuotes, pyatchVM) => {
-    const functionInfo = patchPythonApiInfo[functionName];
+const handleArgListCompletion = (word, argPosition, functionName, inQuotes, pyatchVM) => {
+    const functionInfo = pyatchVM.getDynamicFunctionInfo(functionName);
     if (!functionInfo) {
         return null;
     }
@@ -90,10 +68,8 @@ const handleArgListCompletion = (word, argPosition, functionName, patchPythonApi
         return null;
     }
     let paramterOptions = exampleParameters[arg];
-    // Check if the parameters are dynamic
     if (!Array.isArray(paramterOptions)) {
-        const dynamicOptions = getDynamicOptions(paramterOptions, pyatchVM);
-        paramterOptions = dynamicOptions;
+        return null;
     }
     return {
         from: word.from,
@@ -122,7 +98,8 @@ const getArgPosition = (argListNode, context) => {
     return argPosition;
 }
 
-const completions = (patchPythonApiInfo, pyatchVM) => (context) => {
+const completions = (pyatchVM) => (context) => {
+    const apiInfo = pyatchVM.getApiInfo();
     let currentNode = syntaxTree(context.state).resolveInner(context.pos, 0)
     let word = context.matchBefore(/\w*/);
     if (word.length>0)
@@ -135,16 +112,16 @@ const completions = (patchPythonApiInfo, pyatchVM) => (context) => {
         const variableNameNode = argListNode.prevSibling
         const functionName = context.state.sliceDoc(variableNameNode.from, variableNameNode.to);
         const argPosition = getArgPosition(argListNode, context);
-        return handleArgListCompletion(word, argPosition, functionName, patchPythonApiInfo, inQuotes, pyatchVM);
+        return handleArgListCompletion(word, argPosition, functionName, inQuotes, pyatchVM);
     }
     return {
         from: word.from,
-        options: Object.keys(patchPythonApiInfo).map((key) => {
-            const functionInfo = patchPythonApiInfo[key];
+        options: Object.keys(apiInfo).map((key) => {
+            const functionInfo = apiInfo[key];
             return {
                 label: key,
                 detail: `${key}(${functionInfo.parameters.join(", ")})`,
-                apply: apply(key, functionInfo, pyatchVM),
+                apply: apply(key, pyatchVM),
             };
         })
     };
