@@ -60,6 +60,7 @@ function ThreadEditor(props) {
     }
 
     const handleCodeChange = (newValue) => {
+        console.warn("Code changed", newValue);
         setThreadsText({...threadsText, [thread.id]: newValue});
         setSavedThreads({...savedThreads, [thread.id]: false});
         setChangesSinceLastSave(true);
@@ -153,7 +154,7 @@ function ThreadEditor(props) {
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
-                    value={thread.script}
+                    value={threadsText[thread.id]}
                     extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
