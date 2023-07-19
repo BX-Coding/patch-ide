@@ -455,12 +455,14 @@ const PyatchProvider = props => {
   }
 
   const saveAllThreads = async () => {
-   await Object.keys(threadsText).forEach(async threadId => {
+    const threadSavePromises = [];
+   Object.keys(threadsText).forEach(async threadId => {
       if (!savedThreads[threadId]) {
-        await pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
+        threadSavePromises.push(pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]));
         setSavedThreads({ ...savedThreads, [threadId]: true });
       }
     });
+    await Promise.all(threadSavePromises);
   }
   
   const downloadProject = async () => {

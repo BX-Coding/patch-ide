@@ -73,7 +73,7 @@ export function PatchFileName() {
 }
 
 export function PatchFileButton() {
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave } = useContext(pyatchContext);
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(pyatchContext);
   
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -84,10 +84,10 @@ export function PatchFileButton() {
 
   const handleClose = (event) => {
     setAnchorEl(null);
-    console.log(event.currentTarget.id);
-  };
+  };  
 
   const handleSaveNow = async (event) => {
+    await saveAllThreads();
     // idk if awaiting this is bad but it is unnecessary.
     saveToLocalStorage();
   };
