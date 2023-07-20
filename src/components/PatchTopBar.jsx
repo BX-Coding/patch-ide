@@ -6,11 +6,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
 import * as PyatchProvider from './provider/PyatchProvider.jsx';
 import pyatchContext from './provider/PyatchContext.js';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 export default function PatchTopBar(){
     return(
         <>
         <Grid container item direction = "row" xs = {8} spacing={2} className="patchTopBar">
+          <Grid item>
+            <a href='https://bx-coding.github.io/pyatch-react-ide/'><Button variant="contained"><GitHubIcon/></Button></a>
+          </Grid>
           <Grid item>
             <PatchFileButton/>
           </Grid>
