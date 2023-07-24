@@ -58,6 +58,10 @@ const PyatchProvider = props => {
 
   const [eventLabels, setEventLabels] = useState({});
   const [eventOptionsMap, setEventOptionsMap] = useState({});
+  const [broadcastMessageIds, setBroadcastMessageIds] = useState({});
+
+  const [questionAsked, setQuestionAsked] = useState(null);
+  const [runButtonDisabled, setRunButtonDisabled] = useState(false);
 
   addToGlobalState({
     targetIds,
@@ -103,6 +107,12 @@ const PyatchProvider = props => {
     setEventLabels,
     eventOptionsMap,
     setEventOptionsMap,
+    broadcastMessageIds,
+    setBroadcastMessageIds,
+    questionAsked,
+    setQuestionAsked,
+    runButtonDisabled,
+    setRunButtonDisabled
   });
 
   const updateCostumes = () => {
@@ -413,6 +423,8 @@ const PyatchProvider = props => {
       pyatchVM.on("VM READY", () => {
         setVmLoaded(true);
       });
+
+      pyatchVM.runtime.on("QUESTION", onQuestionAsked);
     }
     asyncEffect();
 
@@ -423,7 +435,9 @@ const PyatchProvider = props => {
   const onFlagPressed = async () => {
     await saveAllThreads();
     setRuntimeErrorList([]);
-    pyatchVM.runtime.greenFlag();
+    setRunButtonDisabled(true);
+    await pyatchVM.greenFlag();
+    setRunButtonDisabled(false);
   }
   
   const onAddSprite = async (sprite = sprites[0]) => {
@@ -432,6 +446,16 @@ const PyatchProvider = props => {
     }
     await addSprite(sprite);
     return pyatchVM.editingTarget.id;
+  }
+
+  const onAnswer = (text) => () => {
+    if (pyatchVM) {
+      pyatchVM.runtime.emit("ANSWER", text);
+    }
+  }
+
+  const onQuestionAsked = (question) => {
+    setQuestionAsked(question);
   }
 
   const onDeleteSprite = async (targetId) => {
@@ -448,12 +472,14 @@ const PyatchProvider = props => {
   }
 
   const saveAllThreads = async () => {
-   await Object.keys(threadsText).forEach(async threadId => {
+    const threadSavePromises = [];
+   Object.keys(threadsText).forEach(async threadId => {
       if (!savedThreads[threadId]) {
-        await pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]);
+        threadSavePromises.push(pyatchVM.getThreadById(threadId).updateThreadScript(threadsText[threadId]));
         setSavedThreads({ ...savedThreads, [threadId]: true });
       }
     });
+    await Promise.all(threadSavePromises);
   }
   
   const downloadProject = async () => {
@@ -567,6 +593,7 @@ const PyatchProvider = props => {
     hasLocalStorageProject,
     loadFromLocalStorage,
     onFlagPressed,
+    onAnswer,
   });
 
   return (
