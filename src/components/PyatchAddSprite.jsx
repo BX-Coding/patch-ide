@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useCallback } from 'react';
 import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import Button from '@mui/material/Button';
 import pyatchContext from './provider/PyatchContext.js';
@@ -15,7 +15,7 @@ import { PatchInternalSoundChooser } from './PatchInternalSoundChooser.jsx';
 import { PatchAddButton } from './PatchTemplates.jsx';
 
 export function PyatchAddSprite(props) {
-    const { onAddSprite, handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
+    const { onAddSprite, handleUploadCostume, setShowInternalChooser, setInternalChooserAdd, vmLoaded, patchReady } = useContext(pyatchContext);
 
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);
@@ -33,11 +33,11 @@ export function PyatchAddSprite(props) {
         handleUploadCostume(newId);
     };
 
-    const handleExistingClick = (event) => {
+    const handleExistingClick = useCallback((event) => {
         setInternalChooserAdd(true);
         setShowInternalChooser(true);
         handleMenuClose();
-    };
+    }, [setInternalChooserAdd, setShowInternalChooser]);
 
     return (
         <Grid container justifyContent="center">
@@ -58,8 +58,8 @@ export function PyatchAddSprite(props) {
                 <MenuItem key="existing" onClick={handleExistingClick}>Use existing costume</MenuItem>
                 <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
             </Menu>
-            <PatchInternalSpriteChooser/>
-            <PatchInternalSoundChooser/>
+            {(vmLoaded && patchReady) ? <PatchInternalSpriteChooser/> : <></>}
+            {vmLoaded ? <PatchInternalSoundChooser/> : <></>}
         </Grid>
     );
 }

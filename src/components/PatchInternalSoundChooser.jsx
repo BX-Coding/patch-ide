@@ -1,13 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
+import React, { useContext } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
-import AddIcon from '@mui/icons-material/Add';
-import Grid from '@mui/material/Grid';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import CancelIcon from '@mui/icons-material/Cancel';
 import sounds from '../assets/sounds.json';
-import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
+import { PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
 
 export function SoundItem(props) {
     const { sound, onClickFunc } = props;
@@ -54,11 +50,14 @@ export function PatchInternalSoundChooser(props) {
     return (
         <Box className="soundSelectorHolder" sx={{ display: showInternalSoundChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
-                <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Sound</Typography>
+                <PatchHorizontalButtons sx={{justifyContent: "center"}}>
+                    <Typography fontSize="18pt" marginBottom="8px">Choose a Sound</Typography>
+                    <PatchIconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalSoundChooser(false)} />
+                </PatchHorizontalButtons>
+                {sounds.map((sound, i) => {
+                    return <SoundItem key={i} onClickFunc={onClickFunc} sound={sound}></SoundItem>
+                })}
             </center>
-            {sounds.map((sound, i) => {
-                return <SoundItem onClickFunc={onClickFunc} sound={sound}></SoundItem>
-            })}
         </Box>
     );
 }

@@ -13,7 +13,7 @@ export function PatchHorizontalButtons(props) {
 
     return (
         <Grid container direction="row" spacing={spacing ? spacing : "4px"} mb="4px" sx={sx}>
-            {children.map((child, i) => {
+            {(Array.isArray(children) ? children : [children]).map((child, i) => {
                 return <Grid item key={i}>{child}</Grid>
             })}
         </Grid>

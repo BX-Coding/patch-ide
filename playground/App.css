@@ -84,19 +84,25 @@ canvas, .canvasBox {
     }
 }*/
 
-.spriteChooserImage {
+.spriteChooserImage, .soundChooserImage {
     width: 64px;
     height: 64px;
 }
 
 .costumeSelectorHolder, .soundSelectorHolder {
     position: fixed;
-    width: 80%;
+    /*width: 80%;
     height: 60%;
     top: 10%;
-    left: 10%;
-    border-radius: 8px;
+    left: 10%;*/
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+    top: 0;
+    left: 0;
     padding: 8px;
+    /*padding: 8px;*/
     overflow-y: scroll;
     border-width: 2px;
     /*border-color: #000000;*/

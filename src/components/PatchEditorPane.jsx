@@ -1,9 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
 import PatchVariables from './PatchVariables.jsx';
-import PatchErrorWindow from './PatchErrorWindow.jsx';
 import getCostumeUrl from '../util/get-costume-url.js';
-import { handleFileUpload, costumeUpload } from '../util/file-uploader.js'
 
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
@@ -11,11 +9,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
-import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import AddReactionIcon from '@mui/icons-material/AddReaction';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { Typography, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import PatchCodeEditor from './PatchCodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
@@ -24,9 +19,9 @@ import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, PatchIconBut
 export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
-    return <div class="tabContent" style={{
+    return <div className="tabContent" style={{
     }}>
-        {[<PatchCodeEditorWrapper />, <PatchSpriteEditor />, <PatchSoundEditor />][patchEditorTab]}
+        {[<PatchCodeEditorWrapper key={0} />, <PatchSpriteEditor key={1} />, <PatchSoundEditor key={2} />][patchEditorTab]}
     </div>
 }
 
@@ -281,7 +276,7 @@ function PatchSoundInspector(props) {
         setSelectedTarget(pyatchVM.editingTarget);
         setSoundIndex(0);
         setTargetSounds(pyatchVM.editingTarget.getSounds());
-    }, [editingTargetId]);
+    }, [editingTargetId, pyatchVM]);
 
     const handleDeleteClick = (i) => {
         selectedTarget.deleteSound(i);
@@ -347,15 +342,7 @@ function PatchSoundInspector(props) {
     // choose from uploading a sprite or using an existing one when adding a new sprite/costume
 
     // -------- Action Buttons --------
-
-    const playButton = (i) => <Button sx={{ color: 'white', width: 20 }} disabled={targetSounds[i].rate === 22050} onClick={() => { handlePlayClick(i); }}><PlayArrowIcon /></Button>
-    const copyButton = (soundName) => <Button sx={{ color: 'white', width: 20 }} onClick={() => { navigator.clipboard.writeText(soundName); }}><ContentCopyIcon /></Button>
-    const deleteButton = (i) => <Button color='error' sx={{ width: 20 }} onClick={() => { handleDeleteClick(i); }}><DeleteIcon /></Button>
-
     const handleDeleteCurrentClick = () => handleDeleteClick(soundIndex);
-
-    const deleteCurrentButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-    const playCurrentButton = () => <PatchIconButton icon={<PlayArrowIcon />} sx={{disabled: targetSounds[soundIndex].rate === 22050}} onClick={() => { handlePlayClick(soundIndex); }} />
 
     const reloadSoundEditor = () => {
         const newSounds = pyatchVM.editingTarget.getSounds();
@@ -378,9 +365,9 @@ function PatchSoundInspector(props) {
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
-                    {deleteCurrentButton()}
+                    <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
                     <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
-                    {playCurrentButton()}
+                    <PatchIconButton icon={<PlayArrowIcon />} disabled={targetSounds[soundIndex].rate === 22050} onClick={() => { handlePlayClick(soundIndex); }} />
                 </PatchHorizontalButtons>
             </Grid>
             <Grid item xs>
@@ -400,7 +387,7 @@ function PatchSoundInspector(props) {
                         minHeight: "100%"
                     }}>
                         {targetSounds.map((sound, i) =>
-                            <Grid item>
+                            <Grid item key={i}>
                                 <ItemCard
                                 // TODO: change this (and the icon in PatchSoundDetails) to a MUI icon
                                     imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
@@ -440,7 +427,6 @@ function PatchSoundInspector(props) {
 
 function PatchSpriteDetails(props) {
     const { costumeIndex, costumes, width, height } = props;
-    const { pyatchVM } = useContext(pyatchContext);
 
     return (
         <Grid container direction="row" spacing={2} sx={{
@@ -515,7 +501,7 @@ function PatchSpriteInspector(props) {
                         minHeight: "100%"
                     }}>
                         {currentCostumes.map((costume, i) =>
-                            <Grid item>
+                            <Grid item key={i}>
                                 <ItemCard
                                     imageSrc={getCostumeUrl(costume.asset)}
                                     title={costume.name}

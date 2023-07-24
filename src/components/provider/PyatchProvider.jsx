@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, createContext } from "react";
+import React, { useState, useEffect, useCallback, useMemo, createContext } from "react";
 import PyatchContext from "./PyatchContext.js";
 import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
@@ -94,6 +94,7 @@ const PyatchProvider = props => {
     setShowInternalSoundChooser,
     patchReady,
     setPatchReady,
+    vmLoaded,
     globalVariables,
     setGlobalVariables,
     changesSinceLastSave,
@@ -216,21 +217,21 @@ const PyatchProvider = props => {
     if (pyatchVM && pyatchVM.editingTarget) {
       handleSaveTargetThreads(pyatchVM.editingTarget);
     }
-  }, [patchEditorTab]);
+  }, [handleSaveTargetThreads, patchEditorTab]);
 
-  const handleSaveThread = (thread) => {
+  const handleSaveThread = useCallback((thread) => {
     thread.updateThreadScript(threadsText[thread.id]);
     setSavedThreads({...savedThreads, [thread.id]: true});
-  }
+  }, [savedThreads, threadsText]);
 
-  const handleSaveTargetThreads = (target) => {
+  const handleSaveTargetThreads = useCallback((target) => {
     const editingThreadIds = Object.keys(target.threads);
 
     editingThreadIds.forEach(threadId => {
       const thread = target.getThread(threadId);
       handleSaveThread(thread);
     });
-  }
+  }, [handleSaveThread]);
 
   // -------- Costume Picking --------
 
@@ -388,7 +389,7 @@ const PyatchProvider = props => {
 
   // -------- Patch VM & Project Setup --------
   useEffect(() => {
-    function useAsyncEffect() {
+    function asyncEffect() {
       setPatchReady(false);
 
       const scratchRenderer = new Renderer(pyatchStage.canvas);
@@ -413,7 +414,7 @@ const PyatchProvider = props => {
         setVmLoaded(true);
       });
     }
-    useAsyncEffect();
+    asyncEffect();
 
   }, []);
 
