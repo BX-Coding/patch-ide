@@ -52,7 +52,7 @@ export default function PyatchSpriteArea(){
                 minHeight: '120px',
                 height: 'calc(100vh - 649px)',
                 maxHeight: 'calc(100vh - 649px)',
-                overflowY: 'scroll',
+                overflowY: 'auto',
                 paddingBottom: '8px',
                 justifyContent: 'left',
                 alignContent: 'start'

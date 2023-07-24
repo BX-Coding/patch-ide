@@ -149,8 +149,8 @@ function App() {
   //setMode(localStorage.getItem('themeMode') || 'dark');
 
   return (
-    <PyatchProvider>
-      <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
+    <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
+      <PyatchProvider>
         <Grid container item direction="row" width={'100%'} sx={{
           position: "absolute",
           width: "100%",
@@ -160,10 +160,9 @@ function App() {
           bottom: 0,
           padding: 0,
           margin: 0,
-          padding: "0px",
           paddingBottom: "0px",
           zIndex: -1,
-          overflowY: "scroll",
+          overflowY: "auto",
           backgroundColor: 'background.default'
         }}>
           <PatchTopBar />
@@ -221,8 +220,8 @@ function App() {
         <div id="testItem" style={{ zIndex: 2 }}>
 
         </div>
-      </ThemeProvider>
-    </PyatchProvider>
+      </PyatchProvider>
+    </ThemeProvider>
   );
 }
 

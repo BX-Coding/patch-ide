@@ -378,7 +378,7 @@ function PatchSoundInspector(props) {
                 borderTopStyle: "solid",
                 borderTopColor: 'divider',
             }}>
-                <Box sx={{ overflowY: "scroll", height: "280px", position: 'relative', bottom: 0 }}>
+                <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
                     <Grid container direction="row" spacing={1} sx={{
                         margin: "0px",
                         backgroundColor: 'panel.default',
@@ -492,7 +492,7 @@ function PatchSpriteInspector(props) {
                 borderTopStyle: "solid",
                 borderTopColor: 'divider',
             }}>
-                <Box sx={{ overflowY: "scroll", height: "280px", position: 'relative', bottom: 0 }}>
+                <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
                     <Grid container direction="row" spacing={1} sx={{
                         margin: "0px",
                         backgroundColor: 'panel.default',
