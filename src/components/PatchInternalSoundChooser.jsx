@@ -41,7 +41,7 @@ export function SoundItem(props) {
 }
 
 export function PatchInternalSoundChooser(props) {
-    const {showInternalSoundChooser, setShowInternalSoundChooser, handleAddSoundToActiveTarget } = useContext(pyatchContext);
+    const { showInternalSoundChooser, setShowInternalSoundChooser, handleAddSoundToActiveTarget } = useContext(pyatchContext);
 
     const onClickFunc = (sound) => {
         handleAddSoundToActiveTarget(sound, true).then(() => { setShowInternalSoundChooser(false); });
@@ -50,10 +50,11 @@ export function PatchInternalSoundChooser(props) {
     return (
         <Box className="soundSelectorHolder" sx={{ display: showInternalSoundChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
-                <PatchHorizontalButtons sx={{justifyContent: "center"}}>
+                <PatchHorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
                     <Typography fontSize="18pt" marginBottom="8px">Choose a Sound</Typography>
                     <PatchIconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalSoundChooser(false)} />
                 </PatchHorizontalButtons>
+                <Box sx={{ height: "4px" }} />
                 {sounds.map((sound, i) => {
                     return <SoundItem key={i} onClickFunc={onClickFunc} sound={sound}></SoundItem>
                 })}

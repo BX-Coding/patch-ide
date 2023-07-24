@@ -44,7 +44,7 @@ export function PatchSignOutButton() {
   };
 
   return (
-    <PatchTextButton sx={{ borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
+    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
   );
 }
 
@@ -54,7 +54,7 @@ export function PatchProjectButton() {
   };
 
   return (
-    <PatchTextButton sx={{ borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
+    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
   );
 }
 
@@ -140,7 +140,7 @@ export function PatchFileButton() {
 
   return (
     <PatchHorizontalButtons>
-      <PatchIconButton sx={{ borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
+      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
       <PatchTextButton
         id="file"
         variant="contained"
@@ -149,9 +149,9 @@ export function PatchFileButton() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         text="File"
-        sx={{ borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
+        sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
       />
-      <PatchTextButton sx={{ borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
+      <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}

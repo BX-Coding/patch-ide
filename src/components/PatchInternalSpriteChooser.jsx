@@ -69,10 +69,11 @@ export function PatchInternalSpriteChooser(props) {
     return (
         <Box className="costumeSelectorHolder" sx={{ display: showInternalChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
-                <PatchHorizontalButtons sx={{justifyContent: "center"}}>
+                <PatchHorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
                     <Typography fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
                     <PatchIconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalChooser(false)} />
                 </PatchHorizontalButtons>
+                <Box sx={{ height: "4px" }} />
                 {sprites.map((sprite, i) => {
                     return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM} />
                 })}
