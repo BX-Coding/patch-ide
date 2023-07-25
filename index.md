@@ -1,6 +1,10 @@
-# Welcome to the Patch Project!
+# Welcome to the Patch Github Pages!
 
-<img src="https://bxcoding.org/wp-content/uploads/2023/02/PyatchLogo.png" width="120">
+<img src="https://bxcoding.org/wp-content/uploads/2023/07/94b695b8ef1123544cf202aa95af32f0.png" width="120">
+
+# What is Patch?
+
+[Patch](https://codepatch.org/) is a free and open-source online coding environment built to help Scratchers transition their skills to Python.
 
 # Contextualization
 
@@ -48,23 +52,24 @@ An informal diagram of how the components of Patch interact
 
 ![Diagram](https://bxcoding.org/wp-content/uploads/2023/02/Pyatch-2.0-Component-Diagram-2.jpg)
 
-## Patch 1.0
+## Pyatch (Patch 1.0)
 
-As a POC we created a simple version of Patch implemented as a local python library. A short demo is included below.
+As a POC we created a simple version of Patch implemented as a local python library. A short demo is included below. At this point in the development stage, the project was called Pyatch, so documentation and API's refer to the project as such.
 [![Patch Demo Video](http://img.youtube.com/vi/imWmAzWxp38/0.jpg)](http://www.youtube.com/watch?v=imWmAzWxp38 "Patch Quick Demo 1.0")
 
-## Patch 2.0 GUI Preview
+## Patch 2.0
 
-![Patch 2.0 Preview](https://bxcoding.org/wp-content/uploads/2023/04/Patch2Preview.png)
+Patch is [live](https://codepatch.org/)! The completely in-browser MVP of Patch is up and we would love to hear everyone's thoughts. If you have any feedback or questions, you can contact us at patch@bxcoding.org.
 
 # Development
 
-Development is currently being managed by [BX Coding](https://bxcoding.org) and is tracked on the [Patch Github project](https://github.com/orgs/BX-Coding/projects/1/views/1) page
+Development is currently being managed by [BX Coding](https://bxcoding.org). The Github for Patch's IDE can be found [here](https://github.com/BX-Coding/pyatch-react-ide). The Github for Patch's VM can be found [here](https://github.com/BX-Coding/pyatch-vm).
 
 ## Developers
 
 - [Elliot Roe](https://github.com/ElliotRoe)
 - [Duncan Johnson](https://github.com/DuncanAJohnson)
+- Benjamin Montgomery
 
 # Want to join?
 
