@@ -41,8 +41,8 @@ export default function PyatchSpriteArea(){
                 </Grid>}
             </Grid>
             <PatchHorizontalButtons sx={{borderWidth: '0px', marginLeft: '-8px', marginRight: '-8px', width: 'calc(100% + 16px)', padding: '4px', paddingBottom: '8px', marginBottom: '0px', borderTopWidth: '1px', borderBottomWidth: '1px', borderColor: 'divider', borderStyle: 'solid'}}>
-                {editingTarget && <PyatchDeleteSprite /> }
                 <PyatchAddSprite />
+                {editingTarget && <PyatchDeleteSprite /> }
             </PatchHorizontalButtons>
             <Grid container direction="row" spacing={"8px"} xs={12} sx={{
                 backgroundColor: 'panel.default',

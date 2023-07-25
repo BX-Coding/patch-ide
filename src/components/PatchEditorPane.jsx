@@ -320,8 +320,8 @@ function PatchSoundInspector(props) {
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
-                    <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
                     <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
+                    <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
                     <PatchIconButton icon={<PlayArrowIcon />} disabled={targetSounds[soundIndex].rate === 22050} onClick={() => { handlePlayClick(soundIndex); }} />
                 </PatchHorizontalButtons>
             </Grid>
@@ -413,8 +413,8 @@ function PatchSpriteInspector(props) {
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
-                    <Grid item>{deleteCurrentCostumeButton()}</Grid>
                     <Grid item><AddCostumeButton /></Grid>
+                    <Grid item>{deleteCurrentCostumeButton()}</Grid>
                 </PatchHorizontalButtons>
             </Grid>
             <Grid item xs>
