@@ -9,8 +9,11 @@ import pyatchContext from './provider/PyatchContext.js';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { PatchHorizontalButtons, PatchTextButton, PatchIconButton } from './PatchTemplates.jsx';
+import { DarkMode } from '@mui/icons-material';
 
-export default function PatchTopBar() {
+export default function PatchTopBar(props) {
+  const { mode, setMode } = props;
+
   return (
     <Grid container item direction="row" sx={{
       width: "100vw",
@@ -31,11 +34,24 @@ export default function PatchTopBar() {
           <PatchHorizontalButtons>
             <PatchProjectButton />
             <PatchSignOutButton />
+            <PatchThemeButton mode={mode} setMode={setMode} />
           </PatchHorizontalButtons>
         </Grid>
       </Grid>
     </Grid>
   );
+}
+
+export function PatchThemeButton(props) {
+  const { mode, setMode } = props;
+
+    return (
+      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" icon={<DarkMode htmlColor={mode === "dark" ? "white" : "black"} />} onClick={() => {
+        let newMode = (mode === "dark") ? "light" : "dark";
+        setMode(newMode);
+        localStorage.setItem("theme", newMode);
+          }} />
+    );
 }
 
 export function PatchSignOutButton() {
@@ -71,11 +87,9 @@ export function PatchFileName() {
         onChange={handleTextChange}
         id="fileName"
         defaultValue="Untitled"
-        variant="outlined"
         size="small"
         fullWidth
         sx={{ marginLeft: "-16px" }}
-      //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
       />
     </>
   );

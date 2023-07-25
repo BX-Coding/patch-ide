@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
 import './App.css'
 import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton, PatchSoundTabButton } from '../src/components/PatchEditorPane.jsx';
+import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton, PatchSoundTabButton, PatchGlobalVariablesTabButton } from '../src/components/PatchEditorPane.jsx';
 
 import { PatchHorizontalButtons } from '../src/components/PatchTemplates.jsx';
 
@@ -24,7 +24,33 @@ function App() {
       background: {
         paper: '#DDDDDD',
         default: '#DDDDDD'
+      },
+      text: {
+        primary: '#000'
       }
+    },
+    shape: {
+      "borderRadius": 8
+    },
+    components: {
+      MuiButton: {
+        "defaultProps": {
+          "disableElevation": true
+        },
+        "styleOverrides": {},
+        "variants": [
+          {
+            "props": {
+              "variant": "code"
+            }
+          },
+          {
+            "props": {
+              "variant": "link"
+            }
+          }
+        ]
+      },
     }
   })
   const darkTheme = createTheme({
@@ -104,7 +130,7 @@ function App() {
             }
           }
         ]
-      }
+      },
     }
   });
 
@@ -144,7 +170,7 @@ function App() {
     },*/
 
   // This holds information about dark mode/light mode
-  const [mode, setMode] = React.useState('dark');
+  const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
 
   //setMode(localStorage.getItem('themeMode') || 'dark');
 
@@ -165,7 +191,7 @@ function App() {
           overflowY: "auto",
           backgroundColor: 'background.default'
         }}>
-          <PatchTopBar />
+          <PatchTopBar mode={mode} setMode={setMode} />
           <Grid item class="leftContainer">
             <Grid item container className="assetHolder" sx={{
               paddingTop: "8px",
@@ -179,6 +205,7 @@ function App() {
                 <PatchCodeEditorTabButton />
                 <PatchSpriteTabButton />
                 <PatchSoundTabButton />
+                <PatchGlobalVariablesTabButton />
               </PatchHorizontalButtons>
             </Grid>
             <PatchEditorPane />

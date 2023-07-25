@@ -112,7 +112,6 @@ function ThreadEditor(props) {
                         variant="outlined"
                         size="small"
                         fullWidth
-                        //sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
                         sx={{ backgroundColor: 'panel.default' }}
                         componentsProps={{
                             paper: {
@@ -154,7 +153,7 @@ function ThreadEditor(props) {
                         size="small"
                     />}
                 </Grid>
-                <Grid item sx={{ width: (/* first XOR final */ !first ^ final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
+                <Grid item sx={{ width: (/* !first XOR final */ !first ^ final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
                     <PatchHorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
                         <PatchIconButton color="success" onClick={handleSave} disabled={savedThreads[thread.id]} sx={{ height: 40 }} icon={<SaveIcon />} />
                         {!first && <PatchDeleteButton onClick={onDeleteThread} sx={{height: 40}} />}
@@ -164,8 +163,6 @@ function ThreadEditor(props) {
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
-                    //value={thread.script}
-                    //extensions={[python(), autocompletion({ override: [completions(pyatchVM.getPatchPythonApiInfo())] }), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     value={threadsText[thread.id]}
                     extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"

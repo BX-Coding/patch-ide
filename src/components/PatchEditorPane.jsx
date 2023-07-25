@@ -15,13 +15,14 @@ import PatchCodeEditor from './PatchCodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
 import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, PatchIconButton, ItemCard } from './PatchTemplates.jsx';
+import PublicIcon from '@mui/icons-material/Public.js';
 
 export function PatchEditorPane(props) {
     const { patchEditorTab } = useContext(pyatchContext);
 
     return <div className="tabContent" style={{
     }}>
-        {[<PatchCodeEditorWrapper key={0} />, <PatchSpriteEditor key={1} />, <PatchSoundEditor key={2} />][patchEditorTab]}
+        {[<PatchCodeEditorWrapper key={0} />, <PatchSpriteEditor key={1} />, <PatchSoundEditor key={2} />, <PatchGlobalVariables key={3} />][patchEditorTab]}
     </div>
 }
 
@@ -75,6 +76,18 @@ export function PatchSoundTabButton(props) {
     );
 }
 
+export function PatchGlobalVariablesTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+
+    const updateEditorTab = () => {
+        setPatchEditorTab(3);
+    }
+
+    return (
+        <Button variant={patchEditorTab === 3 ? "contained" : "outlined"} onClick={updateEditorTab}><PublicIcon /></Button>
+    );
+}
+
 export function PatchSpriteEditor(props) {
     return (
         <Grid container>
@@ -83,19 +96,6 @@ export function PatchSpriteEditor(props) {
             </Grid>
         </Grid>
     );
-    /*return (
-        <Grid container marginTop="8px">
-            <Grid item xs={"auto"}>
-                <PatchSpriteInspector />
-            </Grid>
-            <Grid item xs>
-                <PatchSoundInspector />
-            </Grid>
-            <Grid item xs>
-                <PatchGlobalVariables />
-            </Grid>
-        </Grid>
-    );*/
 }
 
 export function PatchSoundEditor(props) {
@@ -109,54 +109,14 @@ export function PatchSoundEditor(props) {
 }
 
 function PatchGlobalVariables(props) {
-    return <>
-        <Grid><PatchVariables /></Grid>
-    </>;
+    return (
+        <Grid container>
+            <Grid item xs={12}>
+                <PatchVariables />
+            </Grid>
+        </Grid>
+    );
 }
-
-/*function AddCostumeButton(props) {
-    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = (event) => {
-        setAnchorEl(null);
-    };
-
-    const handleBuiltIn = () => {
-        handleClose();
-        setInternalChooserAdd(false);
-        setShowInternalChooser(true);
-    }
-
-    return <>
-        <Button
-            id='addNewCostume'
-            variant='contained'
-            color='primary'
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}>
-            Add New Costume
-        </Button>
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-                'aria-labelledby': 'basic-button',
-            }}
-        >
-            <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
-            <MenuItem id="upload" onClick={() => { handleUploadCostume(); handleClose(); }}>From Upload</MenuItem>
-        </Menu>
-    </>
-}*/
 
 function AddCostumeButton(props) {
     const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
@@ -268,7 +228,6 @@ function PatchSoundInspector(props) {
 
     const handleClick = (index, soundName) => () => {
         // Copy name to clipboard
-        // navigator.clipboard.writeText(soundName);
         setSoundIndex(index);
     }
 
@@ -353,10 +312,6 @@ function PatchSoundInspector(props) {
     return (
         <Grid container direction="column" className="assetHolder" sx={{
             backgroundColor: 'panel.default',
-            borderColor: 'divider',
-            borderTopRightRadius: "0px",
-            borderBottomRightRadius: "0px",
-            borderRightWidth: "1px",
             minHeight: "calc(100% + 40px)",
             marginBottom: "0px"
         }}>
@@ -389,7 +344,7 @@ function PatchSoundInspector(props) {
                         {targetSounds.map((sound, i) =>
                             <Grid item key={i}>
                                 <ItemCard
-                                // TODO: change this (and the icon in PatchSoundDetails) to a MUI icon
+                                    // TODO: change this (and the icon in PatchSoundDetails) to a MUI icon
                                     imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
                                     title={sound.name}
                                     selected={i === soundIndex}
@@ -405,24 +360,6 @@ function PatchSoundInspector(props) {
             </Grid>
         </Grid>
     );
-
-    /*return (
-        <div class="assetHolder">
-            <audio id="soundPreview" src="" type="" />
-            {targetSounds.map((sound, i) =>
-                <ItemCard
-                    imageSrc={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"}
-                    title={sound.name}
-                    selected={i === soundIndex}
-                    onClick={handleClick(i, sound.name)}
-                    actionButtons={[copyButton(sound.name), deleteButton(i), playButton(i)]}
-                    key={sound.name}
-                    width={120}
-                    height={120}
-                />)}
-            <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
-        </div>
-    );*/
 }
 
 function PatchSpriteDetails(props) {
@@ -468,10 +405,6 @@ function PatchSpriteInspector(props) {
     return (
         <Grid container direction="column" className="assetHolder" sx={{
             backgroundColor: 'panel.default',
-            borderColor: 'divider',
-            borderTopRightRadius: "0px",
-            borderBottomRightRadius: "0px",
-            borderRightWidth: "1px",
             minHeight: "calc(100% + 40px)",
             marginBottom: "0px"
         }}>

@@ -83,33 +83,4 @@ export function ItemCard(props) {
             </Grid>
         </Box>
     );
-    /*const { imageSrc, title, selected, onClick, actionButtons, imgWidth, imgHeight } = props;
-    return (
-        <Box sx={{
-            backgroundColor: selected ? 'primary.dark' : 'none',
-            borderColor: 'primary.dark',
-            borderStyle: 'solid',
-            borderWidth: 3,
-            borderRadius: 1,
-            marginBottom: "4px",
-            '&:hover': {
-                backgroundColor: 'primary.main',
-                opacity: [0.9, 0.8, 0.7],
-            },
-        }}
-
-            onClick={() => { onClick(title) }}
-        >
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}><img src={imageSrc} width={imgWidth} maxHeight={imgHeight} /></Box>
-            <Grid display='flex' justifyContent='space-between' alignItems='center' sx={{
-                backgroundColor: 'primary.dark',
-                padding: 1,
-            }}>
-                <Typography>{title}</Typography>
-                {actionButtons}
-            </Grid>
-        </Box>)*/
 }

@@ -15,13 +15,11 @@ export function PyatchSelectSprite(props) {
     }
 
     return(
-        //<Button variant={editingTargetId === target.id ? "contained" : "outlined"} onClick={onClick} sx={{m:"1vh"}}>{target?.sprite?.name}</Button>
         <ItemCard
             imageSrc={getCostumeUrl(target?.getCurrentCostume()?.asset)}
             title={target?.sprite?.name}
             selected={editingTargetId === target.id}
             onClick={onClick}
-            //actionButtons={costumes.length > 1 ? [deleteCostumeButton(costume.name)] : []}
             key={target?.sprite?.name}
             width={120}
             height={120}

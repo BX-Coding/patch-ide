@@ -69,15 +69,4 @@ export default function PyatchSpriteArea(){
             </Grid>
         </Grid>
     );
-            /*
-            <Grid container sx={{ alignItems: 'center' }}>
-                <Grid item xs={6}>
-                    <PyatchAddSprite/>
-                </Grid>
-                <Grid item xs={6}>
-                    <StageButton/>
-                </Grid>
-            </Grid>
-        </Grid>
-    );*/
 }
