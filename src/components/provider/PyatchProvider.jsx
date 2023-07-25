@@ -469,6 +469,10 @@ const PyatchProvider = props => {
     return pyatchVM.downloadProject();
   }
 
+  const loadScratchProject = async (vmState) => {
+    const zip = await JSZip.loadAsync(projectData).then((newZip) => newZip);
+  }
+
   const loadSerializedProject = async (vmState) => {
     if (pyatchVM) {
       setPatchReady(false);
@@ -571,6 +575,7 @@ const PyatchProvider = props => {
     onDeleteSprite,
     saveAllThreads,
     downloadProject,
+    loadScratchProject,
     loadSerializedProject,
     saveToLocalStorage,
     hasLocalStorageProject,

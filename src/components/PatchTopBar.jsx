@@ -77,7 +77,7 @@ export function PatchFileName() {
 }
 
 export function PatchFileButton() {
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(pyatchContext);
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, loadScratchProject, changesSinceLastSave, saveAllThreads } = useContext(pyatchContext);
   
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -112,6 +112,7 @@ export function PatchFileButton() {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
+    input.accept = '.ptch1,.sb3';
     
     input.onchange = e => { 
       
@@ -125,8 +126,15 @@ export function PatchFileButton() {
       // here we tell the reader what to do when it's done reading...
       reader.onloadend = readerEvent => {
         var content = readerEvent.target.result; // this is the content!
-        
-        loadSerializedProject(content);
+        if (file.name.slice(-6) === ".ptch1") {
+          // Patch project
+          console.log("Loading patch project...");
+          loadSerializedProject(content);
+        } else if (file.name.slice(-4) === ".sb3") {
+          // Scratch project
+          console.error("Loading scratch projects hasn't been implemented yet.");
+          loadScratchProject(content);
+        }
       }
     }
     
