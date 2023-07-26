@@ -74,3 +74,11 @@ Development is currently being managed by [BX Coding](https://bxcoding.org). The
 # Want to join?
 
 Reach out to developer@bxcoding.org! We welcome all collaborators!
+
+# Ackowledgements
+
+Patch is built on top of the following amazing open-source projects:
+- [Pyodide](https://pyodide.org/en/stable/)
+- [Scratch VM](https://github.com/scratchfoundation/scratch-vm)
+- [CodeMirror](https://codemirror.net/)
+- [Material UI](https://mui.com/)
