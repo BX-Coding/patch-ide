@@ -16,6 +16,6 @@ export function PyatchStopButton(props) {
     const { pyatchVM } = useContext(pyatchContext);
 
     return(
-        <Button variant="contained" color="error" onClick={pyatchVM?.stopAll.bind(pyatchVM)} sx={{mb: "1vh"}}><DangerousIcon/></Button>
+        <Button variant="contained" color="error" onClick={pyatchVM?.stopAll.bind(pyatchVM)}><DangerousIcon/></Button>
     );
 }

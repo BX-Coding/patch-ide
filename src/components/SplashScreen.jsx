@@ -14,7 +14,7 @@ function SplashScreen(props) {
     }, []);
 
     return(
-        <Box sx={{width: "100vw", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#282828", flexDirection: "column"}}>
+        <Box sx={{width: "100vw", height: "100vh", display: "flex", margin: "-8px", justifyContent: "center", alignItems: "center", backgroundColor: "background.default", flexDirection: "column"}}>
             <img style={{dropShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px", height: "50%"}} src={patchPenguin}/>
             <Typography sx={{fontSize: "24pt", padding: "8px"}}>{`${loadingText}${loadingDots}`}</Typography>
         </Box>

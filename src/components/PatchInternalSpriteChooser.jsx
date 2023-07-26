@@ -1,13 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import pyatchContext from './provider/PyatchContext.js';
-import AddIcon from '@mui/icons-material/Add';
-import Grid from '@mui/material/Grid';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import CancelIcon from '@mui/icons-material/Cancel';
 import sprites from '../assets/sprites.json';
 import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
+import { PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
 
 export function SpriteItem(props) {
     const { sprite, onClickFunc, pyatchVM } = props;
@@ -16,7 +13,15 @@ export function SpriteItem(props) {
 
     const [imageSrc, setImageSrc] = useState("");
 
-    pyatchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], pyatchVM.runtime).then((result) => { setImageSrc(getCostumeUrl(result.asset)) });
+    const getCostumeWrap = useCallback(async () => {
+        const costumeWrap = await pyatchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], pyatchVM.runtime);
+
+        setImageSrc(getCostumeUrl(costumeWrap.asset));
+    }, [pyatchVM, sprite]);
+
+    useEffect(() => {
+        getCostumeWrap();
+    }, [getCostumeWrap]);
 
     return (
         <Box sx={{
@@ -42,7 +47,7 @@ export function SpriteItem(props) {
                 display: 'flex',
                 justifyContent: 'center',
             }}>
-                <img src={imageSrc} class="spriteChooserImage" />
+                <img src={imageSrc} className="spriteChooserImage" />
             </Box>
         </Box>
     )
@@ -51,7 +56,7 @@ export function SpriteItem(props) {
 export function PatchInternalSpriteChooser(props) {
     const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(pyatchContext);
 
-    const onClickFunc = (sprite) => {
+    const onClickFunc = useCallback((sprite) => {
         if (internalChooserAdd) {
             onAddSprite(sprite);
         } else {
@@ -59,27 +64,20 @@ export function PatchInternalSpriteChooser(props) {
         }
 
         setShowInternalChooser(false);
-    }
-
-    // These hold the sprite items
-    const [spriteItems, setSpriteItems] = useState([]);
-
-    // Generate the default sprites to fill the picker (if not already done). Doing this when the sprite
-    // picker first appears (instead of when patch first loads) reduces initial loading time for Patch
-    useEffect(() => {
-        if ((showInternalChooser == true) && (spriteItems.length == 0)) {
-            setSpriteItems(sprites.map((sprite, i) => {
-                return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM}/>
-            }));
-        }
-    }, [showInternalChooser]);
+    }, [internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, setShowInternalChooser]);
 
     return (
-        <div className="costumeSelectorHolder" style={{ display: showInternalChooser ? "block" : "none" }}>
+        <Box className="costumeSelectorHolder" sx={{ display: showInternalChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
-                <Typography width="100%" fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
+                <PatchHorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
+                    <Typography fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
+                    <PatchIconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalChooser(false)} />
+                </PatchHorizontalButtons>
+                <Box sx={{ height: "4px" }} />
+                {sprites.map((sprite, i) => {
+                    return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM} />
+                })}
             </center>
-            {spriteItems}
-        </div>
+        </Box>
     );
 }

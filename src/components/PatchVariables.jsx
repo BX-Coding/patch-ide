@@ -7,113 +7,85 @@ import { useState, useContext, createContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import PyatchContext from "./provider/PyatchContext.js";
+import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons } from './PatchTemplates.jsx';
 
 export default function PatchVariables() {
 
     return (
         <Box
             sx={{
-            border: '1px dashed grey',
-            mb: "1vh"
+                borderTop: '1px solid divider',
+                backgroundColor: 'panel.default',
+                minHeight: "calc(100vh - 123px)",
+                padding: '8px',
             }}>
             <Grid>
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <Typography align="center" variant="h6">Global Variables</Typography>
+                        <Typography color='text.primary' align="center" variant="h6">Global Variables</Typography>
                     </Grid>
                 </Grid>
-                <Grid container sx={{ alignItems: 'center' }}>
-                    <Grid item xs={10} sx={{mb:"1vh"}}>
-                        <VariableInputField/>
-                    </Grid>
-                    <Grid item xs={2}>
-                        <PlusButton/>
-                    </Grid>
-                    <Grid item xs={12} sx={{ml:"1vh"}}><VarList/></Grid>
-                </Grid>
+                <VariableInputField />
             </Grid>
+            <VarList />
         </Box>
-
     );
-  }
+}
 
-function PlusButton(){
+function PlusButton() {
     const { setGlobalVariables, pyatchVM } = useContext(PyatchContext);
 
-    const handleClick = (event) =>{
+    const handleClick = (event) => {
         let name = varName.value;
         let value = varValue.value;
-        if(!Number.isNaN(parseInt(value))){
+        if (!Number.isNaN(parseInt(value))) {
             value = parseInt(value);
         }
         pyatchVM.updateGlobalVariable(name, value)
         setGlobalVariables(pyatchVM.getGlobalVariables());
-
     };
 
     return (
-        <Grid container>
-            <Grid item xs={12}>
-                <IconButton
-                onClick={handleClick}
-                style={{ color: "white"}}
-                >
-                    <AddCircleIcon />
-                </IconButton>
-            </Grid>
-        </Grid>
+        <PatchAddButton sx={{ height: '100%' }} onClick={handleClick} />
     );
 }
 
 function VarLine(props) {
     return (
-        <Typography>{props.name} = {props.value}</Typography>
+        <PatchHorizontalButtons>
+            <Typography sx={{ fontSize: "18px", height: "24px" }} color='text.primary'>{props.name} = {props.value}</Typography>
+        </PatchHorizontalButtons>
     )
 }
 
 function VarList() {
     const { globalVariables } = useContext(PyatchContext);
-    return(
+    return (
         <Grid item xs={12}>{globalVariables.map((variable) => {
-            return <VarLine key = {variable.name} name={variable.name} value={variable.value}/>
+            return <VarLine key={variable.name} name={variable.name} value={variable.value} />
         })}</Grid>
     );
 }
 
-function VariableInputField(){
+function VariableInputField() {
     return (
-       <>
-        <Grid>
-                
-                <Grid container item direction="row" justifyContent="center" sx={{ alignItems: 'center' }}>
-                    <Grid item xs={6.5}>
-                <Typography variant="outlined" margin='dense' sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}>
-                    <TextField
-                    label = "Variable Name"
+        <Typography fontSize={24} alignContent={"center"} variant="outlined" margin='dense'>
+            <PatchHorizontalButtons>
+                <TextField
+                    label="Variable Name"
                     id="varName"
-                    size = "small"
+                    size="small"
                     fullWidth
-                    InputLabelProps={{style : {color : 'white'} }}
-                    InputProps={{style:{height: "2em"}}}
                 />
-                </Typography>
-                </Grid>
-                <Grid item xs={0.5}>
-                <Typography align="center">=</Typography>
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography variant="outlined" margin = 'dense'sx={{input: { color: 'white'}, fieldset: { borderColor: "white" }}}>
-                    <TextField
-                        label = "Value"
-                        id="varValue"
-                        size="small"
-                        fullWidth
-                        InputLabelProps={{style : {color : 'white'} }}
-                        InputProps={{style:{height: "2em"}}}
-                    /> </Typography>
-                </Grid>
-                </Grid>
-        </Grid>
-        </>
+                =
+                <TextField
+                    label="Value"
+                    id="varValue"
+                    size="small"
+                    fullWidth
+                />
+                <PlusButton />
+            </PatchHorizontalButtons>
+        </Typography>
     );
 }
