@@ -132,7 +132,7 @@ export function PatchFileButton() {
           loadSerializedProject(content);
         } else if (file.name.slice(-4) === ".sb3") {
           // Scratch project
-          console.error("Loading scratch projects hasn't been implemented yet.");
+          console.warn("Loading scratch projects hasn't been (fully) implemented yet.");
           loadScratchProject(content);
         }
       }

@@ -470,7 +470,12 @@ const PyatchProvider = props => {
   }
 
   const loadScratchProject = async (vmState) => {
-    const zip = await JSZip.loadAsync(projectData).then((newZip) => newZip);
+    const patchProj = await pyatchVM.scratchToPatch(vmState).then((result) => result);
+    if (patchProj) {
+      loadSerializedProject(patchProj);
+    } else {
+      console.error("Failed to convert to patch project. Abort.");
+    }
   }
 
   const loadSerializedProject = async (vmState) => {
