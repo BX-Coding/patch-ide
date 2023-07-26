@@ -15,6 +15,7 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
+import { PatchDeleteButton, PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
 import completions from '../util/patch-autocompletions.mjs';
 
 export function PyatchTargetEditor(props) {
@@ -97,59 +98,68 @@ function ThreadEditor(props) {
     }
     return (
         <>
-            <Grid display="flex" flexDirection="row" spacing={2} marginTop="4px">
-                <Autocomplete
-                    disablePortal
-                    disableClearable
-                    id="event-thread-selection"
-                    options={eventList}
-                    defaultValue={{id: thread.triggerEvent, label: eventMap[thread.triggerEvent]}}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    hiddenLabel
-                    onChange={handleEventChange}
-                    variant="outlined"  
-                    size="small"
-                    fullWidth
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-                    componentsProps={{
-                        paper: {
-                          sx: {
-                            width: 400
-                          }
+            <Grid container direction="row" spacing={"1px"}>
+                <Grid item xs>
+                    <Autocomplete
+                        disablePortal
+                        disableClearable
+                        id="event-thread-selection"
+                        options={eventList}
+                        defaultValue={{ id: thread.triggerEvent, label: eventMap[thread.triggerEvent] }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        hiddenLabel
+                        onChange={handleEventChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        sx={{ backgroundColor: 'panel.default' }}
+                        componentsProps={{
+                            paper: {
+                                sx: {
+                                    width: 400
+                                }
+                            }
+                        }}
+                        renderInput={(params) =>
+                            <TextField {...params} />
                         }
-                      }}
-                    renderInput={(params) => 
-                        <TextField {...params}/>
-                    }
-                />
-                {(eventOptionsList && eventOptionsList.length > 0) && <Autocomplete
-                    disablePortal
-                    disableClearable
-                    id="event-thread-option-selection"
-                    options={eventOptionsList}
-                    defaultValue={{id: thread.triggerEventOption, label: thread.triggerEventOption}}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    hiddenLabel
-                    onChange={handleEventOptionChange}
-                    variant="outlined"  
-                    size="small"
-                    fullWidth
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-                    renderInput={(params) => 
-                        <TextField {...params}/>
-                    }
-                />}
-                {thread.triggerEvent === "event_whenbroadcastreceived" && <TextField
-                    id="event-thread-broadcost-option-text-input"
-                    onChange={handleEventOptionBroadcastChange}
-                    defaultValue={thread.triggerEventOption}
-                    variant="outlined"  
-                    size="small"
-                    sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-                />}
-                <Button variant="contained" color="success" onClick={handleSave} disabled={savedThreads[thread.id]}><SaveIcon/></Button>
-                {!first && <Button variant="contained" color="primary" onClick={onDeleteThread}><DeleteIcon/></Button>}
-                {final && <Button variant="contained" onClick={onAddThread}><PostAddIcon/></Button>}
+                    />
+                </Grid>
+                <Grid item>
+                    {(eventOptionsList && eventOptionsList.length > 0) && <Autocomplete
+                        disablePortal
+                        disableClearable
+                        id="event-thread-option-selection"
+                        options={eventOptionsList}
+                        defaultValue={{ id: thread.triggerEventOption, label: thread.triggerEventOption }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        hiddenLabel
+                        onChange={handleEventOptionChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        sx={{ backgroundColor: 'panel.default' }}
+                        renderInput={(params) =>
+                            <TextField {...params} />
+                        }
+                    />}
+                </Grid>
+                <Grid item>
+                    {thread.triggerEvent === "event_whenbroadcastreceived" && <TextField
+                        id="event-thread-broadcost-option-text-input"
+                        onChange={handleEventOptionBroadcastChange}
+                        defaultValue={thread.triggerEventOption}
+                        variant="outlined"
+                        size="small"
+                    />}
+                </Grid>
+                <Grid item sx={{ width: (/* !first XOR final */ !first ^ final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
+                    <PatchHorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
+                        <PatchIconButton color="success" onClick={handleSave} disabled={savedThreads[thread.id]} sx={{ height: 40 }} icon={<SaveIcon />} />
+                        {!first && <PatchDeleteButton onClick={onDeleteThread} sx={{height: 40}} />}
+                        {final && <PatchIconButton onClick={onAddThread} icon={<PostAddIcon />} sx={{height: 40}} />}
+                    </PatchHorizontalButtons>
+                </Grid>
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
@@ -157,7 +167,7 @@ function ThreadEditor(props) {
                     extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
-                    height="calc(100vh - 164px)"
+                    height="calc(100vh - 169px)"
                 />
             </Grid>
         </>
