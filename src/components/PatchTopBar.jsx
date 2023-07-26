@@ -8,77 +8,96 @@ import * as PyatchProvider from './provider/PyatchProvider.jsx';
 import pyatchContext from './provider/PyatchContext.js';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-export default function PatchTopBar(){
-    return(
-        <>
-        <Grid container item direction = "row" xs = {8} spacing={2} className="patchTopBar">
-          <Grid item>
-            <a href='https://bx-coding.github.io/pyatch-react-ide/'><Button variant="contained"><GitHubIcon/></Button></a>
-          </Grid>
-          <Grid item>
-            <PatchFileButton/>
-          </Grid>
-          <Grid item xs={6}>
-            <PatchFileName/>
-          </Grid>
+import { PatchHorizontalButtons, PatchTextButton, PatchIconButton } from './PatchTemplates.jsx';
+import { DarkMode } from '@mui/icons-material';
+
+export default function PatchTopBar(props) {
+  const { mode, setMode } = props;
+
+  return (
+    <Grid container item direction="row" sx={{
+      width: "100vw",
+      padding: "8px",
+      maxHeight: "56px",
+      backgroundColor: 'primary.dark',
+    }}>
+      <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
+        <Grid item>
+          <PatchFileButton />
         </Grid>
-        <Grid container item direction = "row" xs = {4} spacing={2} justifyContent = "flex-end">
-          <Grid item>
-            <PatchProjectButton/>
-          </Grid>
-          <Grid item>
-            <PatchSignOutButton/>
-          </Grid>
+        <Grid item xs={6}>
+          <PatchFileName />
         </Grid>
-        </>
+      </Grid>
+      <Grid container item xs={4} justifyContent="flex-end">
+        <Grid item>
+          <PatchHorizontalButtons>
+            <PatchProjectButton />
+            <PatchSignOutButton />
+            <PatchThemeButton mode={mode} setMode={setMode} />
+          </PatchHorizontalButtons>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+}
+
+export function PatchThemeButton(props) {
+  const { mode, setMode } = props;
+
+    return (
+      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" icon={<DarkMode htmlColor={mode === "dark" ? "white" : "black"} />} onClick={() => {
+        let newMode = (mode === "dark") ? "light" : "dark";
+        setMode(newMode);
+        localStorage.setItem("theme", newMode);
+          }} />
     );
 }
 
 export function PatchSignOutButton() {
-    const handleClick = (event) => {
-      console.log(event.currentTarget.id);
-    };
-  
-    return (
-        <Button id="signOut" variant="contained" onClick={handleClick}>Sign Out</Button>
-    );
+  const handleClick = (event) => {
+    console.log(event.currentTarget.id);
+  };
+
+  return (
+    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
+  );
 }
 
 export function PatchProjectButton() {
-    const handleClick = (event) => {
-        console.log(event.currentTarget.id);
-    };
-    
-    return (
-        <Button id = "project" variant="contained" onClick={handleClick}>Projects</Button>
-    );
+  const handleClick = (event) => {
+    console.log(event.currentTarget.id);
+  };
+
+  return (
+    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
+  );
 }
 
 export function PatchFileName() {
 
-    const handleTextChange = event =>{
-        console.log(event.target.value);
-    };
+  const handleTextChange = event => {
+    console.log(event.target.value);
+  };
 
-    return (
-        <>
-        <TextField
-            hiddenLabel
-            onChange = {handleTextChange}
-            id="fileName"
-            defaultValue="Untitled"
-            variant="outlined"  
-            size="small"
-            fullWidth
-            sx={{ input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-        />
-        </>
-    );
+  return (
+    <>
+      <TextField
+        hiddenLabel
+        onChange={handleTextChange}
+        id="fileName"
+        defaultValue="Untitled"
+        size="small"
+        fullWidth
+        sx={{ marginLeft: "-16px" }}
+      />
+    </>
+  );
 }
 
 export function PatchFileButton() {
   const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(pyatchContext);
-  
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -88,7 +107,7 @@ export function PatchFileButton() {
 
   const handleClose = (event) => {
     setAnchorEl(null);
-  };  
+  };
 
   const handleSaveNow = async (event) => {
     await saveAllThreads();
@@ -112,40 +131,41 @@ export function PatchFileButton() {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
-    
-    input.onchange = e => { 
-      
+
+    input.onchange = e => {
+
       // getting a hold of the file reference
-      var file = e.target.files[0]; 
-      
+      var file = e.target.files[0];
+
       // setting up the reader
       var reader = new FileReader();
       reader.readAsArrayBuffer(file);
-      
+
       // here we tell the reader what to do when it's done reading...
       reader.onloadend = readerEvent => {
         var content = readerEvent.target.result; // this is the content!
-        
+
         loadSerializedProject(content);
       }
     }
-    
+
     input.click();
   }
 
   return (
-    <>
-      <Button
+    <PatchHorizontalButtons>
+      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
+      <PatchTextButton
         id="file"
         variant="contained"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
-      >
-        File
-      </Button>
-      <Button id="saveNow" variant={changesSinceLastSave ? "contained" : "outlined"} style={{marginLeft: 4 + "px"}} onClick={handleSaveNow}>{changesSinceLastSave ? "Save" : "Saved"}</Button>
+        text="File"
+        sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
+      />
+      <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -160,6 +180,6 @@ export function PatchFileButton() {
         <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
       </Menu>
-    </>
+    </PatchHorizontalButtons>
   );
-  }
+}

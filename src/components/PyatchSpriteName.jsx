@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import Grid from '@mui/material/Grid';
 
+import { PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
 
 export function PyatchSpriteName(props) {
     const { pyatchVM, targetIds, editingTargetId, setChangesSinceLastSave } = useContext(pyatchContext);
@@ -28,14 +29,16 @@ export function PyatchSpriteName(props) {
     }, [editingTarget]);
 
     return(<Grid display="flex">
-        <TextField 
-            value={name}
-            onChange={onChange}
-            fullWidth
-            sx={{my: "1vh", input: { color: 'white'}, fieldset: { borderColor: "white" }}}
-            size="small"
-            disabled={targetIds[0] == editingTargetId}
-        />
-        <Button variant="contained" color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{m:"1vh"}}><SaveIcon/></Button>
+        <PatchHorizontalButtons sx={{marginBottom: '12px'}}>
+            <TextField 
+                value={name}
+                onChange={onChange}
+                fullWidth
+                size="small"
+                disabled={targetIds[0] == editingTargetId}
+                sx={{minWidth: '532px'}}
+            />
+            <PatchIconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
+        </PatchHorizontalButtons>
     </Grid>);
 }

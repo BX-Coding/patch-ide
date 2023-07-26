@@ -133,8 +133,8 @@ const PyatchStage = () => {
             {!!pyatchStage.canvas && <DOMElementRenderer
                 domElement={pyatchStage.canvas}
                 style={{
-                    height: pyatchStage.height,
-                    width: pyatchStage.width
+                    //height: pyatchStage.height,
+                    //width: pyatchStage.width
                 }}
             />}
         </div>
