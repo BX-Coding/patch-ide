@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, createContext } from "react";
-import PyatchContext from "./PyatchContext.js";
+import PatchContext from "./PatchContext.js";
 import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
@@ -598,12 +598,12 @@ const PyatchProvider = props => {
 
   return (
     <>
-      <PyatchContext.Provider
+      <PatchContext.Provider
         value={{ ...globalPatchIDEState }}
       >
         {!(pyatchVM && vmLoaded && patchReady) && <SplashScreen/>}
         <div style={{display: (pyatchVM && vmLoaded && patchReady) ? "block" : "none"}}>{props.children}</div>
-      </PyatchContext.Provider>
+      </PatchContext.Provider>
     </>
   );
 };

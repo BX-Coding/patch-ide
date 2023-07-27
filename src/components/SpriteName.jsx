@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 import TextField from '@mui/material/TextField';
-import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import Grid from '@mui/material/Grid';
 
-import { PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
+import { HorizontalButtons, IconButton } from './PatchButtons.jsx';
 
-export function PyatchSpriteName(props) {
-    const { pyatchVM, targetIds, editingTargetId, setChangesSinceLastSave } = useContext(pyatchContext);
+export function SpriteName(props) {
+    const { pyatchVM, targetIds, editingTargetId, setChangesSinceLastSave } = useContext(patchContext);
     const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
     const [nameSaved, setNameSaved] = useState(true);
     const [name, setName] = useState(editingTarget.sprite.name);
@@ -29,7 +28,7 @@ export function PyatchSpriteName(props) {
     }, [editingTarget]);
 
     return(<Grid display="flex">
-        <PatchHorizontalButtons sx={{marginBottom: '12px'}}>
+        <HorizontalButtons sx={{marginBottom: '12px'}}>
             <TextField 
                 value={name}
                 onChange={onChange}
@@ -38,7 +37,7 @@ export function PyatchSpriteName(props) {
                 disabled={targetIds[0] == editingTargetId}
                 sx={{minWidth: '532px'}}
             />
-            <PatchIconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
-        </PatchHorizontalButtons>
+            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
+        </HorizontalButtons>
     </Grid>);
 }

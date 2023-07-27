@@ -1,10 +1,39 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 import CancelIcon from '@mui/icons-material/Cancel';
 import sprites from '../assets/sprites.json';
 import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
-import { PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
+import { HorizontalButtons, IconButton } from './PatchButtons.jsx';
+
+export function InternalSpriteChooser(props) {
+    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(patchContext);
+
+    const onClickFunc = useCallback((sprite) => {
+        if (internalChooserAdd) {
+            onAddSprite(sprite);
+        } else {
+            handleAddCostumesToActiveTarget(sprite.costumes, true);
+        }
+
+        setShowInternalChooser(false);
+    }, [internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, setShowInternalChooser]);
+
+    return (
+        <Box className="costumeSelectorHolder" sx={{ display: showInternalChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
+            <center>
+                <HorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
+                    <Typography fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
+                    <IconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalChooser(false)} />
+                </HorizontalButtons>
+                <Box sx={{ height: "4px" }} />
+                {sprites.map((sprite, i) => {
+                    return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM} />
+                })}
+            </center>
+        </Box>
+    );
+}
 
 export function SpriteItem(props) {
     const { sprite, onClickFunc, pyatchVM } = props;
@@ -51,33 +80,4 @@ export function SpriteItem(props) {
             </Box>
         </Box>
     )
-}
-
-export function PatchInternalSpriteChooser(props) {
-    const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(pyatchContext);
-
-    const onClickFunc = useCallback((sprite) => {
-        if (internalChooserAdd) {
-            onAddSprite(sprite);
-        } else {
-            handleAddCostumesToActiveTarget(sprite.costumes, true);
-        }
-
-        setShowInternalChooser(false);
-    }, [internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, setShowInternalChooser]);
-
-    return (
-        <Box className="costumeSelectorHolder" sx={{ display: showInternalChooser ? "block" : "none", backgroundColor: 'panel.dark' }}>
-            <center>
-                <PatchHorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
-                    <Typography fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
-                    <PatchIconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => setShowInternalChooser(false)} />
-                </PatchHorizontalButtons>
-                <Box sx={{ height: "4px" }} />
-                {sprites.map((sprite, i) => {
-                    return <SpriteItem key={i} onClickFunc={onClickFunc} sprite={sprite} pyatchVM={pyatchVM} />
-                })}
-            </center>
-        </Box>
-    );
 }

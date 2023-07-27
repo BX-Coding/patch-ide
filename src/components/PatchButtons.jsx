@@ -8,7 +8,7 @@ import { Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
-export function PatchHorizontalButtons(props) {
+export function HorizontalButtons(props) {
     const { children, sx, spacing } = props;
 
     return (
@@ -32,22 +32,22 @@ function PatchButton(props) {
     return <Button disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} color={color}>{icon}</Button>
 }
 
-export function PatchAddButton(props) {
+export function AddButton(props) {
     const { onClick, onClickArgs, variant, sx, disabled } = props;
     return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} color={'primary'} icon={PatchIconTypes.Add} />
 }
 
-export function PatchDeleteButton(props) {
+export function DeleteButton(props) {
     const { red, onClick, onClickArgs, variant, sx, disabled } = props;
     return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} color={red ? 'error' : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={PatchIconTypes.Delete} />
 }
 
-export function PatchIconButton(props) {
+export function IconButton(props) {
     const { color, onClick, onClickArgs, variant, sx, icon, disabled } = props;
     return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} color={color ? color : 'primary'} onClick={onClickArgs ? () => {onClick(...onClickArgs)} : onClick} icon={icon} />
 }
 
-export function PatchTextButton(props) {
+export function TextButton(props) {
     const { onClick, onClickArgs, variant, text, textColor, sx, disabled } = props;
     return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} textColor={textColor ? textColor : ''} icon={text} />
 }

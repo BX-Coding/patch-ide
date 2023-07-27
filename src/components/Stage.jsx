@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 import DOMElementRenderer from '../util/dom-element-renderer.jsx';
 import { getEventXY } from '../util/touch-utils.js';
 import { PatchQuestion } from './PatchQuestion.jsx';
 import { Box } from '@mui/material';
 
-const PyatchStage = () => {
-    const { questionAsked, pyatchStage, pyatchVM } = useContext(pyatchContext);
+const Stage = () => {
+    const { questionAsked, pyatchStage, pyatchVM } = useContext(patchContext);
     const [rect, setRect] = useState(null);
     const boundingRef = useRef(null);
     const updateRect = () => {
@@ -142,4 +142,4 @@ const PyatchStage = () => {
     );
 }
 
-export default PyatchStage
+export default Stage

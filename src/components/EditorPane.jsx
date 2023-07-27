@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
-import PatchVariables from './PatchVariables.jsx';
+import patchContext from './provider/PatchContext.js';
+import GlobalVariablesInspector from './GlobalVariablesInspector.jsx';
 import getCostumeUrl from '../util/get-costume-url.js';
 
 import Button from '@mui/material/Button'
@@ -11,22 +11,22 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { Box } from '@mui/material';
-import PatchCodeEditor from './PatchCodeEditor.jsx'
+import CodeEditor from './CodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
-import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons, PatchIconButton, ItemCard } from './PatchTemplates.jsx';
+import { AddButton, DeleteButton, HorizontalButtons, IconButton, ItemCard } from './PatchButtons.jsx';
 import PublicIcon from '@mui/icons-material/Public.js';
 
-export function PatchEditorPane(props) {
-    const { patchEditorTab } = useContext(pyatchContext);
+export function EditorPane(props) {
+    const { patchEditorTab } = useContext(patchContext);
 
     return <div className="tabContent" style={{
     }}>
-        {[<PatchCodeEditorWrapper key={0} />, <PatchSpriteEditor key={1} />, <PatchSoundEditor key={2} />, <PatchGlobalVariables key={3} />][patchEditorTab]}
+        {[<CodeEditorWrapper key={0} />, <SpriteEditor key={1} />, <SoundEditor key={2} />, <GlobalVariables key={3} />][patchEditorTab]}
     </div>
 }
 
-export function PatchCodeEditorWrapper(props) {
+export function CodeEditorWrapper(props) {
     return (
         <Grid container direction="column" className="assetHolder" sx={{
             backgroundColor: 'panel.default',
@@ -35,13 +35,13 @@ export function PatchCodeEditorWrapper(props) {
             marginBottom: "0px",
             padding: "8px"
         }}>
-            <PatchCodeEditor />
+            <CodeEditor />
         </Grid>
     );
 }
 
-export function PatchCodeEditorTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+export function CodeEditorTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
 
     const updateEditorTab = () => {
         setPatchEditorTab(0);
@@ -52,8 +52,8 @@ export function PatchCodeEditorTabButton(props) {
     );
 }
 
-export function PatchSpriteTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+export function SpriteTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
 
     const updateEditorTab = () => {
         setPatchEditorTab(1);
@@ -64,8 +64,8 @@ export function PatchSpriteTabButton(props) {
     );
 }
 
-export function PatchSoundTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+export function SoundTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
 
     const updateEditorTab = () => {
         setPatchEditorTab(2);
@@ -76,8 +76,8 @@ export function PatchSoundTabButton(props) {
     );
 }
 
-export function PatchGlobalVariablesTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(pyatchContext);
+export function GlobalVariablesTabButton(props) {
+    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
 
     const updateEditorTab = () => {
         setPatchEditorTab(3);
@@ -88,38 +88,38 @@ export function PatchGlobalVariablesTabButton(props) {
     );
 }
 
-export function PatchSpriteEditor(props) {
+export function SpriteEditor(props) {
     return (
         <Grid container>
             <Grid item xs={12}>
-                <PatchSpriteInspector />
+                <SpriteInspector />
             </Grid>
         </Grid>
     );
 }
 
-export function PatchSoundEditor(props) {
+export function SoundEditor(props) {
     return (
         <Grid container>
             <Grid item xs={12}>
-                <PatchSoundInspector />
+                <SoundInspector />
             </Grid>
         </Grid>
     );
 }
 
-function PatchGlobalVariables(props) {
+function GlobalVariables(props) {
     return (
         <Grid container>
             <Grid item xs={12}>
-                <PatchVariables />
+                <GlobalVariablesInspector />
             </Grid>
         </Grid>
     );
 }
 
 function AddCostumeButton(props) {
-    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(pyatchContext);
+    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(patchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -138,7 +138,7 @@ function AddCostumeButton(props) {
     }
 
     return <>
-        <PatchAddButton
+        <AddButton
             variant='contained'
             onClick={handleClick} />
         <Menu
@@ -157,7 +157,7 @@ function AddCostumeButton(props) {
 
 function AddSoundButton(props) {
     const { reloadSoundEditor } = props;
-    const { handleUploadSound, showInternalSoundChooser, setShowInternalSoundChooser } = useContext(pyatchContext);
+    const { handleUploadSound, showInternalSoundChooser, setShowInternalSoundChooser } = useContext(patchContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -181,7 +181,7 @@ function AddSoundButton(props) {
     }, [showInternalSoundChooser])
 
     return <>
-        <PatchAddButton
+        <AddButton
             id='addNewSound'
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -201,7 +201,7 @@ function AddSoundButton(props) {
     </>
 }
 
-function PatchSoundDetails(props) {
+function SoundDetails(props) {
     const { width, height } = props;
 
     return (
@@ -219,8 +219,8 @@ function PatchSoundDetails(props) {
     );
 }
 
-function PatchSoundInspector(props) {
-    const { pyatchVM, editingTargetId, soundsUpdate } = useContext(pyatchContext);
+function SoundInspector(props) {
+    const { pyatchVM, editingTargetId, soundsUpdate } = useContext(patchContext);
     const [selectedTarget, setSelectedTarget] = useState(pyatchVM.editingTarget);
     const [targetSounds, setTargetSounds] = useState(selectedTarget.getSounds());
 
@@ -316,17 +316,17 @@ function PatchSoundInspector(props) {
             marginBottom: "0px"
         }}>
             <Grid item xs>
-                <PatchHorizontalButtons sx={{
+                <HorizontalButtons sx={{
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
                     <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
-                    <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-                    <PatchIconButton icon={<PlayArrowIcon />} disabled={targetSounds[soundIndex].rate === 22050} onClick={() => { handlePlayClick(soundIndex); }} />
-                </PatchHorizontalButtons>
+                    <DeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
+                    <IconButton icon={<PlayArrowIcon />} disabled={targetSounds[soundIndex].rate === 22050} onClick={() => { handlePlayClick(soundIndex); }} />
+                </HorizontalButtons>
             </Grid>
             <Grid item xs>
-                <PatchSoundDetails width={"100%"} height={"calc(100vh - 460px)"} />
+                <SoundDetails width={"100%"} height={"calc(100vh - 460px)"} />
             </Grid>
             <Grid item xs sx={{
                 borderTopWidth: "1px",
@@ -362,7 +362,7 @@ function PatchSoundInspector(props) {
     );
 }
 
-function PatchSpriteDetails(props) {
+function SpriteDetails(props) {
     const { costumeIndex, costumes, width, height } = props;
 
     return (
@@ -380,8 +380,8 @@ function PatchSpriteDetails(props) {
     );
 }
 
-function PatchSpriteInspector(props) {
-    const { pyatchVM, editingTargetId, currentCostumes, setCurrentCostumes, currentCostumeIndex, setCurrentCostumeIndex } = useContext(pyatchContext);
+function SpriteInspector(props) {
+    const { pyatchVM, editingTargetId, currentCostumes, setCurrentCostumes, currentCostumeIndex, setCurrentCostumeIndex } = useContext(patchContext);
 
     const handleClick = (costumeName) => {
         const newCostumeIndex = pyatchVM.editingTarget.getCostumeIndexByName(costumeName);
@@ -400,7 +400,7 @@ function PatchSpriteInspector(props) {
         handleDeleteClick(currentCostumes[currentCostumeIndex].name);
     }
 
-    const deleteCurrentCostumeButton = () => <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
+    const deleteCurrentCostumeButton = () => <DeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
 
     return (
         <Grid container direction="column" className="assetHolder" sx={{
@@ -409,16 +409,16 @@ function PatchSpriteInspector(props) {
             marginBottom: "0px"
         }}>
             <Grid item xs>
-                <PatchHorizontalButtons sx={{
+                <HorizontalButtons sx={{
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
                     <Grid item><AddCostumeButton /></Grid>
                     <Grid item>{deleteCurrentCostumeButton()}</Grid>
-                </PatchHorizontalButtons>
+                </HorizontalButtons>
             </Grid>
             <Grid item xs>
-                <PatchSpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
+                <SpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
             </Grid>
             <Grid item xs sx={{
                 borderTopWidth: "1px",

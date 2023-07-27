@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 import Typography from '@mui/material/Typography';
 
 
-export function PyatchSpriteAttributes(props) {
-    const { pyatchVM } = useContext(pyatchContext);
+export function SpriteAttributePane(props) {
+    const { pyatchVM } = useContext(patchContext);
     const editingTarget = pyatchVM ? pyatchVM.editingTarget : null;
 
     let spriteXVal = editingTarget?.x;

@@ -1,17 +1,15 @@
 import React, { useContext, useState } from 'react';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
-import * as PyatchProvider from './provider/PyatchProvider.jsx';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-import { PatchHorizontalButtons, PatchTextButton, PatchIconButton } from './PatchTemplates.jsx';
+import { HorizontalButtons, TextButton, IconButton } from './PatchButtons.jsx';
 import { DarkMode } from '@mui/icons-material';
 
-export default function PatchTopBar(props) {
+export default function TopBar(props) {
   const { mode, setMode } = props;
 
   return (
@@ -23,7 +21,7 @@ export default function PatchTopBar(props) {
     }}>
       <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
         <Grid item>
-          <PatchFileButton />
+          <FileButton />
         </Grid>
         <Grid item xs={6}>
           <PatchFileName />
@@ -31,11 +29,11 @@ export default function PatchTopBar(props) {
       </Grid>
       <Grid container item xs={4} justifyContent="flex-end">
         <Grid item>
-          <PatchHorizontalButtons>
+          <HorizontalButtons>
             <PatchProjectButton />
             <PatchSignOutButton />
             <PatchThemeButton mode={mode} setMode={setMode} />
-          </PatchHorizontalButtons>
+          </HorizontalButtons>
         </Grid>
       </Grid>
     </Grid>
@@ -46,7 +44,7 @@ export function PatchThemeButton(props) {
   const { mode, setMode } = props;
 
     return (
-      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" icon={<DarkMode htmlColor={mode === "dark" ? "white" : "black"} />} onClick={() => {
+      <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" icon={<DarkMode htmlColor={mode === "dark" ? "white" : "black"} />} onClick={() => {
         let newMode = (mode === "dark") ? "light" : "dark";
         setMode(newMode);
         localStorage.setItem("theme", newMode);
@@ -60,7 +58,7 @@ export function PatchSignOutButton() {
   };
 
   return (
-    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
   );
 }
 
@@ -70,7 +68,7 @@ export function PatchProjectButton() {
   };
 
   return (
-    <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
   );
 }
 
@@ -95,8 +93,8 @@ export function PatchFileName() {
   );
 }
 
-export function PatchFileButton() {
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(pyatchContext);
+export function FileButton() {
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(patchContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -153,9 +151,9 @@ export function PatchFileButton() {
   }
 
   return (
-    <PatchHorizontalButtons>
-      <PatchIconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
-      <PatchTextButton
+    <HorizontalButtons>
+      <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
+      <TextButton
         id="file"
         variant="contained"
         aria-controls={open ? 'basic-menu' : undefined}
@@ -165,7 +163,7 @@ export function PatchFileButton() {
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
       />
-      <PatchTextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
+      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -180,6 +178,6 @@ export function PatchFileButton() {
         <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
         <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
       </Menu>
-    </PatchHorizontalButtons>
+    </HorizontalButtons>
   );
 }

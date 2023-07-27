@@ -1,11 +1,10 @@
-import React, { useContext, useState } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
-import Button from '@mui/material/Button';
-import { ItemCard } from './PatchTemplates.jsx';
+import React, { useContext } from 'react';
+import patchContext from './provider/PatchContext.js';
+import { ItemCard } from './PatchButtons.jsx';
 import getCostumeUrl from '../util/get-costume-url.js';
 
-export function PyatchSelectSprite(props) {
-    const { pyatchVM, editingTargetId, setEditingTargetId, handleSaveTargetThreads } = useContext(pyatchContext);
+export function SpriteCard(props) {
+    const { pyatchVM, editingTargetId, setEditingTargetId, handleSaveTargetThreads } = useContext(patchContext);
     const { target } = props;
     
     const onClick = () => {

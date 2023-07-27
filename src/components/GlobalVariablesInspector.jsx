@@ -1,15 +1,13 @@
 import * as React from 'react';
-import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { useState, useContext, createContext } from 'react';
+import { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import PyatchContext from "./provider/PyatchContext.js";
-import { PatchAddButton, PatchDeleteButton, PatchHorizontalButtons } from './PatchTemplates.jsx';
+import PyatchContext from "./provider/PatchContext.js";
+import { AddButton, HorizontalButtons } from './PatchButtons.jsx';
 
-export default function PatchVariables() {
+export default function GlobalVariablesInspector() {
 
     return (
         <Box
@@ -25,7 +23,7 @@ export default function PatchVariables() {
                         <Typography color='text.primary' align="center" variant="h6">Global Variables</Typography>
                     </Grid>
                 </Grid>
-                <VariableInputField />
+                <GlobalVariableInputField />
             </Grid>
             <VarList />
         </Box>
@@ -46,15 +44,15 @@ function PlusButton() {
     };
 
     return (
-        <PatchAddButton sx={{ height: '100%' }} onClick={handleClick} />
+        <AddButton sx={{ height: '100%' }} onClick={handleClick} />
     );
 }
 
 function VarLine(props) {
     return (
-        <PatchHorizontalButtons>
+        <HorizontalButtons>
             <Typography sx={{ fontSize: "18px", height: "24px" }} color='text.primary'>{props.name} = {props.value}</Typography>
-        </PatchHorizontalButtons>
+        </HorizontalButtons>
     )
 }
 
@@ -67,10 +65,10 @@ function VarList() {
     );
 }
 
-function VariableInputField() {
+function GlobalVariableInputField() {
     return (
         <Typography fontSize={24} alignContent={"center"} variant="outlined" margin='dense'>
-            <PatchHorizontalButtons>
+            <HorizontalButtons>
                 <TextField
                     label="Variable Name"
                     id="varName"
@@ -85,7 +83,7 @@ function VariableInputField() {
                     fullWidth
                 />
                 <PlusButton />
-            </PatchHorizontalButtons>
+            </HorizontalButtons>
         </Typography>
     );
 }

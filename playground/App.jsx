@@ -1,15 +1,15 @@
 import React from 'react';
-import PyatchProvider from '../src/components/provider/PyatchProvider.jsx';
-import { PyatchStartButton, PyatchStopButton } from '../src/components/PyatchButton.jsx';
-import PyatchStage from '../src/components/PyatchStage.jsx';
-import PyatchSpriteArea from '../src/components/PyatchSpriteArea.jsx';
+import PyatchProvider from '../src/components/provider/PatchProvider.jsx';
+import { StartButton, StopButton } from '../src/components/ControlButton.jsx';
+import Stage from '../src/components/Stage.jsx';
+import SpritePane from '../src/components/SpritePane.jsx';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
 import './App.css'
-import PatchTopBar from '../src/components/PatchTopBar.jsx';
-import { PatchEditorPane, PatchSpriteTabButton, PatchCodeEditorTabButton, PatchSoundTabButton, PatchGlobalVariablesTabButton } from '../src/components/PatchEditorPane.jsx';
+import PatchTopBar from '../src/components/TopBar.jsx';
+import { EditorPane, SpriteTabButton, CodeEditorTabButton, SoundTabButton, GlobalVariablesTabButton } from '../src/components/EditorPane.jsx';
 
-import { PatchHorizontalButtons } from '../src/components/PatchTemplates.jsx';
+import { HorizontalButtons } from '../src/components/PatchButtons.jsx';
 
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material';
@@ -86,14 +86,14 @@ function App() {
               borderBottomWidth: "1px",
               borderColor: 'divider',
             }}>
-              <PatchHorizontalButtons>
-                <PatchCodeEditorTabButton />
-                <PatchSpriteTabButton />
-                <PatchSoundTabButton />
-                <PatchGlobalVariablesTabButton />
-              </PatchHorizontalButtons>
+              <HorizontalButtons>
+                <CodeEditorTabButton />
+                <SpriteTabButton />
+                <SoundTabButton />
+                <GlobalVariablesTabButton />
+              </HorizontalButtons>
             </Grid>
-            <PatchEditorPane />
+            <EditorPane />
           </Grid>
           <Grid item class="rightContainer">
             <Grid item container className="assetHolder" sx={{
@@ -105,10 +105,10 @@ function App() {
               borderLeftWidth: "1px",
               borderColor: 'divider',
             }}>
-              <PatchHorizontalButtons>
-                <PyatchStartButton />
-                <PyatchStopButton />
-              </PatchHorizontalButtons>
+              <HorizontalButtons>
+                <StartButton />
+                <StopButton />
+              </HorizontalButtons>
             </Grid>
             <Box className="assetHolder" sx={{
               backgroundColor: 'panel.default',
@@ -123,9 +123,9 @@ function App() {
                 borderRadius: "8px",
                 overflow: "clip",
               }}>
-                <PyatchStage />
+                <Stage />
               </Box>
-              <PyatchSpriteArea />
+              <SpritePane />
             </Box>
           </Grid>
         </Grid>

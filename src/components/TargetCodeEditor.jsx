@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import pyatchContext from './provider/PyatchContext.js';
+import patchContext from './provider/PatchContext.js';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
@@ -12,14 +12,13 @@ import SplitPane, { Pane } from 'react-split-pane-next';
 
 import { Autocomplete, Button, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
-import { PatchDeleteButton, PatchHorizontalButtons, PatchIconButton } from './PatchTemplates.jsx';
+import { DeleteButton, HorizontalButtons, IconButton } from './PatchButtons.jsx';
 import completions from '../util/patch-autocompletions.mjs';
 
-export function PyatchTargetEditor(props) {
-    const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(pyatchContext);
+export function TargetCodeEditor(props) {
+    const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(patchContext);
     const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
     const { target } = props;
 
@@ -51,7 +50,7 @@ export function PyatchTargetEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(pyatchContext);
+    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(patchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -154,11 +153,11 @@ function ThreadEditor(props) {
                     />}
                 </Grid>
                 <Grid item sx={{ width: (/* !first XOR final */ !first ^ final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
-                    <PatchHorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
-                        <PatchIconButton color="success" onClick={handleSave} disabled={savedThreads[thread.id]} sx={{ height: 40 }} icon={<SaveIcon />} />
-                        {!first && <PatchDeleteButton onClick={onDeleteThread} sx={{height: 40}} />}
-                        {final && <PatchIconButton onClick={onAddThread} icon={<PostAddIcon />} sx={{height: 40}} />}
-                    </PatchHorizontalButtons>
+                    <HorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
+                        <IconButton color="success" onClick={handleSave} disabled={savedThreads[thread.id]} sx={{ height: 40 }} icon={<SaveIcon />} />
+                        {!first && <DeleteButton onClick={onDeleteThread} sx={{height: 40}} />}
+                        {final && <IconButton onClick={onAddThread} icon={<PostAddIcon />} sx={{height: 40}} />}
+                    </HorizontalButtons>
                 </Grid>
             </Grid>
             <Grid marginTop="4px">

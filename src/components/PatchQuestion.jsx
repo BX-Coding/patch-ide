@@ -1,18 +1,18 @@
+import React from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useContext, useState } from "react";
-import pyatchContext from "./provider/PyatchContext";
+import patchContext from "./provider/PatchContext.js";
 
 export function PatchQuestion(props) {
-    const { onAnswer, questionAsked } = useContext(pyatchContext);
+    const { onAnswer, questionAsked } = useContext(patchContext);
     const [inputFieldText, setInputFieldText] = useState("");
     
     const handleInputFieldChange = (event) => {
         setInputFieldText(event.target.value);
     }
 
-    return<>
-        <Box container sx={{
+    return <Box container sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -43,6 +43,5 @@ export function PatchQuestion(props) {
                 />
                 <Button onClick={onAnswer(inputFieldText)}><CheckCircleIcon/></Button>
             </Box>
-        </Box>
-        </>;
+        </Box>;
 }
