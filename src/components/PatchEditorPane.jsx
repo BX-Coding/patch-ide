@@ -322,7 +322,7 @@ function PatchSoundInspector(props) {
                 }}>
                     <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
                     <PatchDeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-                    <PatchIconButton icon={<PlayArrowIcon />} disabled={targetSounds[soundIndex].rate === 22050} onClick={() => { handlePlayClick(soundIndex); }} />
+                    <PatchIconButton icon={<PlayArrowIcon />} disabled={!targetSounds[soundIndex] || targetSounds[soundIndex].rate == 22050} onClick={() => { handlePlayClick(soundIndex); }} />
                 </PatchHorizontalButtons>
             </Grid>
             <Grid item xs>
