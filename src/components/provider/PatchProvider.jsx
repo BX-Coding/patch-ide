@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo, createContext } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PatchContext from "./PatchContext.js";
-import { PYATCH_EXECUTION_STATES, PYATCH_LOADING_MESSAGES } from "../../util/ExecutionState.js";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
-import backdrops from '../../assets/backdrops.json';
 import sprites from '../../assets/sprites.json';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader.js'
@@ -40,7 +38,6 @@ const PyatchProvider = props => {
   const [patchEditorTab, setPatchEditorTab] = useState(0);
   const [runtimeErrorList, setRuntimeErrorList] = useState([]);
 
-  //const [costumesUpdate, setCostumesUpdate] = useState(false);
   const costumesUpdate = false;
   const setCostumesUpdate = () => {updateCostumes()};
   const [currentCostumes, setCurrentCostumes] = useState([]);
@@ -125,56 +122,6 @@ const PyatchProvider = props => {
     updateCostumes();
   }, [costumesUpdate, vmLoaded, patchReady, editingTargetId]);
 
-
-
-  // -------- Error Handling --------
-
-  //returns array with each line of code for given sprite id
-  /*
-  const getCodeLines = (sprite) => {
-    let linesOfCode = [];
-    let prev = 0;
-    if (!pyatchEditor.editorText[sprite]) {
-      return [];
-    }
-    for (let i = 0; i < pyatchEditor.editorText[sprite].length; i++) {
-      if (pyatchEditor.editorText[sprite][i] == '\n') {
-        linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, i));
-        prev = i + 1;
-      }
-    }
-    linesOfCode.push(pyatchEditor.editorText[sprite].substring(prev, pyatchEditor.editorText[sprite].length));
-    return linesOfCode;
-  }
-
-
-  function generateError(error) {
-    let line = error.line;
-    let sprite = error.sprite;
-    let linesOfCode = pyatchEditor.getCodeLines(sprite);
-    let priorText = [];
-    let afterText = [];
-    for (let i = 3; i > 0; i--) {
-      if (line - i - 1 >= 0 && line - i - 1 < linesOfCode.length) priorText.push(line - i + " " + linesOfCode[line - i - 1]);
-      if (line - i + 3 < linesOfCode.length) afterText.push(line - i + 4 + " " + linesOfCode[line - i + 3]);
-    }
-
-
-    let currentError = {
-      "uid": currentId,
-      "line": line,
-      "errName": error.name,
-      "priorText": priorText,
-      "afterText": afterText,
-      "sprite": pyatchEditor.getSpriteName(sprite),
-      "errCode": line + " " + linesOfCode[line - 1]
-    };
-    currentId++;
-    return currentError;
-
-  }
-  */
-
   // -------- Sprite Values --------
 
   const changeSpriteValues = (eventSource = null) => {
@@ -250,7 +197,6 @@ const PyatchProvider = props => {
 
     var returnval = await Promise.all(costumes.map(c => {
       if (fromCostumeLibrary) {
-        //return pyatchVM.addCostumeFromLibrary(c.md5, c);
         return pyatchVM.addCostume(c.md5ext, c, targetId);
       } else {
 
@@ -345,11 +291,6 @@ const PyatchProvider = props => {
   });
 
   // -------- Default Project intialization --------
-
-  const addDefaultBackground = async () => {
-    await pyatchVM.addSprite(backdrops[0]);
-    pyatchVM.getAllRenderedTargets()[0].isStage = true;
-  }
 
   const addSprite = async (sprite) => {
     await pyatchVM.addSprite(sprite);
@@ -489,14 +430,11 @@ const PyatchProvider = props => {
   const loadSerializedProject = async (vmState) => {
     if (pyatchVM) {
       setPatchReady(false);
-      /* TODO: clear out old targets first */
 
       const oldTargets = pyatchVM.runtime.targets;
       const oldExecutableTargets = pyatchVM.runtime.executableTargets;
       const oldGlobalVariables = pyatchVM.runtime._globalVariables;
 
-      // pyatchVM.runtime.targets = [];
-      // pyatchVM.runtime.executableTargets = [];
       pyatchVM.runtime._globalVariables = {};
 
       const result = await pyatchVM.loadProject(vmState);
@@ -537,8 +475,6 @@ const PyatchProvider = props => {
       } else {
         console.error("The base64data to save is null for some reason. Abort.");
       }
-      /* TODO: display a "saved" dialog somewhere */
-      console.log("Saved.");
     }
     setChangesSinceLastSave(false);
   }
