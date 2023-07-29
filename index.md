@@ -75,7 +75,7 @@ Development is currently being managed by [BX Coding](https://bxcoding.org). The
 
 Reach out to developer@bxcoding.org! We welcome all collaborators!
 
-# Ackowledgements
+# Acknowledgments
 
 Patch is built on top of the following amazing open-source projects:
 - [Pyodide](https://pyodide.org/en/stable/)
