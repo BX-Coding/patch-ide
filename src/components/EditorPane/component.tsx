@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import patchContext from './provider/PatchContext.js';
-import GlobalVariablesInspector from './GlobalVariablesInspector.jsx';
-import getCostumeUrl from '../util/get-costume-url.js';
+import patchContext from '../provider/PatchContext.js';
+import GlobalVariablesInspector from '../GlobalVariablesInspector.jsx';
+import getCostumeUrl from '../../util/get-costume-url.js';
 
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
@@ -11,11 +11,14 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { Box } from '@mui/material';
-import CodeEditor from './CodeEditor.jsx'
+import CodeEditor from '../CodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
-import { AddButton, DeleteButton, HorizontalButtons, IconButton, ItemCard } from './PatchButtons.jsx';
+import { AddButton, DeleteButton, HorizontalButtons, IconButton, ItemCard } from '../PatchButtons.jsx';
 import PublicIcon from '@mui/icons-material/Public.js';
+
+import usePatchStore, { EditorTab } from '../../store';
+
 
 export function EditorPane(props) {
     const { patchEditorTab } = useContext(patchContext);
@@ -52,17 +55,7 @@ export function CodeEditorTabButton(props) {
     );
 }
 
-export function SpriteTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
 
-    const updateEditorTab = () => {
-        setPatchEditorTab(1);
-    }
-
-    return (
-        <Button variant={patchEditorTab === 1 ? "contained" : "outlined"} onClick={updateEditorTab}><FlutterDashIcon /></Button>
-    );
-}
 
 export function SoundTabButton(props) {
     const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
@@ -88,15 +81,9 @@ export function GlobalVariablesTabButton(props) {
     );
 }
 
-export function SpriteEditor(props) {
-    return (
-        <Grid container>
-            <Grid item xs={12}>
-                <SpriteInspector />
-            </Grid>
-        </Grid>
-    );
-}
+
+
+
 
 export function SoundEditor(props) {
     return (
@@ -118,42 +105,7 @@ function GlobalVariables(props) {
     );
 }
 
-function AddCostumeButton(props) {
-    const { handleUploadCostume, setShowInternalChooser, setInternalChooserAdd } = useContext(patchContext);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = (event) => {
-        setAnchorEl(null);
-    };
-
-    const handleBuiltIn = () => {
-        handleClose();
-        setInternalChooserAdd(false);
-        setShowInternalChooser(true);
-    }
-
-    return <>
-        <AddButton
-            variant='contained'
-            onClick={handleClick} />
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-                'aria-labelledby': 'basic-button',
-            }}
-        >
-            <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
-            <MenuItem id="upload" onClick={() => { handleUploadCostume(); handleClose(); }}>From Upload</MenuItem>
-        </Menu>
-    </>
-}
 
 function AddSoundButton(props) {
     const { reloadSoundEditor } = props;
@@ -362,93 +314,15 @@ function SoundInspector(props) {
     );
 }
 
-function SpriteDetails(props) {
-    const { costumeIndex, costumes, width, height } = props;
+export function EditorTabButton(tab: EditorTab) {
+    const editorTab = usePatchStore((state) => state.editorTab)
+    const setEditorTab = usePatchStore((state) => state.setEditorTab)
 
-    return (
-        <Grid container direction="row" spacing={2} sx={{
-            width: width,
-            height: height,
-        }}>
-            <Grid item xs={12} sx={{
-                maxWidth: width,
-                maxHeight: height
-            }}>
-                <img src={getCostumeUrl(costumes[costumeIndex].asset)} width={"100%"} height={"100%"} />
-            </Grid>
-        </Grid>
-    );
-}
-
-function SpriteInspector(props) {
-    const { pyatchVM, editingTargetId, currentCostumes, setCurrentCostumes, currentCostumeIndex, setCurrentCostumeIndex } = useContext(patchContext);
-
-    const handleClick = (costumeName) => {
-        const newCostumeIndex = pyatchVM.editingTarget.getCostumeIndexByName(costumeName);
-        pyatchVM.editingTarget.setCostume(newCostumeIndex);
-        setCurrentCostumeIndex(newCostumeIndex);
+    const updateEditorTab = () => {
+        setEditorTab(tab);
     }
 
-    const handleDeleteClick = (costumeName) => {
-        const newCostumeIndex = pyatchVM.editingTarget.getCostumeIndexByName(costumeName);
-        pyatchVM.editingTarget.deleteCostume(newCostumeIndex);
-        setCurrentCostumeIndex(pyatchVM.editingTarget.currentCostume);
-        setCurrentCostumes([...pyatchVM.editingTarget.getCostumes()]);
-    }
+    const variant = editorTab === tab ? "contained" : "outlined";
 
-    const handleDeleteCurrentClick = () => {
-        handleDeleteClick(currentCostumes[currentCostumeIndex].name);
-    }
-
-    const deleteCurrentCostumeButton = () => <DeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-
-    return (
-        <Grid container direction="column" className="assetHolder" sx={{
-            backgroundColor: 'panel.default',
-            minHeight: "calc(100% + 40px)",
-            marginBottom: "0px"
-        }}>
-            <Grid item xs>
-                <HorizontalButtons sx={{
-                    marginLeft: "4px",
-                    marginTop: "4px"
-                }}>
-                    <Grid item><AddCostumeButton /></Grid>
-                    <Grid item>{deleteCurrentCostumeButton()}</Grid>
-                </HorizontalButtons>
-            </Grid>
-            <Grid item xs>
-                <SpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={currentCostumeIndex} costumes={currentCostumes} />
-            </Grid>
-            <Grid item xs sx={{
-                borderTopWidth: "1px",
-                borderTopStyle: "solid",
-                borderTopColor: 'divider',
-            }}>
-                <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
-                    <Grid container direction="row" spacing={1} sx={{
-                        margin: "0px",
-                        backgroundColor: 'panel.default',
-                        padding: "4px",
-                        width: "100%",
-                        minHeight: "100%"
-                    }}>
-                        {currentCostumes.map((costume, i) =>
-                            <Grid item key={i}>
-                                <ItemCard
-                                    imageSrc={getCostumeUrl(costume.asset)}
-                                    title={costume.name}
-                                    selected={i === currentCostumeIndex}
-                                    onClick={handleClick}
-                                    key={costume.name}
-                                    width={120}
-                                    height={120}
-                                />
-                            </Grid>
-                        )}
-                    </Grid>
-                </Box>
-            </Grid>
-        </Grid>
-    );
+    return <Button variant={variant} onClick={updateEditorTab}></Button>
 }

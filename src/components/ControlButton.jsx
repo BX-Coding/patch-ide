@@ -5,7 +5,15 @@ import FlagIcon from '@mui/icons-material/Flag';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 
 export function StartButton(props) {
-    const { onFlagPressed, runButtonDisabled } = useContext(patchContext);
+    const { runButtonDisabled } = useContext(patchContext);
+
+    const onFlagPressed = async () => {
+        await saveAllThreads();
+        setRuntimeErrorList([]);
+        setRunButtonDisabled(true);
+        await pyatchVM.greenFlag();
+        setRunButtonDisabled(false);
+      }
 
     return(
         <Button variant="contained" onClick={onFlagPressed} disabled={runButtonDisabled}><FlagIcon/></Button>

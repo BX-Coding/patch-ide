@@ -51,7 +51,7 @@ const PyatchProvider = props => {
   const [vmLoaded, setVmLoaded] = useState(false);
   const [patchReady, setPatchReady] = useState(false);
   const [globalVariables, setGlobalVariables] = useState([]);
-  const [changesSinceLastSave, setChangesSinceLastSave] = useState(false);
+  const [projectChanged, setProjectChanged] = useState(false);
 
   const [eventLabels, setEventLabels] = useState({});
   const [eventOptionsMap, setEventOptionsMap] = useState({});
@@ -98,8 +98,8 @@ const PyatchProvider = props => {
     vmLoaded,
     globalVariables,
     setGlobalVariables,
-    changesSinceLastSave,
-    setChangesSinceLastSave,
+    projectChanged,
+    setProjectChanged,
     eventLabels,
     setEventLabels,
     eventOptionsMap,
@@ -152,14 +152,14 @@ const PyatchProvider = props => {
   // -------- Saving State --------
 
   useEffect(() => {
-    setChangesSinceLastSave(true);
+    setProjectChanged(true);
   }, [targetIds]);
 
   //https://dev.to/zachsnoek/creating-custom-react-hooks-useconfirmtabclose-eno
   const confirmationMessage = "You have unsaved changes. Continue?";
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (changesSinceLastSave) {
+      if (projectChanged) {
         event.returnValue = confirmationMessage;
         return confirmationMessage;
       }
@@ -168,7 +168,7 @@ const PyatchProvider = props => {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [changesSinceLastSave]);
+  }, [projectChanged]);
 
   useEffect(() => {
     if (pyatchVM && pyatchVM.editingTarget) {
@@ -192,51 +192,6 @@ const PyatchProvider = props => {
 
   // -------- Costume Picking --------
 
-  const handleNewCostume = async (costume, fromCostumeLibrary, targetId) => {
-    const costumes = Array.isArray(costume) ? costume : [costume];
-
-    var returnval = await Promise.all(costumes.map(c => {
-      if (fromCostumeLibrary) {
-        return pyatchVM.addCostume(c.md5ext, c, targetId);
-      } else {
-
-        return pyatchVM.addCostume(c.md5, c, targetId);
-      }
-    })).then(() => {setCostumesUpdate(costumesUpdate ? false : true);});
-
-    return returnval;
-  }
-
-  const handleUploadCostume = (targetId) => {
-    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
-
-    input.onchange = e => {
-      handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-        costumeUpload(buffer, fileType, pyatchVM.runtime.storage, async vmCostumes => {
-          vmCostumes.forEach((costume, i) => {
-            costume.name = `${fileName}${i ? i + 1 : ''}`;
-          });
-
-          if (targetId == undefined || targetId == null) {
-            handleNewCostume(vmCostumes, false, editingTargetId);
-          } else {
-            handleNewCostume(vmCostumes, false, targetId);
-          }
-
-          // await handleNewCostume if you want to do anything here
-        }, console.log);
-      }, console.log);
-    }
-
-    input.click();
-  };
-
-  const handleAddCostumesToActiveTarget = (costumes, fromCostumeLibrary) => {
-    handleNewCostume(costumes, fromCostumeLibrary, editingTargetId);
-  }
 
   // -------- Sound Picking --------
   const handleUploadSound = (targetId) => {
@@ -457,7 +412,7 @@ const PyatchProvider = props => {
       changeSpriteValues(editingTargetId);
       initializeThreadGlobalState();
 
-      setChangesSinceLastSave(false);
+      setProjectChanged(false);
       setPatchReady(true);
     }
   }
@@ -476,7 +431,7 @@ const PyatchProvider = props => {
         console.error("The base64data to save is null for some reason. Abort.");
       }
     }
-    setChangesSinceLastSave(false);
+    setProjectChanged(false);
   }
 
   // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript

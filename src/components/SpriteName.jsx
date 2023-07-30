@@ -7,14 +7,14 @@ import Grid from '@mui/material/Grid';
 import { HorizontalButtons, IconButton } from './PatchButtons.jsx';
 
 export function SpriteName(props) {
-    const { pyatchVM, targetIds, editingTargetId, setChangesSinceLastSave } = useContext(patchContext);
+    const { pyatchVM, targetIds, editingTargetId, setProjectChanged } = useContext(patchContext);
     const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
     const [nameSaved, setNameSaved] = useState(true);
     const [name, setName] = useState(editingTarget.sprite.name);
 
     const handleSave = () => {
         pyatchVM.renameSprite(editingTargetId, name);
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
         setNameSaved(true);
     }
 

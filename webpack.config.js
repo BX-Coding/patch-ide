@@ -16,21 +16,8 @@ export default {
   mode: "development",
   module: {
     rules: [
-      {
-        test: /\.?(js|jsx|mjs)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              '@babel/preset-env', 
-              ['@babel/preset-react', {"runtime": "automatic"}]
-          ], plugins: [
-            '@babel/plugin-syntax-import-assertions'
-          ]
-          }
-        }
-      },
+      { test: /\.(t|j)sx?$/, use: { loader: 'ts-loader' }, exclude: /node_modules/ },
+      { enforce: "pre", test: /\.js$/, exclude: /node_modules/, loader: "source-map-loader" },
       {
         test: /\.css$/,
         use: [

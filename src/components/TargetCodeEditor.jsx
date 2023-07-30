@@ -18,7 +18,7 @@ import { DeleteButton, HorizontalButtons, IconButton } from './PatchButtons.jsx'
 import completions from '../util/patch-autocompletions.mjs';
 
 export function TargetCodeEditor(props) {
-    const { pyatchVM, setChangesSinceLastSave, editingTargetId } = useContext(patchContext);
+    const { pyatchVM, setProjectChanged, editingTargetId } = useContext(patchContext);
     const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
     const { target } = props;
 
@@ -26,13 +26,13 @@ export function TargetCodeEditor(props) {
     const onAddThread = () => {
         target.addThread("", "event_whenflagclicked", "");
         setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
 
     const onDeleteThread = (threadId) => () => {
         target.deleteThread(threadId);
         setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
 
     useEffect(() => {
@@ -50,7 +50,7 @@ export function TargetCodeEditor(props) {
 }
 
 function ThreadEditor(props) {
-    const { setChangesSinceLastSave, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, runtimeErrorList, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(patchContext);
+    const { setProjectChanged, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(patchContext);
     const { thread, first, final, onAddThread, onDeleteThread } = props;
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
@@ -62,7 +62,7 @@ function ThreadEditor(props) {
     const handleCodeChange = (newValue) => {
         setThreadsText({...threadsText, [thread.id]: newValue});
         setSavedThreads({...savedThreads, [thread.id]: false});
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
 
     const handleEventChange = (event, newValue) => {
@@ -74,19 +74,19 @@ function ThreadEditor(props) {
             thread.updateThreadTriggerEventOption("");
         }
         setTriggerEvent(newValue.id);
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
     
     const handleEventOptionChange = (event, newValue) => {
         thread.updateThreadTriggerEventOption(newValue.id)
         setTriggerEventOption(newValue.id);
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
 
     const handleEventOptionBroadcastChange = (event) => {
         thread.updateThreadTriggerEventOption(event.target.value);
         setBroadcastMessageIds({...broadcastMessageIds, [thread.id]: event.target.value})
-        setChangesSinceLastSave(true);
+        setProjectChanged(true);
     }
 
     const eventMap = pyatchVM.getEventLabels();

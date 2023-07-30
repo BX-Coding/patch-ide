@@ -94,7 +94,7 @@ export function PatchFileName() {
 }
 
 export function FileButton() {
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, changesSinceLastSave, saveAllThreads } = useContext(patchContext);
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, projectChanged, saveAllThreads } = useContext(patchContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -163,7 +163,7 @@ export function FileButton() {
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
       />
-      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={changesSinceLastSave ? "contained" : "disabled"} onClick={handleSaveNow} text={changesSinceLastSave ? "Save" : "Saved"} />
+      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={projectChanged ? "contained" : "disabled"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}
