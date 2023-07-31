@@ -1,24 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
-import patchContext from './provider/PatchContext.js';
+import patchContext from '../provider/PatchContext.js';
 import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import Grid from '@mui/material/Grid';
 
-import { HorizontalButtons, IconButton } from './PatchButtons.jsx';
+import { HorizontalButtons, IconButton } from '../PatchButtons.jsx';
+import usePatchStore from '../../store';
 
-export function SpriteName(props) {
-    const { pyatchVM, targetIds, editingTargetId, setProjectChanged } = useContext(patchContext);
-    const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
+export function SpriteName() {
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const targetIds = usePatchStore((state) => state.targetIds);
+    const editingTargetId = usePatchStore((state) => state.editingTargetId);
+    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+
+    const editingTarget = patchVM.editingTarget;
     const [nameSaved, setNameSaved] = useState(true);
     const [name, setName] = useState(editingTarget.sprite.name);
 
     const handleSave = () => {
-        pyatchVM.renameSprite(editingTargetId, name);
+        patchVM.renameSprite(editingTargetId, name);
         setProjectChanged(true);
         setNameSaved(true);
     }
 
-    const onChange = (event) => {
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
         setNameSaved(false);
     }
@@ -37,7 +42,7 @@ export function SpriteName(props) {
                 disabled={targetIds[0] == editingTargetId}
                 sx={{minWidth: '532px'}}
             />
-            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !pyatchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
+            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !patchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
         </HorizontalButtons>
     </Grid>);
 }

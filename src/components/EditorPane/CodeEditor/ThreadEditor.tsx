@@ -1,71 +1,59 @@
-import React, { useContext, useEffect, useState } from 'react';
-import patchContext from './provider/PatchContext.js';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import patchContext from '../../provider/PatchContext.js';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
-import pythonLinter from '../util/python-syntax-lint.js';
+import pythonLinter from '../../../util/python-syntax-lint.js';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-
-import SplitPane, { Pane } from 'react-split-pane-next';
 
 import { Autocomplete, Button, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 
-import { DeleteButton, HorizontalButtons, IconButton } from './PatchButtons.jsx';
-import completions from '../util/patch-autocompletions.mjs';
-
-export function TargetCodeEditor(props) {
-    const { pyatchVM, setProjectChanged, editingTargetId } = useContext(patchContext);
-    const [ editingThreadIds, setEditingThreadsIds ] = useState(Object.keys(pyatchVM.editingTarget.threads));
-    const { target } = props;
+import { DeleteButton, HorizontalButtons, IconButton } from '../../PatchButtons.jsx';
+import completions from '../../../util/patch-autocompletions.mjs';
+import { Target, Thread } from '../types.js';
+import usePatchStore from '../../../store';
 
 
-    const onAddThread = () => {
-        target.addThread("", "event_whenflagclicked", "");
-        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
-        setProjectChanged(true);
-    }
-
-    const onDeleteThread = (threadId) => () => {
-        target.deleteThread(threadId);
-        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
-        setProjectChanged(true);
-    }
-
-    useEffect(() => {
-        setEditingThreadsIds(Object.keys(pyatchVM.editingTarget.threads));
-    }, [editingTargetId]);
-
-    return(
-        <SplitPane split="vertical">
-            {editingThreadIds.map((threadId, i) => 
-            <Pane initialSize={`${100/editingThreadIds.length}%`}>
-                <ThreadEditor thread={pyatchVM.editingTarget.getThread(threadId)} first={i === 0} final={i === (editingThreadIds.length - 1)} onAddThread={onAddThread} onDeleteThread={onDeleteThread(threadId)}/>
-            </Pane>)}
-        </SplitPane>
-    );
+type ThreadEditorProps = {
+    thread: Thread,
+    first: boolean,
+    final: boolean,
 }
 
-function ThreadEditor(props) {
-    const { setProjectChanged, pyatchVM, threadsText, setThreadsText, savedThreads, setSavedThreads, handleSaveThread, broadcastMessageIds, setBroadcastMessageIds, editingTargetId } = useContext(patchContext);
-    const { thread, first, final, onAddThread, onDeleteThread } = props;
+export const ThreadEditor = ({ thread, first, final }: ThreadEditorProps) => {
+    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+    const addThread = usePatchStore((state) => state.addThread);
+    const deleteThread = usePatchStore((state) => state.deleteThread);
+    const updateThread = usePatchStore((state) => state.updateThread);
+    const saveThread = usePatchStore((state) => state.saveThread);
+    const getThread = usePatchStore((state) => state.getThread);
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const editingTargetId = usePatchStore((state) => state.editingTargetId);
+
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
 
+    const handleAdd = () => {
+        addThread(patchVM.editingTarget);
+    }
+
+    const handleDelete = () => {
+        deleteThread(thread.id);
+    }
+    
     const handleSave = () => {
-        handleSaveThread(thread);
+        saveThread(thread.id);
     }
 
-    const handleCodeChange = (newValue) => {
-        setThreadsText({...threadsText, [thread.id]: newValue});
-        setSavedThreads({...savedThreads, [thread.id]: false});
-        setProjectChanged(true);
+    const handleCodeChange = (newScript: string) => {
+        updateThread(thread.id, newScript);
     }
 
-    const handleEventChange = (event, newValue) => {
+    const handleEventChange = (_: React.ChangeEvent<{}>, newValue: { id: string }) => {
         thread.updateThreadTriggerEvent(newValue.id)
         // This Sprite Clicked has an implicit option of "this sprite"
         if (newValue.id === "event_whenthisspriteclicked") {
@@ -77,23 +65,22 @@ function ThreadEditor(props) {
         setProjectChanged(true);
     }
     
-    const handleEventOptionChange = (event, newValue) => {
+    const handleEventOptionChange = (_: React.ChangeEvent<{}>, newValue: { id: string }) => {
         thread.updateThreadTriggerEventOption(newValue.id)
         setTriggerEventOption(newValue.id);
         setProjectChanged(true);
     }
 
-    const handleEventOptionBroadcastChange = (event) => {
+    const handleEventOptionBroadcastChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         thread.updateThreadTriggerEventOption(event.target.value);
-        setBroadcastMessageIds({...broadcastMessageIds, [thread.id]: event.target.value})
         setProjectChanged(true);
     }
 
-    const eventMap = pyatchVM.getEventLabels();
+    const eventMap = patchVM.getEventLabels();
     const eventList = Object.keys(eventMap).map((event) => {return { id: event, label: eventMap[event] }});
     let eventOptionsList;
     if (thread.triggerEvent !== "event_whenbroadcastreceived") {
-        eventOptionsList = (pyatchVM.getEventOptionsMap(triggerEvent) ?? []).map((eventOption) => { return { id: eventOption, label: eventOption}});
+        eventOptionsList = (patchVM.getEventOptionsMap(triggerEvent) ?? []).map((eventOption: string) => { return { id: eventOption, label: eventOption}});
     }
     return (
         <>
@@ -152,18 +139,18 @@ function ThreadEditor(props) {
                         size="small"
                     />}
                 </Grid>
-                <Grid item sx={{ width: (/* !first XOR final */ !first ^ final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
+                <Grid item sx={{ width: (/* !first XOR final */ !first !== final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
                     <HorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
-                        <IconButton color="success" onClick={handleSave} disabled={savedThreads[thread.id]} sx={{ height: 40 }} icon={<SaveIcon />} />
-                        {!first && <DeleteButton onClick={onDeleteThread} sx={{height: 40}} />}
-                        {final && <IconButton onClick={onAddThread} icon={<PostAddIcon />} sx={{height: 40}} />}
+                        <IconButton color="success" onClick={handleSave} disabled={getThread(thread.id).saved} sx={{ height: 40 }} icon={<SaveIcon />} />
+                        {!first && <DeleteButton onClick={handleDelete} sx={{height: 40}} />}
+                        {final && <IconButton onClick={handleAdd} icon={<PostAddIcon />} sx={{height: 40}} />}
                     </HorizontalButtons>
                 </Grid>
             </Grid>
             <Grid marginTop="4px">
                 <CodeMirror
-                    value={threadsText[thread.id]}
-                    extensions={[python(), autocompletion({override: [completions(pyatchVM)]}), pythonLinter(console.log, pyatchVM, thread.id), lintGutter(), indentationMarkers()]}
+                    value={getThread(thread.id).text}
+                    extensions={[python(), autocompletion({override: [completions(patchVM)]}), pythonLinter(console.log, patchVM, thread.id), lintGutter(), indentationMarkers()]}
                     theme="dark"
                     onChange={handleCodeChange}
                     height="calc(100vh - 169px)"

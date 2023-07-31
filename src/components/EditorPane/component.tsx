@@ -29,57 +29,6 @@ export function EditorPane(props) {
     </div>
 }
 
-export function CodeEditorWrapper(props) {
-    return (
-        <Grid container direction="column" className="assetHolder" sx={{
-            backgroundColor: 'panel.default',
-            borderColor: 'divider',
-            minHeight: "calc(100% - 40px)",
-            marginBottom: "0px",
-            padding: "8px"
-        }}>
-            <CodeEditor />
-        </Grid>
-    );
-}
-
-export function CodeEditorTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
-
-    const updateEditorTab = () => {
-        setPatchEditorTab(0);
-    }
-
-    return (
-        <Button variant={patchEditorTab === 0 ? "contained" : "outlined"} onClick={updateEditorTab}><DataObjectIcon /></Button>
-    );
-}
-
-
-
-export function SoundTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
-
-    const updateEditorTab = () => {
-        setPatchEditorTab(2);
-    }
-
-    return (
-        <Button variant={patchEditorTab === 2 ? "contained" : "outlined"} onClick={updateEditorTab}><AudioTrackIcon /></Button>
-    );
-}
-
-export function GlobalVariablesTabButton(props) {
-    const { patchEditorTab, setPatchEditorTab } = useContext(patchContext);
-
-    const updateEditorTab = () => {
-        setPatchEditorTab(3);
-    }
-
-    return (
-        <Button variant={patchEditorTab === 3 ? "contained" : "outlined"} onClick={updateEditorTab}><PublicIcon /></Button>
-    );
-}
 
 
 

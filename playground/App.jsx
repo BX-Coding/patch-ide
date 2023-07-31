@@ -2,7 +2,7 @@ import React from 'react';
 import PyatchProvider from '../src/components/provider/PatchProvider.jsx';
 import { StartButton, StopButton } from '../src/components/ControlButton.jsx';
 import Stage from '../src/components/Stage.jsx';
-import SpritePane from '../src/components/SpritePane.jsx';
+import SpritePane from '../src/components/SpritePane/component.jsx';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
 import './App.css'
