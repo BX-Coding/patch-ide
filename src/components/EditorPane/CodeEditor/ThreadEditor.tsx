@@ -12,7 +12,7 @@ import { Autocomplete, Button, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 
-import { DeleteButton, HorizontalButtons, IconButton } from '../../PatchButtons.jsx';
+import { DeleteButton, HorizontalButtons, IconButton } from '../../PatchButton/component.jsx';
 import completions from '../../../util/patch-autocompletions.mjs';
 import { Target, Thread } from '../types.js';
 import usePatchStore from '../../../store';

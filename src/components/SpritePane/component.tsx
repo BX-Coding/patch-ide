@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { AddSpriteButton } from "../AddSpriteButton.jsx"; //plus button
-import { DeleteSpriteButton } from "../DeleteSpriteButton.jsx"; //clear button
+import { AddSpriteButton } from "./AddSpriteButton.jsx"; //plus button
+import { DeleteSpriteButton } from "./DeleteSpriteButton.jsx"; //clear button
 import { SpriteCard } from "./SpriteCard.jsx"; //sprite name button
 import { SpriteAttributePane } from "./SpriteAttributeArea.js"; //height and stuff
 import { SpriteName } from "./SpriteName.jsx"; //textfeild
@@ -8,7 +8,7 @@ import patchContext from '../provider/PatchContext.js';
 
 import Grid from '@mui/material/Grid';
 
-import { HorizontalButtons } from '../PatchButtons.jsx';
+import { HorizontalButtons } from '../PatchButton/component.jsx';
 import usePatchStore from '../../store/index.js';
 
 function StageButton() {

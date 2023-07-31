@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import patchContext from '../provider/PatchContext.js';
-import GlobalVariablesInspector from '../GlobalVariablesInspector.jsx';
+import GlobalVariablesInspector from './VariableEditor/GlobalVariablesInspector.jsx';
 import getCostumeUrl from '../../util/get-costume-url.js';
 
 import Button from '@mui/material/Button'
@@ -14,7 +14,7 @@ import { Box } from '@mui/material';
 import CodeEditor from '../CodeEditor.jsx'
 import AudioTrackIcon from '@mui/icons-material/Audiotrack'
 
-import { AddButton, DeleteButton, HorizontalButtons, IconButton, ItemCard } from '../PatchButtons.jsx';
+import { AddButton, DeleteButton, HorizontalButtons, IconButton, ItemCard } from '../PatchButton/component.jsx';
 import PublicIcon from '@mui/icons-material/Public.js';
 
 import usePatchStore, { EditorTab } from '../../store';

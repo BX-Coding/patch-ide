@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import patchContext from './provider/PatchContext.js';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-import { HorizontalButtons, TextButton, IconButton } from './PatchButtons.jsx';
+import { HorizontalButtons, TextButton, IconButton } from './PatchButton/component.jsx';
 import { DarkMode } from '@mui/icons-material';
 
 export default function TopBar(props) {

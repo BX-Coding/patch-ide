@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
 import usePatchStore, { ModalSelectorType } from '../../../store';
 import { getCostumeUrl } from 'get-costume-url';
-import { AddButton, DeleteButton, ItemCard } from '../../PatchButtons.jsx';
+import { AddButton, DeleteButton, ItemCard } from '../../PatchButton/component.jsx';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';
 import { handleUploadCostume } from './handleCostume';
 import { Costume } from '../types';

@@ -14,10 +14,7 @@ export interface SpriteAreaState {
     setQuestionAsked: (asked: boolean) => void,
     setRunButtonDisabled: (disabled: boolean) => void,
 
-    setEditingTargetX: (x: number) => void,
-    setEditingTargetY: (y: number) => void,
-    setEditingTargetSize: (size: number) => void,
-    setEditingTargetDirection: (direction: number) => void,
+    setEditingTargetAttributes: (x: number, y: number, size: number, direction: number) => void,
 }
 
 export const createSpriteAreaSlice: StateCreator<
@@ -38,9 +35,11 @@ export const createSpriteAreaSlice: StateCreator<
     setQuestionAsked: (asked: boolean) => set({ questionAsked: asked }),
     setRunButtonDisabled: (disabled: boolean) => set({ runButtonDisabled: disabled }),
 
-    setEditingTargetX: (x: number) => set({ editingTargetX: x }),
-    setEditingTargetY: (y: number) => set({ editingTargetY: y }),
-    setEditingTargetSize: (size: number) => set({ editingTargetSize: size }),
-    setEditingTargetDirection: (direction: number) => set({ editingTargetDirection: direction }),
+    setEditingTargetAttributes: (x: number, y: number, size: number, direction: number) => set({
+        editingTargetX: x,
+        editingTargetY: y,
+        editingTargetSize: size,
+        editingTargetDirection: direction,
+    }),
 
   })

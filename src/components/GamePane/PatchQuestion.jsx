@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useContext, useState } from "react";
-import patchContext from "./provider/PatchContext.js";
+import patchContext from "../provider/PatchContext.js";
 
 export function PatchQuestion(props) {
     const { onAnswer, questionAsked } = useContext(patchContext);

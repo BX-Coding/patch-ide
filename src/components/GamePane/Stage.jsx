@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import patchContext from './provider/PatchContext.js';
-import DOMElementRenderer from '../util/dom-element-renderer.jsx';
-import { getEventXY } from '../util/touch-utils.js';
+import patchContext from '../provider/PatchContext.js';
+import DOMElementRenderer from '../../util/dom-element-renderer.jsx';
+import { getEventXY } from '../../util/touch-utils.js';
 import { PatchQuestion } from './PatchQuestion.jsx';
 import { Box } from '@mui/material';
 

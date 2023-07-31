@@ -4,8 +4,8 @@ import Grid from '@mui/material/Grid';
 import { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import PyatchContext from "./provider/PatchContext.js";
-import { AddButton, HorizontalButtons } from './PatchButtons.jsx';
+import PyatchContext from "../../provider/PatchContext.js";
+import { AddButton, HorizontalButtons } from '../../PatchButton/component.jsx';
 
 export default function GlobalVariablesInspector() {
 

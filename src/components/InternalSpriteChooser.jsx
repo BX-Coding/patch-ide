@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import patchContext from './provider/PatchContext.js';
 import CancelIcon from '@mui/icons-material/Cancel';
-import sprites from '../assets/sprites.json';
+import sprites from '../assets/sprites.ts/index.js';
 import getCostumeUrl from '../util/get-costume-url.js';
 import { Typography, Box } from '@mui/material';
-import { HorizontalButtons, IconButton } from './PatchButtons.jsx';
+import { HorizontalButtons, IconButton } from './PatchButton/component.jsx';
 
 export function InternalSpriteChooser(props) {
     const { showInternalChooser, setShowInternalChooser, internalChooserAdd, onAddSprite, handleAddCostumesToActiveTarget, pyatchVM } = useContext(patchContext);

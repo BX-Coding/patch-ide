@@ -1,18 +1,33 @@
+import EventEmitter from "events"
+
 export type Asset = {
     assetId: string,
     assetType: string,
 }
 
 export type Costume = {
+    assetId: string,
     name: string,
-    md5: string,
+    md5?: string,
     md5ext: string,
-    textLayerMD5: string,
+    textLayerMD5?: string,
     bitmapResolution: number,
-    asset: Asset,
+    asset?: Asset,
     dataFormat: string,
     rotationCenterX: number,
     rotationCenterY: number,
+}
+
+export type Sound = {
+    assetId: string,
+    name: string,
+    md5?: string,
+    md5ext: string,
+    asset?: Asset,
+    dataFormat: string,
+    format: string,
+    rate: number,
+    sampleCount: number,
 }
 
 export interface Thread {
@@ -39,7 +54,17 @@ export interface Sprite {
     costumes: Costume[],
 }
 
-export interface Target {
+export interface SpriteJson {
+    name: string,
+    tags: string[],
+    isStage: boolean,
+    variables?: {},
+    costumes: Costume[],
+    sounds: Sound[],
+    blocks?: {},
+}
+
+export interface Target extends EventEmitter {
     id: string,
     name: string,
     isStage: boolean,

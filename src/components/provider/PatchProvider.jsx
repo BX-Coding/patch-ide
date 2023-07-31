@@ -4,7 +4,7 @@ import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
-import sprites from '../../assets/sprites.json';
+import sprites from '../../assets/sprites.ts/index.js';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader.js'
 
@@ -124,28 +124,6 @@ const PyatchProvider = props => {
 
   // -------- Sprite Values --------
 
-  const changeSpriteValues = (eventSource = null) => {
-    if (!pyatchVM) {
-      return;
-    }
-
-    // only update the attributes if the active sprite has changes
-    if (eventSource) {
-      if (eventSource.id !== editingTargetId) {
-        return;
-      }
-    }
-
-    const editingTarget = pyatchVM.runtime.getTargetById(editingTargetId);
-
-    if (editingTarget) {
-      setEditingTargetX(editingTarget.x);
-      setEditingTargetY(editingTarget.y);
-      setEditingTargetSize(editingTarget.size);
-      setEditingTargetDirection(editingTarget.direction);
-    }
-
-  }
 
   addToGlobalState({changeSpriteValues});
 
@@ -247,19 +225,6 @@ const PyatchProvider = props => {
 
   // -------- Default Project intialization --------
 
-  const addSprite = async (sprite) => {
-    await pyatchVM.addSprite(sprite);
-    const targets = pyatchVM.getAllRenderedTargets();
-    const newTarget = targets[targets.length - 1];
-
-    setTargetIds(targets.map(target => target.id));
-    pyatchVM.setEditingTarget(newTarget.id);
-    setEditingTargetId(newTarget.id);
-
-    newTarget.on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
-    setCostumesUpdate(!costumesUpdate);
-  }
-
   const initializeDefaultProject = async () => {
     loadSerializedProject(defaulPatchProject);
   }
@@ -335,14 +300,6 @@ const PyatchProvider = props => {
     await pyatchVM.greenFlag();
     setRunButtonDisabled(false);
   }
-  
-  const onAddSprite = async (sprite = sprites[0]) => {
-    if (pyatchVM && pyatchVM.editingTarget) {
-      handleSaveTargetThreads(pyatchVM.editingTarget);
-    }
-    await addSprite(sprite);
-    return pyatchVM.editingTarget.id;
-  }
 
   const onAnswer = (text) => () => {
     if (pyatchVM) {
@@ -354,18 +311,7 @@ const PyatchProvider = props => {
     setQuestionAsked(question);
   }
 
-  const onDeleteSprite = async (targetId) => {
-    if (pyatchVM && pyatchVM.editingTarget) {
-      handleSaveTargetThreads(pyatchVM.editingTarget);
-    }
-    pyatchVM.runtime.emit("targetWasRemoved", pyatchVM.runtime.getTargetById(targetId));
-    await pyatchVM.deleteSprite(targetId);
-    const deletedIndex = targetIds.indexOf(targetId);
-    setTargetIds(targetIds.filter(id => id !== targetId));
-    const newIndex = deletedIndex > 1 ? deletedIndex - 1 : 0;
-    pyatchVM.setEditingTarget(targetIds[newIndex]);
-    setEditingTargetId(pyatchVM.editingTarget.id);
-  }
+  
 
   const saveAllThreads = async () => {
     const threadSavePromises = [];
