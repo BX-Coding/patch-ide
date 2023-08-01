@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+//@ts-nocheck
+import React from 'react';
 import { Grid, Typography } from '@mui/material';
-import { patchVM } from '../../provider/PatchProvider.jsx';
 import SplitPane, { Pane } from 'react-split-pane-next';
 import usePatchStore from '../../../store/index.js';
 import { ThreadEditor } from './ThreadEditor'
 
-export function CodeEditor() {
+export const CodeEditor = () => {
+    const patchVM = usePatchStore((state) => state.patchVM);
+
     const editingTargetId = patchVM ? patchVM.editingTarget.id : null;
     const targets = patchVM ? patchVM.getAllRenderedTargets() : [];
 
@@ -24,17 +26,17 @@ export function CodeEditor() {
     );
 }
 
-function NoSprites(){
+const NoSprites = () => {
     return(
         <Typography>No Sprite Selected</Typography>
     );
 }
 
-function TargetCodeEditor() {
+// Split Pane is causing trouble in typescript. Ignoring for now.
+const TargetCodeEditor = () => {
     const getThreads = usePatchStore((state) => state.getThreads);
     const threads = getThreads();
 
-    // @ts-ignore
     return(
         <SplitPane split="vertical">
             {threads.map((threadState, i) => 

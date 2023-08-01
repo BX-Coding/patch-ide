@@ -4,7 +4,7 @@ import { CostumeEditorState, createCostumeEditorSlice } from './costumeEditorSto
 import { SoundEditorState, createSoundEditorSlice } from './soundEditorStore'
 import { SpriteAreaState, createSpriteAreaSlice } from './spriteAreaStore'
 import { VariableEditorState, createVariableEditorSlice } from './variableEditorStore'
-import { EditorTab, ModalSelectorType PatchEditorState, createPatchEditorSlice } from './patchEditorStore'
+import { EditorTab, ModalSelectorType, PatchEditorState, createPatchEditorSlice } from './patchEditorStore'
 
 export interface EditorState extends 
     CodeEditorState, 

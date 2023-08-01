@@ -1,13 +1,22 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import PyatchContext from "../../provider/PatchContext.js";
-import { AddButton, HorizontalButtons } from '../../PatchButton/component.jsx';
+import { AddButton, HorizontalButtons } from '../../PatchButton';
+import usePatchStore from '../../../store';
 
-export default function GlobalVariablesInspector() {
+export function VariableEditor() {
+    return (
+        <Grid container>
+            <Grid item xs={12}>
+                <GlobalVariablesInspector />
+            </Grid>
+        </Grid>
+    );
+}
+
+function GlobalVariablesInspector() {
 
     return (
         <Box
@@ -31,16 +40,19 @@ export default function GlobalVariablesInspector() {
 }
 
 function PlusButton() {
-    const { setGlobalVariables, pyatchVM } = useContext(PyatchContext);
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const setGlobalVariables = usePatchStore((state) => state.setGlobalVariables);
+    const newVariableName = usePatchStore((state) => state.newVariableName);
+    const newVariableValue = usePatchStore((state) => state.newVariableValue);
 
-    const handleClick = (event) => {
-        let name = varName.value;
-        let value = varValue.value;
-        if (!Number.isNaN(parseInt(value))) {
+    const handleClick = () => {
+        let name = newVariableName;
+        let value = newVariableValue;
+        if (typeof value === "string" && !Number.isNaN(parseInt(value))) {
             value = parseInt(value);
         }
-        pyatchVM.updateGlobalVariable(name, value)
-        setGlobalVariables(pyatchVM.getGlobalVariables());
+        patchVM.updateGlobalVariable(name, value)
+        setGlobalVariables(patchVM.getGlobalVariables());
     };
 
     return (
@@ -48,7 +60,7 @@ function PlusButton() {
     );
 }
 
-function VarLine(props) {
+function VarLine(props: { name: string, value: any }) {
     return (
         <HorizontalButtons>
             <Typography sx={{ fontSize: "18px", height: "24px" }} color='text.primary'>{props.name} = {props.value}</Typography>
@@ -57,7 +69,7 @@ function VarLine(props) {
 }
 
 function VarList() {
-    const { globalVariables } = useContext(PyatchContext);
+    const globalVariables = usePatchStore((state) => state.globalVariables);
     return (
         <Grid item xs={12}>{globalVariables.map((variable) => {
             return <VarLine key={variable.name} name={variable.name} value={variable.value} />
@@ -65,9 +77,9 @@ function VarList() {
     );
 }
 
-function GlobalVariableInputField() {
+const GlobalVariableInputField = () => {
     return (
-        <Typography fontSize={24} alignContent={"center"} variant="outlined" margin='dense'>
+        <Typography fontSize={24} alignContent={"center"} margin='dense'>
             <HorizontalButtons>
                 <TextField
                     label="Variable Name"

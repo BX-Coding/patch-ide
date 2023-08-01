@@ -4,7 +4,6 @@ import { DeleteSpriteButton } from "./DeleteSpriteButton.jsx"; //clear button
 import { SpriteCard } from "./SpriteCard.jsx"; //sprite name button
 import { SpriteAttributePane } from "./SpriteAttributeArea.js"; //height and stuff
 import { SpriteName } from "./SpriteName.jsx"; //textfeild
-import patchContext from '../provider/PatchContext.js';
 
 import Grid from '@mui/material/Grid';
 

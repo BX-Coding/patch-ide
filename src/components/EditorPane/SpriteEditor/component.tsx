@@ -1,13 +1,11 @@
 import React, { useContext, useState } from 'react';
-import Button from '@mui/material/Button';
 import usePatchStore, { ModalSelectorType } from '../../../store';
 import { getCostumeUrl } from 'get-costume-url';
-import { AddButton, DeleteButton, ItemCard } from '../../PatchButton/component.jsx';
+import { AddButton, DeleteButton, HorizontalButtons } from '../../PatchButton';
+import { ItemCard } from '../../ItemCard';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';
-import { handleUploadCostume } from './handleCostume';
+import { handleUploadCostume } from './handleUpload';
 import { Costume } from '../types';
-import { patchVM } from '../../provider/PatchProvider.jsx';
-import { HorizontalButtons } from '../src/components/PatchButtons.jsx';
 
 
 export function SpriteEditor() {
@@ -87,6 +85,7 @@ function SpriteDetails({ costumeIndex, costumes, width, height }: SpriteDetailsP
 }
 
 function SpriteInspector() {
+    const patchVM = usePatchStore((state) => state.patchVM);
     const setSelectedCostumeIndex = usePatchStore((state) => state.setSelectedCostumeIndex);
     const selectedCostumeIndex = usePatchStore((state) => state.selectedCostumeIndex);
     const setCostumes = usePatchStore((state) => state.setCostumes);
@@ -143,14 +142,13 @@ function SpriteInspector() {
                         {costumes.map((costume, i) =>
                             <Grid item key={i}>
                                 <ItemCard
-                                    imageSrc={getCostumeUrl(costume.asset)}
                                     title={costume.name}
                                     selected={i === selectedCostumeIndex}
                                     onClick={handleClick}
                                     key={costume.name}
                                     width={120}
                                     height={120}
-                                />
+                                >{getCostumeUrl(costume.asset)}</ItemCard>
                             </Grid>
                         )}
                     </Grid>

@@ -3,6 +3,7 @@ import EventEmitter from "events"
 export type Asset = {
     assetId: string,
     assetType: string,
+    data: any,
 }
 
 export type Costume = {
@@ -62,6 +63,16 @@ export interface SpriteJson {
     costumes: Costume[],
     sounds: Sound[],
     blocks?: {},
+}
+
+export interface SoundJson {
+    name: string,
+    tags: string[],
+    dataFormat: string,
+    md5ext: string,
+    sampleCount: number,
+    assetId: string,
+    rate: number,
 }
 
 export interface Target extends EventEmitter {

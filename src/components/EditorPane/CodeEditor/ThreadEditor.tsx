@@ -1,5 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import patchContext from '../../provider/PatchContext.js';
+import React, { useState } from 'react';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
@@ -8,14 +7,13 @@ import { lintGutter } from "@codemirror/lint";
 import pythonLinter from '../../../util/python-syntax-lint.js';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 
-import { Autocomplete, Button, TextField, Grid } from '@mui/material';
+import { Autocomplete, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
-
-import { DeleteButton, HorizontalButtons, IconButton } from '../../PatchButton/component.jsx';
-import completions from '../../../util/patch-autocompletions.mjs';
-import { Target, Thread } from '../types.js';
+import completions from '../../../util/patch-autocompletions.js';
+import { Thread } from '../types.js';
 import usePatchStore from '../../../store';
+import { HorizontalButtons, DeleteButton, IconButton } from '../../PatchButton/component.js';
 
 
 type ThreadEditorProps = {
@@ -93,9 +91,7 @@ export const ThreadEditor = ({ thread, first, final }: ThreadEditorProps) => {
                         options={eventList}
                         defaultValue={{ id: thread.triggerEvent, label: eventMap[thread.triggerEvent] }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                        hiddenLabel
                         onChange={handleEventChange}
-                        variant="outlined"
                         size="small"
                         fullWidth
                         sx={{ backgroundColor: 'panel.default' }}
@@ -119,9 +115,7 @@ export const ThreadEditor = ({ thread, first, final }: ThreadEditorProps) => {
                         options={eventOptionsList}
                         defaultValue={{ id: thread.triggerEventOption, label: thread.triggerEventOption }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                        hiddenLabel
                         onChange={handleEventOptionChange}
-                        variant="outlined"
                         size="small"
                         fullWidth
                         sx={{ backgroundColor: 'panel.default' }}

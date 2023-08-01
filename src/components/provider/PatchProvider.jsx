@@ -172,46 +172,7 @@ const PyatchProvider = props => {
 
 
   // -------- Sound Picking --------
-  const handleUploadSound = (targetId) => {
-    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-    var input = document.createElement('input');
-    input.type = 'file';
-    // TODO: change this to audio file types instead of image types
-    input.accept = 'audio/*';
-
-    const result = new Promise((resolve, reject) => {
-        input.onchange = e => {
-          handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-            soundUpload(buffer, fileType, pyatchVM.runtime.storage, async vmSound => {
-              if (targetId == undefined || targetId == null) {
-                pyatchVM.addSound({...vmSound, name: fileName }).then(() => resolve());
-              } else {
-                pyatchVM.addSound({...vmSound, name: fileName }, targetId).then(() => resolve());
-              }
-
-              //resolve();
-            }, console.log);
-          }, console.log);
-        }
-
-        input.onabort = () => {
-          resolve();
-        }
-      }
-    );
-
-    input.click();
-
-    return result;
-  };
-
-  const handleAddSoundToActiveTarget = (sound, fromLibrary) => {
-    const result = new Promise((resolve, reject) => {
-      pyatchVM.addSound(fromLibrary ? {...sound, md5: sound.md5ext} : sound).then(() => resolve());
-    });
-
-    return result;
-  }
+  
 
   addToGlobalState({ 
     handleAddCostumesToActiveTarget, 

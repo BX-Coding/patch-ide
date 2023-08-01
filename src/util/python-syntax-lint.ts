@@ -1,13 +1,13 @@
 import {syntaxTree} from "@codemirror/language"
-import {linter} from "@codemirror/lint"
+import {Diagnostic, linter} from "@codemirror/lint"
 
 let isSyntaxErrorFree = true;
 
-const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return linter(view => {
-  const runtimeErrors = pyatchVM.getRuntimeErrors().filter((error) => error.threadId === threadId);
-  const compileTimeErrors = pyatchVM.getCompileTimeErrors().filter((error) => error.threadId === threadId);
+const pythonLinter = (syntaxThreadCallback: (...props: any) => any, patchVM: any, threadId: string) => { return linter(view => {
+  const runtimeErrors = patchVM.getRuntimeErrors().filter((error: any) => error.threadId === threadId);
+  const compileTimeErrors = patchVM.getCompileTimeErrors().filter((error: any) => error.threadId === threadId);
   const vmErrors = runtimeErrors.concat(compileTimeErrors);
-  let diagnostics = []
+  let diagnostics: Diagnostic[] = []
   isSyntaxErrorFree = true;
   syntaxTree(view.state).cursor().iterate(node => {
     if (node.type.isError) diagnostics.push({
@@ -21,7 +21,7 @@ const pythonLinter = (syntaxThreadCallback, pyatchVM, threadId) => { return lint
     }
   })
   let doc = view.state.doc;
-  const runtimeErrorDiagnostics = vmErrors.map((error) => {
+  const runtimeErrorDiagnostics = vmErrors.map((error: any) => {
     const shiftedLineNumber = Math.min(error.lineNumber, doc.lines);
     return {
       from: doc.line(shiftedLineNumber).from,

@@ -1,31 +1,37 @@
-import React from 'react';
-import { Box, Typography, Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Grid, IconProps } from '@mui/material';
 import { boxStyle, typographyStyle } from './style';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 
 type ItemCardProps = {
-    imageSrc: string,
     title: string,
     selected: boolean,
     onClick: (title: string) => void,
     actionButtons?: JSX.Element[],
     width: number,
     height: number,
+    children?: React.ReactNode | Promise<React.ReactNode>,
 }
 
-export function ItemCard({ imageSrc, title, selected, onClick, actionButtons, width, height }: ItemCardProps) {
-    const imgHeight = height - 40;
+export function ItemCard({ title, selected, onClick, actionButtons, width, height, children }: ItemCardProps) {
+    const [imageElement, setImageElement] = useState<JSX.Element>(<HourglassBottomIcon/>);
+    if (children instanceof Promise) {
+        children.then((element) => {
+            setImageElement(element as JSX.Element);
+        });
+    }
 
     return (
-        <Box onClick={() => { onClick(title) }} sx={boxStyle(selected, height, width)}>
-                <img src={imageSrc} width={width} height={imgHeight}/>
-            <Grid container direction="row">
-                <Typography sx={typographyStyle}>{title}</Typography>
-                {actionButtons ? (actionButtons.map((button, i) => {
-                    return (
-                        <Grid item>{button}</Grid>
-                    );
-                })) : null}
-            </Grid>
-        </Box>
+    <Box onClick={() => { onClick(title) }} sx={boxStyle(selected, height, width)}>
+        {imageElement}
+        <Grid container direction="row">
+            <Typography sx={typographyStyle}>{title}</Typography>
+            {actionButtons ? (actionButtons.map((button, i) => {
+                return (
+                    <Grid item>{button}</Grid>
+                );
+            })) : null}
+        </Grid>
+    </Box>
     );
 }

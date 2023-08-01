@@ -1,4 +1,7 @@
-[
+import { SoundJson } from "../components/EditorPane/types";
+
+
+export const sounds: SoundJson[] = [
     {
         "name": "A Bass",
         "tags": [

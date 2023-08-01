@@ -26,7 +26,8 @@ export const HorizontalButtons = ({ children, sx, spacing, mb }: HorizontalButto
 
 
 type PatchButtonProps = {
-    onClick: () => void,
+    id?: string,
+    onClick: (...args: any[]) => void,
     onClickArgs?: any[],
     variant?: "text" | "outlined" | "contained",
     color?: "inherit" | "primary" | "secondary" | "error" | "info" | "success" | "warning",
@@ -36,33 +37,33 @@ type PatchButtonProps = {
     disabled?: boolean
 }
 
-const PatchButton = ({ onClick, onClickArgs, variant, color, textColor, icon, sx, disabled }: PatchButtonProps) => {
+const PatchButton = ({ id, onClick, onClickArgs, variant, color, textColor, icon, sx, disabled }: PatchButtonProps) => {
     const onClickWithArgs = () => {
         if (onClickArgs) {
-            // @ts-ignore
             onClick(...onClickArgs);
         } else {
             onClick();
         }
     }
-    return <Button disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickWithArgs} color={color}>{icon}</Button>
+    return <Button id={id} disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickWithArgs} color={color}>{icon}</Button>
 }
 
 type AddButtonProps = {
-    onClick: () => void,
+    id?: string,
+    onClick: (...args: any[]) => void,
     onClickArgs?: any[],
     variant?: "text" | "outlined" | "contained",
     sx?: any,
     disabled?: boolean
 }
 
-export const AddButton = ({ onClick, onClickArgs, variant, sx, disabled }: AddButtonProps) => {
-    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} color={'primary'} icon={<AddIcon />} />
+export const AddButton = ({id, onClick, onClickArgs, variant, sx, disabled }: AddButtonProps) => {
+    return <PatchButton id={id} disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} color={'primary'} icon={<AddIcon />} />
 }
 
 type DeleteButtonProps = {
     red?: boolean,
-    onClick: () => void,
+    onClick: (...args: any[]) => void,
     onClickArgs?: any[],
     variant?: "text" | "outlined" | "contained",
     sx?: any,
@@ -75,7 +76,7 @@ export const DeleteButton = ({ red, onClick, onClickArgs, variant, sx, disabled 
 
 type IconButtonProps = {
     color?: "inherit" | "primary" | "secondary" | "error" | "info" | "success" | "warning",
-    onClick: () => void,
+    onClick: (...args: any[]) => void,
     onClickArgs?: any[],
     variant?: "text" | "outlined" | "contained",
     sx?: any,
@@ -88,7 +89,7 @@ export const IconButton = ({ color, onClick, onClickArgs, variant, sx, icon, dis
 }
 
 type TextButtonProps = {
-    onClick: () => void,
+    onClick: (...args: any[]) => void,
     onClickArgs?: any[],
     variant?: "text" | "outlined" | "contained",
     text: string,
