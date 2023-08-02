@@ -16,6 +16,7 @@ export interface CodeEditorState {
     updateThread: (id: string, text: string) => void,
     saveThread: (id: string | string[]) => void,
     saveTargetThreads: (target: Target) => void,
+    saveAllThreads: () => void,
     deleteThread: (id: string) => void,
     getThread: (id: string) => ThreadState,
     getThreads: () => ThreadState[],
@@ -54,6 +55,20 @@ export const createCodeEditorSlice: StateCreator<
           get().saveThread(thread.id);
         });
     },
+    saveAllThreads: async () => { 
+        const threads = get().threads;
+        const savePromise = Object.keys(threads).map((id) => {
+            return threads[id].thread.updateThreadScript(threads[id].text);
+        });
+        await Promise.all(savePromise);
+        set((state) => {
+            const newThreads = { ...state.threads };
+            Object.keys(newThreads).forEach((id) => {
+                newThreads[id].saved = true;
+            });
+            return { threads: newThreads };
+        }
+        )},
     deleteThread: (id: string) => set((state) => {
         const newThreads = { ...state.threads };
         delete newThreads[id];

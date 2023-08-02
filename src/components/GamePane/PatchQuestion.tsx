@@ -2,17 +2,24 @@ import React from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useContext, useState } from "react";
-import patchContext from "../provider/PatchContext.js";
+import usePatchStore from "../../store";
 
-export function PatchQuestion(props) {
-    const { onAnswer, questionAsked } = useContext(patchContext);
+export function PatchQuestion() {
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const questionAsked = usePatchStore((state) => state.questionAsked);
     const [inputFieldText, setInputFieldText] = useState("");
+
+    const onAnswer = (text: string) => () => {
+        if (patchVM) {
+            patchVM.runtime.emit("ANSWER", text);
+        }
+      }
     
-    const handleInputFieldChange = (event) => {
+    const handleInputFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputFieldText(event.target.value);
     }
 
-    return <Box container sx={{
+    return <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -28,7 +35,7 @@ export function PatchQuestion(props) {
                 {questionAsked}
             </Typography>
             }
-            <Box container sx={{
+            <Box sx={{
                 display: 'flex',
                 flexDirection: 'row',
                 width: 1,

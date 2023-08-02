@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
+import { DOMElement } from 'react'
 
 export enum EditorTab {
     CODE = "code",
@@ -28,6 +29,11 @@ export interface PatchEditorState {
     modalSelectorOpen: boolean,
 
     patchVM: any,
+    patchStage: {
+        canvas: HTMLCanvasElement,
+        height: number,
+        width: number,
+    },
 
     // Actions
     setTargetIds: (ids: string[]) => void,
@@ -43,6 +49,7 @@ export interface PatchEditorState {
     hideModalSelector: () => void,
 
     setPatchVM: any,
+    setPatchStage: (stage: HTMLCanvasElement) => void,
 }
 
 export const createPatchEditorSlice: StateCreator<
@@ -60,7 +67,11 @@ export const createPatchEditorSlice: StateCreator<
     modalSelectorType: ModalSelectorType.COSTUME,
     modalSelectorOpen: false,
     patchVM: null,
-
+    patchStage: {
+        canvas: document.createElement('canvas'),
+        height: 400,
+        width: 600,
+    },
     // Actions
     setTargetIds: (ids: string[]) => set({ targetIds: ids }),
     setEditingTargetId: (id: string) => set({ editingTargetId: id }),
@@ -75,4 +86,5 @@ export const createPatchEditorSlice: StateCreator<
     hideModalSelector: () => set({ modalSelectorOpen: false }),
 
     setPatchVM: (vm: any) => set({ patchVM: vm }),
+    setPatchStage: (stage: HTMLCanvasElement) => set({ patchStage: stage }),
 })

@@ -10,7 +10,7 @@ import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-up
 
 import defaulPatchProject from '../../assets/defaultProject.ptch1';
 
-import SplashScreen from "../SplashScreen.jsx";
+import SplashScreen from "../SplashScreen/component.jsx";
 
 import { Buffer } from 'buffer-es6'
 
@@ -262,11 +262,7 @@ const PyatchProvider = props => {
     setRunButtonDisabled(false);
   }
 
-  const onAnswer = (text) => () => {
-    if (pyatchVM) {
-      pyatchVM.runtime.emit("ANSWER", text);
-    }
-  }
+
 
   const onQuestionAsked = (question) => {
     setQuestionAsked(question);

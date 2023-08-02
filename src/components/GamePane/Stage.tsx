@@ -1,20 +1,24 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import patchContext from '../provider/PatchContext.js';
-import DOMElementRenderer from '../../util/dom-element-renderer.jsx';
-import { getEventXY } from '../../util/touch-utils.js';
-import { PatchQuestion } from './PatchQuestion.jsx';
+import React, { useEffect, useState, useRef } from 'react';
+import DOMElementRenderer from 'dom-element-renderer';
+import { getEventXY } from 'touch-utils';
+import { PatchQuestion } from './PatchQuestion';
 import { Box } from '@mui/material';
+import usePatchStore from '../../store/index.js';
 
 const Stage = () => {
-    const { questionAsked, pyatchStage, pyatchVM } = useContext(patchContext);
-    const [rect, setRect] = useState(null);
-    const boundingRef = useRef(null);
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const patchStage = usePatchStore((state) => state.patchStage);
+    const questionAsked = usePatchStore((state) => state.questionAsked);
+
+    const [rect, setRect] = useState<null | DOMRect>(null);
+    const boundingRef = useRef<null | HTMLDivElement>(null);
     const updateRect = () => {
-        // console.log("UPDATING", boundingRef.current.getBoundingClientRect());
-        setRect(boundingRef.current.getBoundingClientRect());
+        if (boundingRef.current) {
+            setRect(boundingRef.current.getBoundingClientRect());
+        }
     }
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: MouseEvent) => {
         // TODO: Stop mystery function calling this with rect rect.width && height === 0
         if (rect && rect.width && rect.height) {
             const {x, y} = getEventXY(e);
@@ -25,11 +29,10 @@ const Stage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height
             };
-            // console.log(coordinates);
-            pyatchVM.postIOData('mouse', coordinates);
+            patchVM.postIOData('mouse', coordinates);
         }
     }
-    const onMouseUp = (e) => {
+    const onMouseUp = (e: MouseEvent) => {
         if (rect && rect.width && rect.height) {
             const {x, y} = getEventXY(e);
             const data = {
@@ -39,11 +42,10 @@ const Stage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height,
             };
-            // console.log(data);
-            pyatchVM.postIOData('mouse', data);
+            patchVM.postIOData('mouse', data);
         }
     }
-    const onMouseDown = (e) => {
+    const onMouseDown = (e: MouseEvent) => {
         if (rect && rect.width && rect.height) {
             updateRect();
             const {x, y} = getEventXY(e);
@@ -55,18 +57,17 @@ const Stage = () => {
                 canvasWidth: rect.width,
                 canvasHeight: rect.height
             };
-            // console.log(data);
-            pyatchVM.postIOData('mouse', data);
+            patchVM.postIOData('mouse', data);
         }
     }
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
         if (rect) {
             // Don't capture keys intended for Blockly inputs.
             if (e.target !== document && e.target !== document.body) return;
 
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
-            pyatchVM.postIOData('keyboard', {
+            patchVM.postIOData('keyboard', {
                 key: key,
                 isDown: true
             });
@@ -79,12 +80,12 @@ const Stage = () => {
         }
     }
 
-    const handleKeyUp = (e) => {
+    const handleKeyUp = (e: KeyboardEvent) => {
         if (rect) {
             // Always capture up events,
             // even those that have switched to other targets.
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
-            pyatchVM.postIOData('keyboard', {
+            patchVM.postIOData('keyboard', {
                 key: key,
                 isDown: false
             });
@@ -96,7 +97,7 @@ const Stage = () => {
         }
     }
 
-    const attachMouseEvents = (canvas) => {
+    const attachMouseEvents = () => {
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
         document.addEventListener('mousedown', onMouseDown);
@@ -108,12 +109,12 @@ const Stage = () => {
     }
 
     useEffect(() => {
-        if (pyatchStage.canvas) {
+        if (patchStage.canvas) {
             attachMouseEvents();
             attachKeyboardEvents();
             updateRect();
         }
-    }, [pyatchStage.canvas])
+    }, [patchStage.canvas])
 
     return (
     <div>
@@ -125,17 +126,13 @@ const Stage = () => {
             position: 'absolute', 
             zIndex: 1, 
             width: 600, 
-            height: pyatchStage.height,
+            height: patchStage.height,
         }}>
             { questionAsked !== null && <PatchQuestion/>}
         </Box>
         <div ref={boundingRef} style={{position: 'relative'}}>
-            {!!pyatchStage.canvas && <DOMElementRenderer
-                domElement={pyatchStage.canvas}
-                style={{
-                    //height: pyatchStage.height,
-                    //width: pyatchStage.width
-                }}
+            {!!patchStage.canvas && <DOMElementRenderer
+                domElement={patchStage.canvas}
             />}
         </div>
     </div>
