@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import usePatchStore, { ModalSelectorType } from '../../../store';
-import { getCostumeUrl } from 'get-costume-url';
+import getCostumeUrl from '../../../util/get-costume-url';
 import { AddButton, DeleteButton, HorizontalButtons } from '../../PatchButton';
 import { ItemCard } from '../../ItemCard';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';

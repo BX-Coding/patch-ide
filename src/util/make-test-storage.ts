@@ -1,4 +1,6 @@
+// @ts-ignore
 import ScratchStorage from 'scratch-storage';
+import { Asset } from '../components/EditorPane/types';
 
 const ASSET_SERVER = 'https://cdn.assets.scratch.mit.edu/';
 const PROJECT_SERVER = 'https://cdn.projects.scratch.mit.edu/';
@@ -7,7 +9,7 @@ const PROJECT_SERVER = 'https://cdn.projects.scratch.mit.edu/';
  * @param {Asset} asset - calculate a URL for this asset.
  * @returns {string} a URL to download a project file.
  */
-const getProjectUrl = function (asset) {
+const getProjectUrl = function (asset: Asset) {
     const assetIdParts = asset.assetId.split('.');
     const assetUrlParts = [PROJECT_SERVER, 'internalapi/project/', assetIdParts[0], '/get/'];
     if (assetIdParts[1]) {
@@ -20,7 +22,7 @@ const getProjectUrl = function (asset) {
  * @param {Asset} asset - calculate a URL for this asset.
  * @returns {string} a URL to download a project asset (PNG, WAV, etc.)
  */
-const getAssetUrl = function (asset) {
+const getAssetUrl = function (asset: Asset) {
     const assetUrlParts = [
         ASSET_SERVER,
         'internalapi/asset/',

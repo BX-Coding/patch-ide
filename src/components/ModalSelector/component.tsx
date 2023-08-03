@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { sprites } from '../../assets/sprites';
 import { sounds }  from '../../assets/sounds';
-import { getCostumeUrl } from 'get-costume-url';
+import getCostumeUrl from '../../util/get-costume-url';
 import { Typography, Box } from '@mui/material';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';

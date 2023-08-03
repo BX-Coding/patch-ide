@@ -1,6 +1,20 @@
+// @ts-ignore
 import {BitmapAdapter, sanitizeSvg} from 'scratch-svg-renderer';
 import bmpConverter from './bmp-converter';
+// @ts-ignore
 import gifDecoder from './gif-decoder';
+// @ts-ignore
+import { ScratchStorage } from 'scratch-storage';
+  
+type AssetType = ScratchStorage.AssetType;
+
+interface VMAsset {
+    name: string | null;
+    dataFormat: string;
+    asset: ScratchStorage.Asset;
+    md5: string;
+    assetId: string;
+  }
 
 /**
  * Extract the file name given a string of the form fileName + ext
@@ -8,7 +22,7 @@ import gifDecoder from './gif-decoder';
  * @return {string} The name without the extension, or the full name if
  * there was no '.' in the string (e.g. 'my_image')
  */
-const extractFileName = function (nameExt) {
+const extractFileName = function (nameExt: string) {
     // There could be multiple dots, but get the stuff before the first .
     const nameParts = nameExt.split('.', 1); // we only care about the first .
     return nameParts[0];
@@ -21,12 +35,26 @@ const extractFileName = function (nameExt) {
  * @param {Function} onload The function that handles loading the file
  * @param {Function} onerror The function that handles any error loading the file
  */
-const handleFileUpload = function (fileInput, onload, onerror) {
-    const readFile = (i, files) => {
+const handleFileUpload = function (
+    fileInput: HTMLInputElement | null, 
+    onload: (
+        fileData: ArrayBuffer | string,
+        fileType: string,
+        fileName: string,
+        index: number,
+        total: number
+      ) => void,
+    onerror: (event: ProgressEvent<FileReader>) => void,
+): void {
+    if (!fileInput) {
+        return;
+    }
+    const readFile = (i: number, files: FileList) => {
         if (i === files.length) {
             // Reset the file input value now that we have everything we need
             // so that the user can upload the same sound multiple times if
             // they choose
+            // @ts-ignore
             fileInput.value = null;
             return;
         }
@@ -35,13 +63,14 @@ const handleFileUpload = function (fileInput, onload, onerror) {
         reader.onload = () => {
             const fileType = file.type;
             const fileName = extractFileName(file.name);
-            onload(reader.result, fileType, fileName, i, files.length);
+            onload(reader.result as ArrayBuffer | string, fileType, fileName, i, files.length);
             readFile(i + 1, files);
         };
         reader.onerror = onerror;
         reader.readAsArrayBuffer(file);
     };
-    readFile(0, fileInput.files);
+    // @ts-ignore
+    readFile(0, fileInput?.files);
 };
 
 /**
@@ -67,7 +96,7 @@ const handleFileUpload = function (fileInput, onload, onerror) {
  * @return {VMAsset} An object representing this asset and relevant information
  * which can be used to look up the data in storage
  */
-const createVMAsset = function (storage, assetType, dataFormat, data) {
+const createVMAsset = function (storage: any, assetType: AssetType, dataFormat: string, data: Uint8Array) {
     const asset = storage.createAsset(
         assetType,
         dataFormat,
@@ -96,9 +125,15 @@ const createVMAsset = function (storage, assetType, dataFormat, data) {
  * adding the costume to the VM and handling other UI flow that should come after adding the costume
  * @param {Function} handleError The function to execute if there is an error parsing the costume
  */
-const costumeUpload = function (fileData, fileType, storage, handleCostume, handleError = () => {}) {
-    let costumeFormat = null;
-    let assetType = null;
+const costumeUpload = function (
+    fileData: ArrayBuffer | string,
+    fileType: string,
+    storage: ScratchStorage,
+    handleCostume: (vmCostumes: any[]) => void,
+    handleError = () => {}
+    ) {
+    let costumeFormat: string | null = null;
+    let assetType: string | null = null;
     switch (fileType) {
     case 'image/svg+xml': {
         // run svg bytes through scratch-svg-renderer's sanitization code
@@ -116,7 +151,7 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
     case 'image/bmp': {
         // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
         // and would otherwise take up a lot of storage space and take much longer to upload and download.
-        bmpConverter(fileData).then(dataUrl => {
+        bmpConverter(fileData).then((dataUrl: any) => {
             costumeUpload(dataUrl, 'image/png', storage, handleCostume);
         });
         return; // Return early because we're triggering another proper costumeUpload
@@ -127,7 +162,8 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
         break;
     }
     case 'image/gif': {
-        let costumes = [];
+        let costumes: any[] = [];
+        // @ts-ignore
         gifDecoder(fileData, (frameNumber, dataUrl, numFrames) => {
             costumeUpload(dataUrl, 'image/png', storage, costumes_ => {
                 costumes = costumes.concat(costumes_);
@@ -139,12 +175,18 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
         return; // Abandon this load, do not try to load gif itself
     }
     default:
+        // @ts-ignore
         handleError(`Encountered unexpected file type: ${fileType}`);
         return;
     }
 
     const bitmapAdapter = new BitmapAdapter();
-    const addCostumeFromBuffer = function (dataBuffer) {
+    const addCostumeFromBuffer = function (dataBuffer: Uint8Array) {
+        if (!costumeFormat || !assetType) {
+            // @ts-ignore
+            handleError('Encountered unexpected error while loading costume');
+            return;
+        }
         const vmCostume = createVMAsset(
             storage,
             assetType,
@@ -159,6 +201,7 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
         // passing in an array buffer causes the sprite/costume
         // thumbnails to not display because the data URI for the costume
         // is invalid
+        // @ts-ignore
         addCostumeFromBuffer(new Uint8Array(fileData));
     } else {
         // otherwise it's a bitmap
@@ -178,7 +221,13 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
  * as well as handling other UI flow that should come after adding the sound
  * @param {Function} handleError The function to execute if there is an error parsing the sound
  */
-const soundUpload = function (fileData, fileType, storage, handleSound, handleError) {
+const soundUpload = function (
+    fileData: ArrayBuffer | string,
+    fileType: string,
+    storage: ScratchStorage,
+    handleSound: (vmSound: VMAsset) => void,
+    handleError?: (error: string) => void
+  ): void {
     let soundFormat;
     switch (fileType) {
     case 'audio/mp3':
@@ -194,6 +243,7 @@ const soundUpload = function (fileData, fileType, storage, handleSound, handleEr
         break;
     }
     default:
+        // @ts-ignore
         handleError(`Encountered unexpected file type: ${fileType}`);
         return;
     }
@@ -202,12 +252,20 @@ const soundUpload = function (fileData, fileType, storage, handleSound, handleEr
         storage,
         storage.AssetType.Sound,
         soundFormat,
+        // @ts-ignore
         new Uint8Array(fileData));
 
     handleSound(vmSound);
 };
 
-const spriteUpload = function (fileData, fileType, spriteName, storage, handleSprite, handleError = () => {}) {
+const spriteUpload = function (
+    fileData: ArrayBuffer,
+    fileType: string,
+    spriteName: string,
+    storage: ScratchStorage,
+    handleSprite: (spriteJson: string | Uint8Array) => void, 
+    handleError = () => {}
+    ): void {
     switch (fileType) {
     case '':
     case 'application/zip': { // We think this is a .sprite2 or .sprite3 file
@@ -247,6 +305,7 @@ const spriteUpload = function (fileData, fileType, spriteName, storage, handleSp
         return;
     }
     default: {
+        // @ts-ignore
         handleError(`Encountered unexpected file type: ${fileType}`);
         return;
     }

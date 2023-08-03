@@ -1,5 +1,5 @@
 import { Costume } from '../types';
-import { handleFileUpload, costumeUpload } from 'scratch-file-uploader';
+import { handleFileUpload, costumeUpload } from '../../../util/file-uploader';
 import usePatchStore from '../../../store';
 
 const handleNewCostume = async (costume: Costume | Costume[], fromCostumeLibrary: boolean, targetId: string) => {
@@ -26,7 +26,7 @@ export const handleUploadCostume = (targetId?: string) => {
     input.type = 'file';
     input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
 
-    input.onchange = e => {
+    input.onchange = (e: any) => {
       handleFileUpload(e.target, (buffer: string |ArrayBuffer, fileType: string, fileName: string , fileIndex: number, fileCount: number) => {
         costumeUpload(buffer, fileType, patchVM.runtime.storage, async (vmCostumes: Costume[]) => {
           vmCostumes.forEach((costume, i) => {

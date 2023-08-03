@@ -1,4 +1,4 @@
-import { handleFileUpload, soundUpload } from 'scratch-file-uploader';
+import { handleFileUpload, soundUpload } from '../../../util/file-uploader';
 import usePatchStore from '../../../store';
 import { Sound, SoundJson } from '../types';
 
@@ -11,7 +11,7 @@ export const handleUploadSound = (targetId: string) => {
     input.accept = 'audio/*';
 
     const result = new Promise<void>((resolve, reject) => {
-        input.onchange = e => {
+        input.onchange = (e: any) => {
           handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
             soundUpload(buffer, fileType, patchVM.runtime.storage, async vmSound => {
               if (targetId == undefined || targetId == null) {

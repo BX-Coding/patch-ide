@@ -1,8 +1,7 @@
+// @ts-nocheck  
 import omit from 'lodash.omit';
-import PropTypes from 'prop-types';
 import React from 'react';
 import Style from 'to-style';
-import stylePropType from 'react-style-proptype';
 
 /*
  * DOMElementRenderer wraps a DOM element, allowing it to be
@@ -13,8 +12,13 @@ import stylePropType from 'react-style-proptype';
  * Props passed to the DOMElementRenderer will be set on the
  * DOM element like it's a normal component.
  */
+type DOMElementRendererProps = {
+    domElement: Element,
+    style: React.CSSProperties,
+}
+
 class DOMElementRenderer extends React.Component {
-    constructor (props) {
+    constructor (props: DOMElementRendererProps) {
         super(props);
         this.setContainer = this.setContainer.bind(this);
     }
@@ -44,10 +48,5 @@ class DOMElementRenderer extends React.Component {
         return <div ref={this.setContainer} />;
     }
 }
-
-DOMElementRenderer.propTypes = {
-    domElement: PropTypes.instanceOf(Element).isRequired,
-    style: stylePropType
-};
 
 export default DOMElementRenderer;

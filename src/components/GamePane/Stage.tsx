@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import DOMElementRenderer from 'dom-element-renderer';
-import { getEventXY } from 'touch-utils';
+import DOMElementRenderer from '../../util/dom-element-renderer';
+import { getEventXY } from '../../util/touch-utils';
 import { PatchQuestion } from './PatchQuestion';
 import { Box } from '@mui/material';
 import usePatchStore from '../../store';
@@ -132,6 +132,7 @@ const Stage = () => {
         </Box>
         <div ref={boundingRef} style={{position: 'relative'}}>
             {!!patchStage.canvas && <DOMElementRenderer
+                // @ts-ignore
                 domElement={patchStage.canvas}
             />}
         </div>

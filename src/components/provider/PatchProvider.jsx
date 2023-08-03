@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PatchContext from "./PatchContext";
 import Renderer from 'scratch-render';
-import makeTestStorage from "../../util/make-test-storage.mjs";
+import makeTestStorage from "../../util/make-test-storage.ts/index.js";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
 import sprites from '../../assets/sprites.ts/index';

@@ -1,4 +1,4 @@
-export default bmpImage => new Promise(resolve => {
+export default ( bmpImage: string | BlobPart ) => new Promise(resolve => {
     // If the input is an ArrayBuffer, we need to convert it to a `Blob` and give it a URL so we can use it as an <img>
     // `src`. If it's a data URI, we can use it as-is.
     const imageUrl = bmpImage instanceof String ?
@@ -13,15 +13,17 @@ export default bmpImage => new Promise(resolve => {
     image.addEventListener('load', () => {
         canvas.width = image.naturalWidth;
         canvas.height = image.naturalHeight;
-        ctx.drawImage(image, 0, 0);
+        if (ctx != null) {
+            ctx.drawImage(image, 0, 0);
+        }
 
         const dataUrl = canvas.toDataURL('image/png');
     
         // Revoke URL. If a blob URL was generated earlier, this allows the blob to be GC'd and prevents a memory leak.
-        window.URL.revokeObjectURL(imageUrl);
+        window.URL.revokeObjectURL(imageUrl as string);
 
         resolve(dataUrl);
     });
 
-    image.setAttribute('src', imageUrl);
+    image.setAttribute('src', imageUrl as string);
 });

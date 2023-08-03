@@ -1,6 +1,7 @@
+// @ts-ignore
 import {GifReader} from 'omggif';
 
-export default (arrayBuffer, onFrame) => {
+export default (arrayBuffer: ArrayBuffer, onFrame: (...params: any[])=>any) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const gifReader = new GifReader(new Uint8Array(arrayBuffer));
@@ -8,11 +9,15 @@ export default (arrayBuffer, onFrame) => {
     canvas.width = gifReader.width;
     canvas.height = gifReader.height;
 
+    if (!ctx) {
+        return;
+    }
+
     let imageData = ctx.createImageData(canvas.width, canvas.height);
     let previousData = ctx.createImageData(canvas.width, canvas.height);
 
-    const loadFrame = i => {
-        const framePixels = [];
+    const loadFrame = (i: number) => {
+        const framePixels: any[] = [];
         gifReader.decodeAndBlitFrameRGBA(i, framePixels);
         const {x, y, width, height, disposal} = gifReader.frameInfo(i);
         for (let row = 0; row < height; row++) {

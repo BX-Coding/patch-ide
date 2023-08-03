@@ -4,6 +4,7 @@ export type Asset = {
     assetId: string,
     assetType: string,
     data: any,
+    dataFormat: string,
 }
 
 export type Costume = {
