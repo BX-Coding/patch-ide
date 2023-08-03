@@ -1,16 +1,22 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
-import patchContext from './provider/PatchContext.js';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-import { HorizontalButtons, TextButton, IconButton } from './PatchButton/component.jsx';
+import { HorizontalButtons, TextButton, IconButton } from '../PatchButton';
 import { DarkMode } from '@mui/icons-material';
+import usePatchStore from '../../store';
 
-export default function TopBar(props) {
-  const { mode, setMode } = props;
+import { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject } from '../../util/patch-serialization';
+
+type TopBarProps = {
+  mode: string,
+  setMode: (mode: string) => void,
+}
+
+export function TopBar({ mode, setMode }: TopBarProps) {
 
   return (
     <Grid container item direction="row" sx={{
@@ -24,15 +30,15 @@ export default function TopBar(props) {
           <FileButton />
         </Grid>
         <Grid item xs={6}>
-          <PatchFileName />
+          <FileName />
         </Grid>
       </Grid>
       <Grid container item xs={4} justifyContent="flex-end">
         <Grid item>
           <HorizontalButtons>
-            <PatchProjectButton />
-            <PatchSignOutButton />
-            <PatchThemeButton mode={mode} setMode={setMode} />
+            <ProjectButton />
+            <SignOutButton />
+            <ThemeButton mode={mode} setMode={setMode} />
           </HorizontalButtons>
         </Grid>
       </Grid>
@@ -40,8 +46,12 @@ export default function TopBar(props) {
   );
 }
 
-export function PatchThemeButton(props) {
-  const { mode, setMode } = props;
+type ThemeButtonProps = {
+  mode: string,
+  setMode: (mode: string) => void,
+}
+
+export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
 
     return (
       <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" icon={<DarkMode htmlColor={mode === "dark" ? "white" : "black"} />} onClick={() => {
@@ -52,29 +62,29 @@ export function PatchThemeButton(props) {
     );
 }
 
-export function PatchSignOutButton() {
-  const handleClick = (event) => {
+export function SignOutButton() {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log(event.currentTarget.id);
   };
 
   return (
-    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" id="signOut" variant="contained" onClick={handleClick} />
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" variant="contained" onClick={handleClick} />
   );
 }
 
-export function PatchProjectButton() {
-  const handleClick = (event) => {
+export function ProjectButton() {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log(event.currentTarget.id);
   };
 
   return (
-    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="project" variant="contained" onClick={handleClick} text="Projects" />
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
   );
 }
 
-export function PatchFileName() {
+export function FileName() {
 
-  const handleTextChange = event => {
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(event.target.value);
   };
 
@@ -94,55 +104,57 @@ export function PatchFileName() {
 }
 
 export function FileButton() {
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject, projectChanged, saveAllThreads } = useContext(patchContext);
+  const projectChanged = usePatchStore((state) => state.projectChanged);
+  const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
 
-  const [anchorEl, setAnchorEl] = useState(null);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = (event) => {
+  const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const handleSaveNow = async (event) => {
+  const handleSaveNow = async () => {
     await saveAllThreads();
-    // idk if awaiting this is bad but it is unnecessary.
     saveToLocalStorage();
   };
 
-  const handleLoadFromLocalStorage = (event) => {
+  const handleLoadFromLocalStorage = () => {
     loadFromLocalStorage();
   }
-  const handleNew = (event) => {
+  const handleNew = () => {
     /* For now, this will just clear the project from localStorage and reload. */
     localStorage.removeItem("proj");
     location.reload();
   }
-  const handleDownload = async (event) => {
+  const handleDownload = async () => {
     await downloadProject();
   };
 
-  const handleUpload = (event) => {
+  const handleUpload = () => {
     //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
     var input = document.createElement('input');
     input.type = 'file';
 
-    input.onchange = e => {
-
+    input.onchange = (e: Event) => {
       // getting a hold of the file reference
-      var file = e.target.files[0];
+      const target = e.target as HTMLInputElement;
+      if (!target?.files) return;
+      var file = target?.files[0];
 
       // setting up the reader
       var reader = new FileReader();
       reader.readAsArrayBuffer(file);
 
       // here we tell the reader what to do when it's done reading...
-      reader.onloadend = readerEvent => {
-        var content = readerEvent.target.result; // this is the content!
-
+      reader.onloadend = (readerEvent: ProgressEvent<FileReader>) => {
+        var content = readerEvent?.target?.result; // this is the content!
+        if (!content) return;
         loadSerializedProject(content);
       }
     }
@@ -154,7 +166,6 @@ export function FileButton() {
     <HorizontalButtons>
       <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
       <TextButton
-        id="file"
         variant="contained"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -163,7 +174,7 @@ export function FileButton() {
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
       />
-      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} id="saveNow" variant={projectChanged ? "contained" : "disabled"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
+      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} disabled={!projectChanged} variant={"contained"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
       <Menu
         anchorEl={anchorEl}
         open={open}

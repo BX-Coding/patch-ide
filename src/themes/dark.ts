@@ -1,3 +1,17 @@
+import { createTheme, Theme } from '@mui/material/styles';
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    panel: Palette['primary'];
+    outlinedButtonBorder?: Palette['primary'];
+  }
+  interface PaletteOptions {
+    panel: PaletteOptions['primary'];
+    outlinedButtonBorder?: PaletteOptions['primary'];
+  }
+}
+
+const theme: Theme = createTheme(
 {
     "palette": {
       "mode": "dark",
@@ -39,19 +53,18 @@
         "primary": "#fff",
         "secondary": "rgba(255, 255, 255, 0.7)",
         "disabled": "rgba(255, 255, 255, 0.5)",
-        "icon": "rgba(255, 255, 255, 0.5)"
       },
       "background": {
         "paper": "#242424",
         "default": "#242424"
       },
       "panel": {
-        "default": "rgba(0, 0, 0, 0.16)",
+        "main": "rgba(0, 0, 0, 0.16)",
         "dark": "rgba(24, 24, 24, 0.96)",
-        "contrast": "#FFFFFF"
+        "contrastText": "#FFFFFF"
       },
       "outlinedButtonBorder": {
-        "default": "rgba(255, 255, 255, 0.16)"
+        "main": "rgba(255, 255, 255, 0.16)"
       }
     },
     "shape": {
@@ -66,15 +79,15 @@
         "variants": [
           {
             "props": {
-              "variant": "code"
-            }
-          },
-          {
-            "props": {
-              "variant": "link"
+              "variant": "outlined"
+            },
+            "style": {
+              "border": "1px solid #000"
             }
           }
         ]
       }
     }
-  }
+  });
+
+  export default theme;

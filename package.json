@@ -72,8 +72,5 @@
     "webpack-dev-server": "^4.13.2",
     "worker-loader": "^3.0.8",
     "worker-plugin": "^5.0.1"
-  },
-  "volta": {
-    "node": "19.8.1"
   }
 }

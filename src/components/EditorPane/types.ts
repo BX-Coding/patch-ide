@@ -88,3 +88,19 @@ export interface Target extends EventEmitter {
     addThread: (id: string, trigger: string, script: string) => string,
     getCurrentCostume: () => Costume,
 }
+
+type GlobalVariable = {
+    name: string,
+    value: string | number | boolean,
+}
+
+export type VmState = {
+    targets: Target[],
+    extensions: any[],
+    globalVariables: GlobalVariable[],
+    meta: {
+        semver: string,
+        vm: string,
+        agent: string,
+    }
+}

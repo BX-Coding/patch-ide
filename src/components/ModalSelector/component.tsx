@@ -6,10 +6,10 @@ import { getCostumeUrl } from 'get-costume-url';
 import { Typography, Box } from '@mui/material';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';
-import { handleAddCostumesToEditingTarget } from '../EditorPane/SpriteEditor/handleUpload.js';
-import { onAddSprite } from '../SpritePane/onAddSpriteHandler.js';
-import { SoundJson, SpriteJson } from '../EditorPane/types.js';
-import { handleAddSoundToEditingTarget } from '../EditorPane/SoundEditor/handleUpload.js';
+import { handleAddCostumesToEditingTarget } from '../EditorPane/SpriteEditor/handleUpload';
+import { onAddSprite } from '../SpritePane/onAddSpriteHandler';
+import { SoundJson, SpriteJson } from '../EditorPane/types';
+import { handleAddSoundToEditingTarget } from '../EditorPane/SoundEditor/handleUpload';
 import { ItemCard } from '../ItemCard';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 

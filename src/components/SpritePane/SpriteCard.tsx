@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ItemCard } from '../ItemCard';
 import { getCostumeUrl } from 'get-costume-url';
-import { Target } from '../EditorPane/types.js';
+import { Target } from '../EditorPane/types';
 import usePatchStore from '../../store';
 
 type SpriteCardProps = {

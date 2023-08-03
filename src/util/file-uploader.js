@@ -1,6 +1,6 @@
 import {BitmapAdapter, sanitizeSvg} from 'scratch-svg-renderer';
-import bmpConverter from './bmp-converter.js';
-import gifDecoder from './gif-decoder.js';
+import bmpConverter from './bmp-converter';
+import gifDecoder from './gif-decoder';
 
 /**
  * Extract the file name given a string of the form fileName + ext

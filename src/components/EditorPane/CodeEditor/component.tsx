@@ -2,7 +2,7 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import SplitPane, { Pane } from 'react-split-pane-next';
-import usePatchStore from '../../../store/index.js';
+import usePatchStore from '../../../store';
 import { ThreadEditor } from './ThreadEditor'
 
 export const CodeEditor = () => {

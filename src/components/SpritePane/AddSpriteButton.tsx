@@ -3,10 +3,10 @@ import Grid from '@mui/material/Grid';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-import { AddButton } from '../PatchButton/component.jsx';
-import usePatchStore, { ModalSelectorType } from '../../store/index.js';
-import { handleUploadCostume } from '../EditorPane/SpriteEditor/handleUpload.js';
-import { onAddSprite } from './onAddSpriteHandler.js';
+import { AddButton } from '../PatchButton';
+import usePatchStore, { ModalSelectorType } from '../../store';
+import { handleUploadCostume } from '../EditorPane/SpriteEditor/handleUpload';
+import { onAddSprite } from './onAddSpriteHandler';
 
 export function AddSpriteButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);

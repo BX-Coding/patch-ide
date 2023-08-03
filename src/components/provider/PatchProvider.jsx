@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
-import PatchContext from "./PatchContext.js";
+import PatchContext from "./PatchContext";
 import Renderer from 'scratch-render';
 import makeTestStorage from "../../util/make-test-storage.mjs";
 import VirtualMachine from 'pyatch-vm';
 import AudioEngine from 'scratch-audio';
-import sprites from '../../assets/sprites.ts/index.js';
+import sprites from '../../assets/sprites.ts/index';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
-import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader.js'
+import { handleFileUpload, costumeUpload, soundUpload } from '../../util/file-uploader'
 
 import defaulPatchProject from '../../assets/defaultProject.ptch1';
 
-import SplashScreen from "../SplashScreen/component.jsx";
+import SplashScreen from "../SplashScreen/component";
 
 import { Buffer } from 'buffer-es6'
 
@@ -204,19 +204,6 @@ const PyatchProvider = props => {
     width: 600,
   };
 
-  const initializeThreadGlobalState = () => {
-    const threadsText = {};
-    const threadsSaved = {};
-    pyatchVM.getAllRenderedTargets().forEach(target => {
-      target.getThreads().forEach(thread => {
-        threadsText[thread.id] = thread.script;
-        threadsSaved[thread.id] = true;
-      });
-    });
-    setThreadsText(threadsText);
-    setSavedThreads(threadsSaved);
-  }
-
   addToGlobalState({ pyatchVM, pyatchStage });
 
   // -------- Patch VM & Project Setup --------
@@ -279,102 +266,6 @@ const PyatchProvider = props => {
       }
     });
     await Promise.all(threadSavePromises);
-  }
-  
-  const downloadProject = async () => {
-    return pyatchVM.downloadProject();
-  }
-
-  const loadSerializedProject = async (vmState) => {
-    if (pyatchVM) {
-      setPatchReady(false);
-
-      const oldTargets = pyatchVM.runtime.targets;
-      const oldExecutableTargets = pyatchVM.runtime.executableTargets;
-      const oldGlobalVariables = pyatchVM.runtime._globalVariables;
-
-      pyatchVM.runtime._globalVariables = {};
-
-      const result = await pyatchVM.loadProject(vmState);
-
-      if (result == null) {
-        console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
-
-        pyatchVM.runtime.targets = oldTargets;
-        pyatchVM.runtime.executableTargets = oldExecutableTargets;
-        pyatchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
-
-        return;
-      }
-
-      setGlobalVariables(result.json.globalVariables);
-      setTargetIds(pyatchVM.getAllRenderedTargets().map(target => target.id));
-      const editingTargetId = pyatchVM?.editingTarget?.id ?? pyatchVM.runtime.targets[0].id;
-      pyatchVM.setEditingTarget(editingTargetId);
-      setEditingTargetId(editingTargetId);
-      changeSpriteValues(editingTargetId);
-      initializeThreadGlobalState();
-
-      setProjectChanged(false);
-      setPatchReady(true);
-    }
-  }
-
-  const saveToLocalStorage = async () => {
-    // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
-    let proj = await pyatchVM.zipProject();
-    var reader = new FileReader();
-    reader.readAsDataURL(proj);
-    reader.onloadend = function () {
-      var base64data = reader.result;
-      if (base64data) {
-        localStorage.removeItem("proj");
-        localStorage.setItem("proj", base64data);
-      } else {
-        console.error("The base64data to save is null for some reason. Abort.");
-      }
-    }
-    setProjectChanged(false);
-  }
-
-  // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
-  const b64dataurltoBlob = (b64Data, contentType = '', sliceSize = 512) => {
-    // the split removes the encoding info from the data url and just returns the raw data
-    const byteCharacters = atob(b64Data.split(',')[1]);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-  }
-
-  const hasLocalStorageProject = () => {
-    return !!localStorage.getItem("proj");
-  }
-
-  const loadFromLocalStorage = async () => {
-    let text = localStorage.getItem("proj");
-    if (text) {
-      console.log("Loading from localStorage...");
-      let proj = b64dataurltoBlob(text, 'application/zip');
-      await loadSerializedProject(proj);
-      console.log("Loaded from localStorage...");
-      return true;
-    } else {
-      console.warn("No project detected in localStorage.");
-      return false;
-    }
   }
 
   addToGlobalState({

@@ -2,7 +2,7 @@ import { sprites } from "../../assets/sprites";
 import usePatchStore from "../../store";
 import { Sprite, SpriteJson, Target } from "../EditorPane/types";
 
-const changeSpriteValues = (eventSource: Target | null = null) => {
+export const changeSpriteValues = (eventSource: Target | null = null) => {
     const patchVM = usePatchStore((state) => state.patchVM);
     const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
     

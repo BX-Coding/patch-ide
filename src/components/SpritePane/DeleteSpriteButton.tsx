@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeleteButton } from '../PatchButton/component.jsx';
+import { DeleteButton } from '../PatchButton';
 import usePatchStore from '../../store';
 
 export function DeleteSpriteButton() {

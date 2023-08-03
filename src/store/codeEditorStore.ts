@@ -14,6 +14,7 @@ export interface CodeEditorState {
     // Actions
     addThread: (target: Target) => void,
     updateThread: (id: string, text: string) => void,
+    loadTargetThreads: (target: Target) => void,
     saveThread: (id: string | string[]) => void,
     saveTargetThreads: (target: Target) => void,
     saveAllThreads: () => void,
@@ -38,6 +39,13 @@ export const createCodeEditorSlice: StateCreator<
         return { threads: newThreads };
     }),
     updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
+    loadTargetThreads: (target: Target) => set((state) => {
+        const newThreads = { ...state.threads };
+        Object.keys(target.threads).forEach((id) => {
+            newThreads[id] = { thread: target.getThread(id), text: target.getThread(id).script, saved: true };
+        });
+        return { threads: newThreads };
+    }),
     saveThread: (id: string | string[]) => set((state) => {
         const ids = typeof id === "string" ? [id] : id;
         const newThreads = { ...state.threads };

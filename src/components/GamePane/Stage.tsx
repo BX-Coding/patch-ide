@@ -3,7 +3,7 @@ import DOMElementRenderer from 'dom-element-renderer';
 import { getEventXY } from 'touch-utils';
 import { PatchQuestion } from './PatchQuestion';
 import { Box } from '@mui/material';
-import usePatchStore from '../../store/index.js';
+import usePatchStore from '../../store';
 
 const Stage = () => {
     const patchVM = usePatchStore((state) => state.patchVM);

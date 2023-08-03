@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import Grid from '@mui/material/Grid';
 
-import { HorizontalButtons, IconButton } from '../PatchButton/component.jsx';
+import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore from '../../store';
 
 export function SpriteName() {

@@ -1,1 +1,2 @@
-export * from './component';
+import SpritePane from './component';
+export default SpritePane;

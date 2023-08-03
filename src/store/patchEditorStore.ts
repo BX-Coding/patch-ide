@@ -15,6 +15,12 @@ export enum ModalSelectorType {
     SOUND = "sound",
 }
 
+type Stage = {
+    canvas: HTMLCanvasElement,
+    height: number,
+    width: number,
+}
+
 export interface PatchEditorState {
     targetIds: string[],
     editingTargetId: string,
@@ -29,11 +35,7 @@ export interface PatchEditorState {
     modalSelectorOpen: boolean,
 
     patchVM: any,
-    patchStage: {
-        canvas: HTMLCanvasElement,
-        height: number,
-        width: number,
-    },
+    patchStage: Stage,
 
     // Actions
     setTargetIds: (ids: string[]) => void,
@@ -49,7 +51,7 @@ export interface PatchEditorState {
     hideModalSelector: () => void,
 
     setPatchVM: any,
-    setPatchStage: (stage: HTMLCanvasElement) => void,
+    setPatchStage: (stage: Stage) => void,
 }
 
 export const createPatchEditorSlice: StateCreator<
@@ -86,5 +88,5 @@ export const createPatchEditorSlice: StateCreator<
     hideModalSelector: () => set({ modalSelectorOpen: false }),
 
     setPatchVM: (vm: any) => set({ patchVM: vm }),
-    setPatchStage: (stage: HTMLCanvasElement) => set({ patchStage: stage }),
+    setPatchStage: (stage: Stage) => set({ patchStage: stage }),
 })

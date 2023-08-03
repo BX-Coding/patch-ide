@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { AddSpriteButton } from "./AddSpriteButton.jsx"; //plus button
-import { DeleteSpriteButton } from "./DeleteSpriteButton.jsx"; //clear button
-import { SpriteCard } from "./SpriteCard.jsx"; //sprite name button
-import { SpriteAttributePane } from "./SpriteAttributeArea.js"; //height and stuff
-import { SpriteName } from "./SpriteName.jsx"; //textfeild
+import { AddSpriteButton } from "./AddSpriteButton"; //plus button
+import { DeleteSpriteButton } from "./DeleteSpriteButton"; //clear button
+import { SpriteCard } from "./SpriteCard"; //sprite name button
+import { SpriteAttributePane } from "./SpriteAttributeArea"; //height and stuff
+import { SpriteName } from "./SpriteName"; //textfeild
 
 import Grid from '@mui/material/Grid';
 
-import { HorizontalButtons } from '../PatchButton/component.jsx';
-import usePatchStore from '../../store/index.js';
+import { HorizontalButtons } from '../PatchButton';
+import usePatchStore from '../../store';
 
 function StageButton() {
     const patchVM = usePatchStore((state) => state.patchVM);

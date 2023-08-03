@@ -9,7 +9,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 
 export default {
-  entry: path.join(__dirname, "playground", "main.jsx"),
+  entry: path.join(__dirname, "src", "index.tsx"),
   output: {
     path: path.join(__dirname, "/build"),
   },
@@ -41,8 +41,11 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "playground", "public", "index.html"),
+      template: path.join(__dirname, "public", "index.html"),
     }),
     new NodePolyfillPlugin(),
   ],
+  resolve: {
+    extensions: ['', '.js', '.jsx', '.ts', '.tsx'],
+  }
 }

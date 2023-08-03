@@ -4,16 +4,16 @@ import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
-import pythonLinter from '../../../util/python-syntax-lint.js';
+import pythonLinter from '../../../util/python-syntax-lint';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 
 import { Autocomplete, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
-import completions from '../../../util/patch-autocompletions.js';
-import { Thread } from '../types.js';
+import completions from '../../../util/patch-autocompletions';
+import { Thread } from '../types';
 import usePatchStore from '../../../store';
-import { HorizontalButtons, DeleteButton, IconButton } from '../../PatchButton/component.js';
+import { HorizontalButtons, DeleteButton, IconButton } from '../../PatchButton';
 
 
 type ThreadEditorProps = {

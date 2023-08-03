@@ -21,7 +21,11 @@ export function EditorPane() {
     </div>
 }
 
-export function EditorTabButton(tab: EditorTab) {
+type EditorTabButtonProps = {
+    tab: EditorTab,
+}
+
+export function EditorTabButton({ tab }: EditorTabButtonProps) {
     const editorTab = usePatchStore((state) => state.editorTab)
     const setEditorTab = usePatchStore((state) => state.setEditorTab)
 
