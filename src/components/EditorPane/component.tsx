@@ -7,18 +7,30 @@ import { SoundEditor } from './SoundEditor';
 import Button from '@mui/material/Button'
 
 import usePatchStore, { EditorTab } from '../../store';
-
+import { Typography } from '@mui/material';
+import { useEditingTarget } from '../../hooks/useEditingTarget';
 
 export function EditorPane() {
     const patchEditorTab = usePatchStore((state) => state.editorTab)
+    const [editingTarget] = useEditingTarget();
 
-    return <div className="tabContent" style={{
-    }}>
-        {patchEditorTab === EditorTab.CODE && <CodeEditor/>}
-        {patchEditorTab === EditorTab.COSTUMES && <SpriteEditor/>}
-        {patchEditorTab === EditorTab.SOUNDS && <SoundEditor/>}
-        {patchEditorTab === EditorTab.VARIABLES && <VariableEditor/>}
-    </div>
+    return <>
+        { !editingTarget ? <EmptyEditor/> :
+            <div className="tabContent" style={{
+            }}>
+                {patchEditorTab === EditorTab.CODE && <CodeEditor/>}
+                {patchEditorTab === EditorTab.COSTUMES && <SpriteEditor/>}
+                {patchEditorTab === EditorTab.SOUNDS && <SoundEditor/>}
+                {patchEditorTab === EditorTab.VARIABLES && <VariableEditor/>}
+            </div>
+        }
+    </>
+}
+
+const EmptyEditor = () => {
+    return(
+        <Typography>No Sprite Selected</Typography>
+    );
 }
 
 type EditorTabButtonProps = {

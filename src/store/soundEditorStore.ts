@@ -1,16 +1,11 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
+import { Sound } from '../components/EditorPane/types'
 
 type Asset = {
     data: number[]
     assetId: string,
     assetType: string,
-}
-
-type Sound = {
-    rate: number
-    name: string,
-    asset: Asset,
 }
 
 export interface SoundEditorState {

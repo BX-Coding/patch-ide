@@ -7,6 +7,8 @@ import usePatchStore, { ModalSelectorType } from '../../../store';
 import { handleUploadSound } from './handleUpload';
 import { playByteArray } from './handlePreview';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import { useEditingTarget } from '../../../hooks/useEditingTarget';
+import { Target } from '../types';
 
 export function SoundEditor() {
     return (
@@ -23,8 +25,9 @@ type AddSoundButtonProps = {
 }
 
 function AddSoundButton({ reloadSoundEditor }: AddSoundButtonProps) {
-    const editingTargetId = usePatchStore((state) => state.editingTargetId);
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
+
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -58,7 +61,7 @@ function AddSoundButton({ reloadSoundEditor }: AddSoundButtonProps) {
             }}
         >
             <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
-            <MenuItem id="upload" onClick={() => { handleUploadSound(editingTargetId).then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
+            <MenuItem id="upload" onClick={() => { handleUploadSound(editingTarget.id).then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
         </Menu >
     </>
 }
@@ -87,13 +90,12 @@ function SoundDetails({ width, height }: SoundDetailsProps) {
 
 function SoundInspector() {
     const patchVM = usePatchStore((state) => state.patchVM);
-    const editingTargetId = usePatchStore((state) => state.editingTargetId);
     const selectedSoundIndex = usePatchStore((state) => state.selectedSoundIndex);
     const setSelectedSoundIndex = usePatchStore((state) => state.setSelectedSoundIndex);
     const sounds = usePatchStore((state) => state.sounds);
     const setSounds = usePatchStore((state) => state.setSounds);
 
-    const editingTarget = patchVM.editingTarget;
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
 
     const handleClick = (index: number, soundName: string) => () => {
         setSelectedSoundIndex(index);
@@ -101,8 +103,8 @@ function SoundInspector() {
 
     useEffect(() => {
         setSelectedSoundIndex(0);
-        setSounds(patchVM.editingTarget.getSounds());
-    }, [editingTargetId, patchVM]);
+        setSounds(editingTarget.getSounds());
+    }, [editingTarget, patchVM]);
 
     const handleDeleteClick = (index: number) => {
         editingTarget.deleteSound(index);
@@ -112,7 +114,10 @@ function SoundInspector() {
     }
 
     const handlePlayClick = (index: number) => {
-        playByteArray(sounds[index].asset.data);
+        const sound = sounds[index];
+        if (sound?.asset?.data) {
+            playByteArray(sound.asset.data);
+        }
     }
 
     const handleDeleteCurrentClick = () => handleDeleteClick(selectedSoundIndex);

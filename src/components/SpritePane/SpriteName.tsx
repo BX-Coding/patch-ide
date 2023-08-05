@@ -5,19 +5,22 @@ import Grid from '@mui/material/Grid';
 
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore from '../../store';
+import { useEditingTarget } from '../../hooks/useEditingTarget';
 
 export function SpriteName() {
     const patchVM = usePatchStore((state) => state.patchVM);
     const targetIds = usePatchStore((state) => state.targetIds);
-    const editingTargetId = usePatchStore((state) => state.editingTargetId);
     const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
 
-    const editingTarget = patchVM.editingTarget;
+    const [editingTarget, setEditingTarget] = useEditingTarget();
     const [nameSaved, setNameSaved] = useState(true);
-    const [name, setName] = useState(editingTarget.sprite.name);
+    const [name, setName] = useState(editingTarget?.sprite.name);
 
     const handleSave = () => {
-        patchVM.renameSprite(editingTargetId, name);
+        if (!editingTarget) {
+            return;
+        }
+        patchVM.renameSprite(editingTarget.id, name);
         setProjectChanged(true);
         setNameSaved(true);
     }
@@ -28,6 +31,9 @@ export function SpriteName() {
     }
 
     useEffect(() => {
+        if (!editingTarget) {
+            return;
+        }
         setName(editingTarget.sprite.name);
     }, [editingTarget]);
 
@@ -38,7 +44,7 @@ export function SpriteName() {
                 onChange={onChange}
                 fullWidth
                 size="small"
-                disabled={targetIds[0] == editingTargetId}
+                disabled={targetIds[0] == editingTarget?.id}
                 sx={{minWidth: '532px'}}
             />
             <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !patchVM.editingTarget.isSprite()} sx={{height: '40px'}} />

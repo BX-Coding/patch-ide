@@ -5,7 +5,8 @@ import { AddButton, DeleteButton, HorizontalButtons } from '../../PatchButton';
 import { ItemCard } from '../../ItemCard';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';
 import { handleUploadCostume } from './handleUpload';
-import { Costume } from '../types';
+import { Costume, Target } from '../types';
+import { useEditingTarget } from '../../../hooks/useEditingTarget';
 
 
 export function SpriteEditor() {
@@ -85,23 +86,24 @@ function SpriteDetails({ costumeIndex, costumes, width, height }: SpriteDetailsP
 }
 
 function SpriteInspector() {
-    const patchVM = usePatchStore((state) => state.patchVM);
     const setSelectedCostumeIndex = usePatchStore((state) => state.setSelectedCostumeIndex);
     const selectedCostumeIndex = usePatchStore((state) => state.selectedCostumeIndex);
     const setCostumes = usePatchStore((state) => state.setCostumes);
     const costumes = usePatchStore((state) => state.costumes);
 
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
+
     const handleClick = (costumeName: string) => {
-        const newCostumeIndex = patchVM.editingTarget.getCostumeIndexByName(costumeName);
-        patchVM.editingTarget.setCostume(newCostumeIndex);
+        const newCostumeIndex = editingTarget.getCostumeIndexByName(costumeName);
+        editingTarget.setCostume(newCostumeIndex);
         setSelectedCostumeIndex(newCostumeIndex);
     }
 
     const handleDeleteClick = (costumeName: string) => {
-        const newCostumeIndex = patchVM.editingTarget.getCostumeIndexByName(costumeName);
-        patchVM.editingTarget.deleteCostume(newCostumeIndex);
-        setSelectedCostumeIndex(patchVM.editingTarget.currentCostume);
-        setCostumes([...patchVM.editingTarget.getCostumes()]);
+        const newCostumeIndex = editingTarget.getCostumeIndexByName(costumeName);
+        editingTarget.deleteCostume(newCostumeIndex);
+        setSelectedCostumeIndex(editingTarget.currentCostume);
+        setCostumes([...editingTarget.getCostumes()]);
     }
 
     const handleDeleteCurrentClick = () => {

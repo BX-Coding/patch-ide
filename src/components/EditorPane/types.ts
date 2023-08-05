@@ -77,6 +77,10 @@ export interface SoundJson {
 }
 
 export interface Target extends EventEmitter {
+    direction: number
+    size: number
+    y: number
+    x: number
     id: string,
     name: string,
     isStage: boolean,
@@ -87,7 +91,15 @@ export interface Target extends EventEmitter {
 
     getThread: (id: string) => Thread,
     addThread: (id: string, trigger: string, script: string) => string,
+    
     getCurrentCostume: () => Costume,
+    getCostumeIndexByName: (name: string) => number,
+    setCostume: (costumeIndex: number) => void,
+    deleteCostume: (costumeIndex: number) => void,
+    getCostumes: () => Costume[],
+
+    deleteSound: (soundIndex: number) => void,
+    getSounds: () => Sound[],
 }
 
 type GlobalVariable = {

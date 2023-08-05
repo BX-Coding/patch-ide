@@ -9,6 +9,8 @@ import Grid from '@mui/material/Grid';
 
 import { HorizontalButtons } from '../PatchButton';
 import usePatchStore from '../../store';
+import { Target } from '../EditorPane/types';
+import { useEditingTarget } from '../../hooks/useEditingTarget';
 
 function StageButton() {
     const patchVM = usePatchStore((state) => state.patchVM);
@@ -20,13 +22,7 @@ function StageButton() {
 export default function SpritePane(){
     const patchVM = usePatchStore((state) => state.patchVM);
     const targetIds = usePatchStore((state) => state.targetIds);
-    const editingTargetId = usePatchStore((state) => state.editingTargetId);
-
-    if (!patchVM) {
-        return null;
-    }
-
-    const editingTarget = patchVM.runtime.getTargetById(editingTargetId);
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
 
     return(
         <Grid>

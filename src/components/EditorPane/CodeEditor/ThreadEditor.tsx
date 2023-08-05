@@ -11,9 +11,10 @@ import { Autocomplete, TextField, Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import completions from '../../../util/patch-autocompletions';
-import { Thread } from '../types';
+import { Target, Thread } from '../types';
 import usePatchStore from '../../../store';
 import { HorizontalButtons, DeleteButton, IconButton } from '../../PatchButton';
+import { useEditingTarget } from '../../../hooks/useEditingTarget';
 
 
 type ThreadEditorProps = {
@@ -30,13 +31,15 @@ export const ThreadEditor = ({ thread, first, final }: ThreadEditorProps) => {
     const saveThread = usePatchStore((state) => state.saveThread);
     const getThread = usePatchStore((state) => state.getThread);
     const patchVM = usePatchStore((state) => state.patchVM);
-    const editingTargetId = usePatchStore((state) => state.editingTargetId);
+
+    // We are casting as true as this component should only be rendered when a target is selected
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
 
     const [triggerEvent, setTriggerEvent] = useState(thread.triggerEvent);
     const [triggerEventOption, setTriggerEventOption] = useState(thread.triggerEventOption);
 
     const handleAdd = () => {
-        addThread(patchVM.editingTarget);
+        addThread(editingTarget);
     }
 
     const handleDelete = () => {
@@ -55,7 +58,7 @@ export const ThreadEditor = ({ thread, first, final }: ThreadEditorProps) => {
         thread.updateThreadTriggerEvent(newValue.id)
         // This Sprite Clicked has an implicit option of "this sprite"
         if (newValue.id === "event_whenthisspriteclicked") {
-            thread.updateThreadTriggerEventOption(editingTargetId)
+            thread.updateThreadTriggerEventOption(editingTarget.id)
         } else {
             thread.updateThreadTriggerEventOption("");
         }
