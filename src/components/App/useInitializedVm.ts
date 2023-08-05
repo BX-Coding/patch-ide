@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 // @ts-ignore
 import defaultPatchProject from '../../assets/defaultProject.ptch1';
-import { loadSerializedProject, hasLocalStorageProject, loadFromLocalStorage } from '../../util/patch-serialization';
 // @ts-ignore
 import VirtualMachine from 'pyatch-vm';
 // @ts-ignore
@@ -20,6 +19,9 @@ const useInitializedVm = () => {
     const setPatchVM = usePatchStore(state => state.setPatchVM);
     const setQuestionAsked = usePatchStore(state => state.setQuestionAsked);
     const setVmLoaded = usePatchStore(state => state.setVmLoaded);
+    const hasLocalStorageProject = usePatchStore(state => state.hasLocalStorageProject);
+    const loadFromLocalStorage = usePatchStore(state => state.loadFromLocalStorage);
+    const loadSerializedProject = usePatchStore(state => state.loadSerializedProject);
 
     const initializePatchProject = async () => {
         if (hasLocalStorageProject()) {
