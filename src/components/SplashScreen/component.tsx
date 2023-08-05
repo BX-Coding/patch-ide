@@ -1,9 +1,20 @@
 import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 // @ts-ignore
-import patchPenguin from '../assets/PatchPenguin.svg';
+import patchPenguin from '../../assets/PatchPenguin.svg';
 
-function SplashScreen() {
+type SplashScreenProps = {
+    renderCondition: boolean,
+    children?: React.ReactNode,
+}
+const SplashScreen = ({ renderCondition, children }: SplashScreenProps) => {
+    return <>
+        {!renderCondition && <PatchAnimation/>}
+        <div style={{display: renderCondition ? "block" : "none"}}>{children}</div>
+    </>
+}
+
+const PatchAnimation = () => {
     const [loadingText, setLoadingText] = useState("Loading")
     const [loadingDots, setLoadingDots] = useState("")
 

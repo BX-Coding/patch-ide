@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, ReactElement } from 'react';
 import { VariableEditor } from './VariableEditor';
 import { CodeEditor } from './CodeEditor';
 import { SpriteEditor } from './SpriteEditor';
@@ -23,9 +23,10 @@ export function EditorPane() {
 
 type EditorTabButtonProps = {
     tab: EditorTab,
+    icon: ReactElement,
 }
 
-export function EditorTabButton({ tab }: EditorTabButtonProps) {
+export function EditorTabButton({ tab, icon }: EditorTabButtonProps) {
     const editorTab = usePatchStore((state) => state.editorTab)
     const setEditorTab = usePatchStore((state) => state.setEditorTab)
 
@@ -35,5 +36,5 @@ export function EditorTabButton({ tab }: EditorTabButtonProps) {
 
     const variant = editorTab === tab ? "contained" : "outlined";
 
-    return <Button variant={variant} onClick={updateEditorTab}></Button>
+    return <Button variant={variant} onClick={updateEditorTab}>{icon}</Button>
 }

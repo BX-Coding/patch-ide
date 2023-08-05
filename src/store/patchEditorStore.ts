@@ -28,6 +28,7 @@ export interface PatchEditorState {
     editorTab: EditorTab,
     vmLoaded: boolean,
     patchReady: boolean,
+    renderEditor: boolean,
 
     projectChanged: boolean,
 
@@ -59,12 +60,13 @@ export const createPatchEditorSlice: StateCreator<
     [],
     [],
     PatchEditorState
-> = (set) => ({
+> = (set, get) => ({
     targetIds: [],
     editingTargetId: "",
     editorTab: EditorTab.CODE,
     vmLoaded: false,
     patchReady: false,
+    renderEditor: false,
     projectChanged: false,
     modalSelectorType: ModalSelectorType.COSTUME,
     modalSelectorOpen: false,
@@ -79,8 +81,8 @@ export const createPatchEditorSlice: StateCreator<
     setEditingTargetId: (id: string) => set({ editingTargetId: id }),
 
     setEditorTab: (tab: EditorTab) => set({ editorTab: tab }),
-    setVmLoaded: (loaded: boolean) => set({ vmLoaded: loaded }),
-    setPatchReady: (ready: boolean) => set({ patchReady: ready }),
+    setVmLoaded: (loaded: boolean) => set({ vmLoaded: loaded, renderEditor: loaded && get().patchReady }),
+    setPatchReady: (ready: boolean) => set({ patchReady: ready, renderEditor: ready && get().vmLoaded }),
 
     setProjectChanged: (changed: boolean) => set({ projectChanged: changed }),
 

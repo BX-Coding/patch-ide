@@ -2,17 +2,11 @@ import usePatchStore from "../store";
 import { VmState, Target, Thread } from "../components/EditorPane/types";
 import { changeSpriteValues } from "../components/SpritePane/onAddSpriteHandler";
 
-export const downloadProject = async () => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-
+export const downloadProject = async (patchVM: any) => {
     return patchVM.downloadProject();
   }
 
-const initializeThreadGlobalState = () => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const loadTargetThreads = usePatchStore((state) => state.loadTargetThreads);
-    const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-
+const initializeThreadGlobalState = (patchVM: any, loadTargetThreads: (target: Target) => void, saveAllThreads: () => void) => {
     patchVM.getAllRenderedTargets().forEach((target: Target) => {
         loadTargetThreads(target);
     });
