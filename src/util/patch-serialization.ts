@@ -1,4 +1,4 @@
-import usePatchStore from "../store";
+import usePatchStore, { EditorState } from "../store";
 import { VmState, Target, Thread } from "../components/EditorPane/types";
 import { changeSpriteValues } from "../components/SpritePane/onAddSpriteHandler";
 
@@ -13,13 +13,13 @@ const initializeThreadGlobalState = (patchVM: any, loadTargetThreads: (target: T
     saveAllThreads();
 }
 
-export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer) => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const setPatchReady = usePatchStore((state) => state.setPatchReady);
-    const setGlobalVariables = usePatchStore((state) => state.setGlobalVariables);
-    const setTargetIds = usePatchStore((state) => state.setTargetIds);
-    const setEditingTargetId = usePatchStore((state) => state.setEditingTargetId);
-    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer, editorState: EditorState) => {
+    const patchVM = editorState.patchVM
+    const setPatchReady = editorState.setPatchReady
+    const setGlobalVariables = editorState.setGlobalVariables
+    const setTargetIds = editorState.setTargetIds
+    const setEditingTargetId = editorState.setEditingTargetId
+    const setProjectChanged = editorState.setProjectChanged
 
     if (patchVM) {
       setPatchReady(false);
@@ -48,16 +48,16 @@ export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer
       patchVM.setEditingTarget(editingTargetId);
       setEditingTargetId(editingTargetId);
       changeSpriteValues(editingTargetId);
-      initializeThreadGlobalState();
+      initializeThreadGlobalState(patchVM, editorState.loadTargetThreads, editorState.saveAllThreads);
 
       setProjectChanged(false);
       setPatchReady(true);
     }
   }
 
-  export const saveToLocalStorage = async () => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+  export const saveToLocalStorage = async (editorState: EditorState) => {
+    const patchVM = editorState.patchVM;
+    const setProjectChanged = editorState.setProjectChanged;
 
     // https://stackoverflow.com/questions/18650168/convert-blob-to-base64
     let proj = await patchVM.zipProject();
@@ -77,7 +77,6 @@ export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer
 
   // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
   export const b64dataurltoBlob = (b64Data: string, contentType = '', sliceSize = 512) => {
-    const patchVM = usePatchStore((state) => state.patchVM);
     // the split removes the encoding info from the data url and just returns the raw data
     const byteCharacters = atob(b64Data.split(',')[1]);
     const byteArrays = [];
@@ -102,12 +101,12 @@ export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer
     return !!localStorage.getItem("proj");
   }
 
-  export const loadFromLocalStorage = async () => {
+  export const loadFromLocalStorage = async (editorState: EditorState) => {
     let text = localStorage.getItem("proj");
     if (text) {
       console.log("Loading from localStorage...");
       let proj = b64dataurltoBlob(text, 'application/zip');
-      await loadSerializedProject(proj);
+      await loadSerializedProject(proj, editorState);
       console.log("Loaded from localStorage...");
       return true;
     } else {
