@@ -11,19 +11,13 @@ import { HorizontalButtons } from '../PatchButton';
 import usePatchStore from '../../store';
 import { Target } from '../EditorPane/types';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
-
-function StageButton() {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const stageTarget = patchVM.runtime.getTargetForStage();
-
-    return <>{stageTarget && <SpriteCard key={stageTarget.id} target={stageTarget}/>}</>;
-}
+import { useStageTarget } from './useStageTarget';
 
 export default function SpritePane(){
     const patchVM = usePatchStore((state) => state.patchVM);
     const targetIds = usePatchStore((state) => state.targetIds);
     const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
-
+    
     return(
         <Grid>
             <Grid container justifyContent = "center">
@@ -65,4 +59,10 @@ export default function SpritePane(){
             </Grid>
         </Grid>
     );
+}
+
+function StageButton() {
+    const stageTarget = useStageTarget();
+
+    return <>{stageTarget && <SpriteCard key={stageTarget.id} target={stageTarget}/>}</>;
 }

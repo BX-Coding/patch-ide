@@ -31,11 +31,13 @@ const useInitializedVm = () => {
         }
     }
     useEffect(() => {
-        function asyncEffect() {
+        const asyncEffect = async () => {
           setPatchReady(false);
-    
+
+          
+          
           const scratchRenderer = new Renderer(patchStage.canvas);
-    
+          
           const patchVM = new VirtualMachine();
           patchVM.attachStorage(makeTestStorage());
           patchVM.attachRenderer(scratchRenderer);
@@ -44,15 +46,15 @@ const useInitializedVm = () => {
           
           patchVM.runtime.draw();
           patchVM.start();
-    
-          initializePatchProject();
-    
+          
+          setPatchVM(patchVM);
+          await initializePatchProject();
+          
           patchVM.on("VM READY", () => {
             setVmLoaded(true);
           });
     
           patchVM.runtime.on("QUESTION", onQuestionAsked);
-          setPatchVM(patchVM);
 
         }
         asyncEffect();

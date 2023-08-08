@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-react": "^7.22.5",
     "@codemirror/lang-python": "^6.1.2",
     "@codemirror/language": "^6.8.0",
     "@codemirror/lint": "^6.2.2",
@@ -17,6 +19,7 @@
     "@types/node": "^20.4.5",
     "@uiw/codemirror-theme-material": "^4.19.16",
     "@uiw/react-codemirror": "^4.19.16",
+    "babel-loader": "^9.1.3",
     "buffer": "^6.0.3",
     "file-loader": "^6.2.0",
     "lodash.omit": "^4.5.0",

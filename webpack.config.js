@@ -16,7 +16,23 @@ export default {
   mode: "development",
   module: {
     rules: [
-      { test: /\.(t|j)sx?$/, use: { loader: 'ts-loader' }, exclude: /node_modules/ },
+      // Still using babel loader for js files only to support funky CodeMirror component see BXC-210
+      {
+        test: /\.?(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              '@babel/preset-env', 
+              ['@babel/preset-react', {"runtime": "automatic"}]
+          ], plugins: [
+            '@babel/plugin-syntax-import-assertions'
+          ]
+          }
+        }
+      },
+      { test: /\.tsx?$/, use: { loader: 'ts-loader' }, exclude: /node_modules/ },
       { enforce: "pre", test: /\.js$/, exclude: /node_modules/, loader: "source-map-loader" },
       {
         test: /\.css$/,

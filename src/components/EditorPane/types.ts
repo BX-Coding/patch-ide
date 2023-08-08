@@ -90,7 +90,7 @@ export interface Target extends EventEmitter {
     sprite: Sprite,
 
     getThread: (id: string) => Thread,
-    addThread: (id: string, trigger: string, script: string) => string,
+    addThread: (id: string, trigger: string, script: string) => Promise<string>,
     
     getCurrentCostume: () => Costume,
     getCostumeIndexByName: (name: string) => number,

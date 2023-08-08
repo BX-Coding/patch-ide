@@ -20,7 +20,6 @@ export interface CodeEditorState {
     saveAllThreads: () => void,
     deleteThread: (id: string) => void,
     getThread: (id: string) => ThreadState,
-    getThreads: () => ThreadState[],
 }
 
 export const createCodeEditorSlice: StateCreator<
@@ -32,12 +31,15 @@ export const createCodeEditorSlice: StateCreator<
     threads: {},
 
     // Actions
-    addThread: (target: Target) => set((state) => {
-        const id = target.addThread("", "event_whenflagclicked", "");
-        const newThreads = { ...state.threads };
-        newThreads[target.id] = { thread: target.getThread(id), text: "", saved: true };
-        return { threads: newThreads };
-    }),
+    addThread: async (target: Target) => {
+        const id = await target.addThread("", "event_whenflagclicked", "");
+        const thread = target.getThread(id);
+        set((state) => {
+            const newThreads = { ...state.threads };
+            newThreads[id] = { thread, text: "", saved: true };
+            return { threads: newThreads };
+        }
+    )},
     updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
     loadTargetThreads: (target: Target) => set((state) => {
         const newThreads = { ...state.threads };
@@ -84,5 +86,5 @@ export const createCodeEditorSlice: StateCreator<
         return { threads: newThreads };
     }),
     getThread: (id: string) => get().threads[id],
-    getThreads: () => Object.values(get().threads),
+    
 })

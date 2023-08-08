@@ -45,7 +45,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
-      <SplashScreen renderCondition={renderEditor}>
+      <SplashScreen renderCondition={true}>
           <Grid container item direction="row" width={'100%'} sx={{
             position: "absolute",
             width: "100%",

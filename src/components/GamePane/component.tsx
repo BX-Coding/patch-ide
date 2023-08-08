@@ -23,7 +23,6 @@ export const GamePane = () => {
         <Box className="assetHolder" sx={{
             backgroundColor: 'panel.default',
             padding: "8px",
-            minHeight: "calc(100% - 67px)",
             borderLeftWidth: "1px",
             borderColor: 'divider',
         }}>

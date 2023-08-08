@@ -7,9 +7,7 @@ export const downloadProject = async (patchVM: any) => {
   }
 
 const initializeThreadGlobalState = (patchVM: any, loadTargetThreads: (target: Target) => void, saveAllThreads: () => void) => {
-    patchVM.getAllRenderedTargets().forEach((target: Target) => {
-        loadTargetThreads(target);
-    });
+    loadTargetThreads(patchVM.editingTarget);
     saveAllThreads();
 }
 
@@ -20,6 +18,10 @@ export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer
     const setTargetIds = editorState.setTargetIds
     const setEditingTargetId = editorState.setEditingTargetId
     const setProjectChanged = editorState.setProjectChanged
+    const setEditingTargetAttributes = editorState.setEditingTargetAttributes
+
+    console.warn("Loading serialized project...", patchVM);
+    
 
     if (patchVM) {
       setPatchReady(false);
@@ -47,7 +49,7 @@ export const loadSerializedProject = async (vmState: Blob | string | ArrayBuffer
       const editingTargetId = patchVM?.editingTarget?.id ?? patchVM.runtime.targets[0].id;
       patchVM.setEditingTarget(editingTargetId);
       setEditingTargetId(editingTargetId);
-      changeSpriteValues(editingTargetId);
+      changeSpriteValues(editingTargetId, setEditingTargetAttributes, editingTargetId);
       initializeThreadGlobalState(patchVM, editorState.loadTargetThreads, editorState.saveAllThreads);
 
       setProjectChanged(false);

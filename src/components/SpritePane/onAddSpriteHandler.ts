@@ -3,17 +3,10 @@ import { useEditingTarget } from "../../hooks/useEditingTarget";
 import usePatchStore from "../../store";
 import { Sprite, SpriteJson, Target } from "../EditorPane/types";
 
-export const changeSpriteValues = (eventSource: Target | null = null) => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
-    
-    if (!patchVM) {
-      return;
-    }
-
+export const changeSpriteValues = (eventSource: Target | null = null, setEditingTargetAttributes: (x: number, y: number, size: number, direction: number) => void, editingTargetId: string) => {
     // only update the attributes if the active sprite has changes
     if (eventSource) {
-      if (eventSource.id !== patchVM.editingTarget?.id) {
+      if (eventSource.id !== editingTargetId) {
         return;
       }
     }
@@ -30,6 +23,7 @@ export const changeSpriteValues = (eventSource: Target | null = null) => {
 const addSprite = async (sprite: Sprite | SpriteJson) => {
     const patchVM = usePatchStore((state) => state.patchVM);
     const setTargetIds = usePatchStore((state) => state.setTargetIds);
+    const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
     const [editingTarget, setEditingTarget] = useEditingTarget();
 
     await patchVM.addSprite(sprite);
@@ -39,7 +33,7 @@ const addSprite = async (sprite: Sprite | SpriteJson) => {
     setTargetIds(targets.map(target => target.id));
     setEditingTarget(newTarget.id);
 
-    newTarget.on('EVENT_TARGET_VISUAL_CHANGE', changeSpriteValues);
+    newTarget.on('EVENT_TARGET_VISUAL_CHANGE', (eventSource: Target | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
 }
 
 export const onAddSprite = async (sprite?: Sprite | SpriteJson) => {
