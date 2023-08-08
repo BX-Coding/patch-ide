@@ -11,11 +11,18 @@ const getEditingTarget = (patchVM: any, editingTargetId: string): Target | null 
     return patchVM.runtime.getTargetById(editingTargetId);
 }
 
-const setEditingTarget = (patchVM: any, setEditingTargetId: (id: string) => void, loadTargetThreads: (target: Target) => void) => (target: Target | string) => {
+const setEditingTarget = (
+    patchVM: any, 
+    setEditingTargetId: (id: string) => void, 
+    loadTargetThreads: (target: Target) => void, 
+    saveTargetThreads: (target: Target) => void
+    ) => (target: Target | string) => {
     if (!patchVM) {
         return;
     }
     const targetId = typeof target == "string" ? target : target.id;
+    saveTargetThreads(patchVM.editingTarget);
+
     patchVM.setEditingTarget(targetId);
     setEditingTargetId(targetId);
     loadTargetThreads(patchVM.editingTarget);
@@ -26,5 +33,7 @@ export const useEditingTarget = (): [Target | null, (target: Target | string) =>
     const editingTargetId = usePatchStore(state => state.editingTargetId);
     const setEditingTargetId = usePatchStore(state => state.setEditingTargetId);
     const loadTargetThreads = usePatchStore(state => state.loadTargetThreads);
-    return [getEditingTarget(patchVM, editingTargetId), setEditingTarget(patchVM, setEditingTargetId, loadTargetThreads)];
+    const saveTargetThreads = usePatchStore(state => state.saveTargetThreads);
+
+    return [getEditingTarget(patchVM, editingTargetId), setEditingTarget(patchVM, setEditingTargetId, loadTargetThreads, saveTargetThreads)];
 }

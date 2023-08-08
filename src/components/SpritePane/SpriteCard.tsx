@@ -16,7 +16,6 @@ export function SpriteCard({ target }: SpriteCardProps) {
 
     
     const onClick = () => {
-        saveTargetThreads(patchVM.editingTarget);
         setEditingTarget(target.id);
     }
 

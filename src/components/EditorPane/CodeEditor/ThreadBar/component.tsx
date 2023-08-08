@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { Autocomplete, TextField, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import { Target, Thread } from '../../types';

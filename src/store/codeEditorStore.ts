@@ -42,7 +42,7 @@ export const createCodeEditorSlice: StateCreator<
     )},
     updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
     loadTargetThreads: (target: Target) => set((state) => {
-        const newThreads = { ...state.threads };
+        const newThreads: { [key: string]: ThreadState} = {};
         Object.keys(target.threads).forEach((id) => {
             newThreads[id] = { thread: target.getThread(id), text: target.getThread(id).script, saved: true };
         });
