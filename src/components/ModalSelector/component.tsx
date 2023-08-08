@@ -12,9 +12,12 @@ import { SoundJson, SpriteJson } from '../EditorPane/types';
 import { handleAddSoundToEditingTarget } from '../EditorPane/SoundEditor/handleUpload';
 import { ItemCard } from '../ItemCard';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { CostumeImage } from '../CostumeImage';
+import { usePromise } from '../../hooks/usePromise';
 
 export const ModalSelector = () => {
-    const patchVM = usePatchStore((state) => state.patchVM);
     const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
     const modalSelectorOpen = usePatchStore((state) => state.modalSelectorOpen);
     const hideModalSelector = usePatchStore((state) => state.hideModalSelector);
@@ -35,17 +38,6 @@ export const ModalSelector = () => {
         hideModalSelector();
     }
 
-    const getAssetNode = async (asset: SpriteJson | SoundJson) => {
-        if (modalSelectorType === ModalSelectorType.SPRITE || modalSelectorType === ModalSelectorType.COSTUME) {
-            const sprite = asset as SpriteJson;
-            const costumeWrap = await patchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], patchVM.runtime);
-            const url = await getCostumeUrl(costumeWrap.asset);
-            return <img src={url} className="spriteChooserImage" />
-        } else if (modalSelectorType === ModalSelectorType.SOUND) {
-            return <VolumeUpIcon />
-        }
-    }
-
     const internalAssets = modalSelectorType === ModalSelectorType.SPRITE ? sprites : sounds;
 
     return (
@@ -62,9 +54,33 @@ export const ModalSelector = () => {
                         selected={false}
                         onClick={() => onClick(asset)}
                         width={84}
-                        height={84}>{getAssetNode(asset)}</ItemCard>
+                        height={84}>
+                            <AssetImage asset={asset} />
+                        </ItemCard>
                 })}
             </center>
         </Box>
     );
+}
+
+const AssetImage = ({ asset }: { asset: SpriteJson | SoundJson }) => {
+    const patchVM = usePatchStore((state) => state.patchVM);
+    const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
+
+    const getDisplayElement = async (asset: SpriteJson | SoundJson) => {
+        if (modalSelectorType === ModalSelectorType.SPRITE || modalSelectorType === ModalSelectorType.COSTUME) {
+            const sprite = asset as SpriteJson;
+            const costume = await patchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], patchVM.runtime);
+            return <CostumeImage costume={costume} className="costumeCardImage" />
+        } else if (modalSelectorType === ModalSelectorType.SOUND) {
+            return <VolumeUpIcon />
+        }
+    }
+    const {loading, error, data} = usePromise(getDisplayElement(asset));
+
+    return <>
+        {loading && <HourglassEmptyIcon />}
+        {error && <ErrorOutlineIcon />}
+        {(!loading && !error) && data}
+    </>;
 }

@@ -7,6 +7,7 @@ import { Box, Grid, Menu, MenuItem } from '@mui/material';
 import { handleUploadCostume } from './handleUpload';
 import { Costume, Target } from '../types';
 import { useEditingTarget } from '../../../hooks/useEditingTarget';
+import { CostumeImage } from '../../CostumeImage';
 
 
 export function SpriteEditor() {
@@ -78,7 +79,7 @@ function SpriteDetails({ costumeIndex, costumes, width, height }: SpriteDetailsP
                 maxWidth: width,
                 maxHeight: height
             }}>
-                <img src={getCostumeUrl(costumes[costumeIndex].asset)} width={"100%"} height={"100%"} />
+                <CostumeImage costume={costumes[costumeIndex]} className="assetDetailsImage"/>
             </Grid>
         </Grid>
     );
@@ -149,7 +150,9 @@ function SpriteInspector() {
                                     key={costume.name}
                                     width={120}
                                     height={120}
-                                >{getCostumeUrl(costume.asset)}</ItemCard>
+                                >
+                                    <CostumeImage costume={costume} className="costumeCardImage"/>
+                                </ItemCard>
                             </Grid>
                         )}
                     </Grid>

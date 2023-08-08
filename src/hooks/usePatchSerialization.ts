@@ -58,6 +58,8 @@ export const usePatchSerialization = () => {
             return;
         }
 
+        console.warn(result.json.globalVariables);
+        
         setGlobalVariables(result.json.globalVariables);
         setTargetIds(patchVM.getAllRenderedTargets().map((target: Target) => target.id));
         const editingTargetId = patchVM?.editingTarget?.id ?? patchVM.runtime.targets[0].id;

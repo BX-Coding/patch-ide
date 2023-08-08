@@ -5,7 +5,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { ItemCard } from '../../ItemCard';
 import usePatchStore, { ModalSelectorType } from '../../../store';
 import { handleUploadSound } from './handleUpload';
-import { playByteArray } from './handlePreview';
+import { useAudioPlayback } from './useAudioPlayback';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useEditingTarget } from '../../../hooks/useEditingTarget';
 import { Target } from '../types';
@@ -94,6 +94,7 @@ function SoundInspector() {
     const setSelectedSoundIndex = usePatchStore((state) => state.setSelectedSoundIndex);
     const sounds = usePatchStore((state) => state.sounds);
     const setSounds = usePatchStore((state) => state.setSounds);
+    const playByteArray = useAudioPlayback();
 
     const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
 

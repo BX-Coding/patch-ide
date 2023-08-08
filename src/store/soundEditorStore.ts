@@ -52,7 +52,7 @@ export const createSoundEditorSlice: StateCreator<
     // Actions
     setSounds: (sounds: Sound[]) => set({ sounds: sounds }),
     setSelectedSoundIndex: (index: number) => set({ selectedSoundIndex: index }),
-    loadTargetSounds: (target: Target) => set({ sounds: target.sprite.sounds }),
+    loadTargetSounds: (target: Target) => set({ sounds: target.sprite.sounds, selectedSoundIndex: 0 }),
 
     // Preview Actions
     setContext: (context: AudioContext) => set({ context: context }),

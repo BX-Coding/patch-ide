@@ -4,6 +4,7 @@ import getCostumeUrl from '../../util/get-costume-url';
 import { Target } from '../EditorPane/types';
 import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
+import { CostumeImage } from '../CostumeImage';
 
 type SpriteCardProps = {
     target: Target,
@@ -25,6 +26,8 @@ export function SpriteCard({ target }: SpriteCardProps) {
             key={target?.sprite?.name}
             width={120}
             height={120}
-        >{getCostumeUrl(target?.getCurrentCostume()?.asset)}</ItemCard>
+        >
+            <CostumeImage costume={target?.sprite?.costumes[0]} className="costumeCardImage" />
+        </ItemCard>
     );
 }

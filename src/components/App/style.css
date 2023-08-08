@@ -50,39 +50,9 @@ canvas, .canvasBox {
     }
 }
 
-/*@media screen and (min-width: 1500px) {
-    .leftContainer {
-        width: calc(100% - 917px);
-        margin-top: 0px;
-    }
-    .rightContainer {
-        width: 917px;
-        margin-top: 0px;
-    }
-    canvas, .canvasBox {
-        width: 900px;
-        height: 600px;
-    }
-}*/
-
-/*@media screen and (min-width: 1080px) {
-    :root {
-        --canvas-width: calc(30vw + 276px);
-        --canvas-height: calc(var(--canvas-width) * 2 / 3);
-    }
-    .leftContainer {
-        width: calc(100% - 17px - var(--canvas-width));
-        margin-top: 0px;
-    }
-    .rightContainer {
-        width: 17px + var(--canvas-width);
-        margin-top: 0px;
-    }
-    canvas, .canvasBox {
-        width: var(--canvas-width);
-        height: var(--canvas-height);
-    }
-}*/
+.costumeCardImage {
+    height: 70%;
+}
 
 .spriteChooserImage, .soundChooserImage {
     width: 64px;
