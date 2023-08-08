@@ -10,8 +10,6 @@ type SpriteCardProps = {
 }
 
 export function SpriteCard({ target }: SpriteCardProps) {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads);
     const [editingTarget, setEditingTarget] = useEditingTarget();
 
     

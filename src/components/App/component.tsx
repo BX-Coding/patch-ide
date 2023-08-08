@@ -39,7 +39,7 @@ const App = () => {
   const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
 
   useInitializedVm();
-  useConfirmClose(projectChanged);
+  // useConfirmClose(projectChanged);
   useThreadAutoSave(patchVM, saveTargetThreads, editorTab);
   useMonitorProjectChange(setProjectChanged, [targetIds])
 

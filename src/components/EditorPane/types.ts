@@ -52,8 +52,8 @@ export interface Sprite {
     id: string,
     name: string,
     isStage: boolean,
-    currentCostume: number,
     costumes: Costume[],
+    sounds: Sound[],
 }
 
 export interface SpriteJson {

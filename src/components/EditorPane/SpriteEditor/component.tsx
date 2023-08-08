@@ -69,7 +69,6 @@ type SpriteDetailsProps = {
 }
 
 function SpriteDetails({ costumeIndex, costumes, width, height }: SpriteDetailsProps) {
-
     return (
         <Grid container direction="row" spacing={2} sx={{
             width: width,
@@ -122,7 +121,7 @@ function SpriteInspector() {
                     marginTop: "4px"
                 }}>
                     <Grid item><AddCostumeButton /></Grid>
-                    <Grid item><DeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} /></Grid>
+                    <Grid item><DeleteButton disabled={costumes.length === 1} red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} /></Grid>
                 </HorizontalButtons>
             </Grid>
             <Grid item xs>

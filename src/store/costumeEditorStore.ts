@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { EditorState } from './index';
-import { Costume } from '../components/EditorPane/types';
+import { Costume, Target } from '../components/EditorPane/types';
 
 export interface CostumeEditorState {
     costumes: Costume[],
@@ -9,6 +9,7 @@ export interface CostumeEditorState {
     // Actions
     setCostumes: (costumes: Costume[]) => void,
     setSelectedCostumeIndex: (index: number) => void,
+    loadTargetCostumes: (target: Target) => void,
 }
 
 export const createCostumeEditorSlice: StateCreator<
@@ -16,11 +17,12 @@ export const createCostumeEditorSlice: StateCreator<
     [],
     [],
     CostumeEditorState
-> = (set) => ({
+> = (set, get) => ({
     costumes: [],
     selectedCostumeIndex: -1,
 
     // Actions
     setCostumes: (costumes: Costume[]) => set({ costumes: costumes }),
     setSelectedCostumeIndex: (index: number) => set({ selectedCostumeIndex: index }),
+    loadTargetCostumes: (target: Target) => set({ costumes: target.sprite.costumes, selectedCostumeIndex: target.currentCostume }),
 })

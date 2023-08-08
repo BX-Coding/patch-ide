@@ -11,35 +11,35 @@ import AudioEngine from 'scratch-audio';
 import ScratchSVGRenderer from 'scratch-svg-renderer';
 import makeTestStorage from "../../util/make-test-storage";
 import usePatchStore from '../../store';
+import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 
 
 const useInitializedVm = () => {
     const setPatchReady = usePatchStore(state => state.setPatchReady);
     const patchStage = usePatchStore(state => state.patchStage);
+    const patchVM = usePatchStore(state => state.patchVM);
     const setPatchVM = usePatchStore(state => state.setPatchVM);
     const setQuestionAsked = usePatchStore(state => state.setQuestionAsked);
     const setVmLoaded = usePatchStore(state => state.setVmLoaded);
-    const hasLocalStorageProject = usePatchStore(state => state.hasLocalStorageProject);
-    const loadFromLocalStorage = usePatchStore(state => state.loadFromLocalStorage);
-    const loadSerializedProject = usePatchStore(state => state.loadSerializedProject);
+    const { loadSerializedProject, loadFromLocalStorage, hasLocalStorageProject } = usePatchSerialization();
 
-    const initializePatchProject = async () => {
-        if (hasLocalStorageProject()) {
-            await loadFromLocalStorage();
-        } else {
-            await loadSerializedProject(defaultPatchProject);
-        }
+    const loadProject = async () => {
+      let loadSuccess = false;
+      if (hasLocalStorageProject()) {
+        loadSuccess = await loadFromLocalStorage();
+      } 
+      if (!loadSuccess) {
+        await loadSerializedProject(defaultPatchProject);
+      }
     }
+
     useEffect(() => {
         const asyncEffect = async () => {
           setPatchReady(false);
 
-          
-          
-          const scratchRenderer = new Renderer(patchStage.canvas);
-          
           const patchVM = new VirtualMachine();
           patchVM.attachStorage(makeTestStorage());
+          const scratchRenderer = new Renderer(patchStage.canvas);
           patchVM.attachRenderer(scratchRenderer);
           patchVM.attachAudioEngine(new AudioEngine());
           patchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
@@ -47,21 +47,24 @@ const useInitializedVm = () => {
           patchVM.runtime.draw();
           patchVM.start();
           
-          setPatchVM(patchVM);
-          await initializePatchProject();
-          
           patchVM.on("VM READY", () => {
             setVmLoaded(true);
           });
-    
+          
           patchVM.runtime.on("QUESTION", onQuestionAsked);
+          
+          setPatchVM(patchVM);
 
         }
         asyncEffect();
     
       }, []);
-    
-      // -------- Global Functions --------
+
+    useEffect(() => {
+      if (patchVM) {
+        loadProject();
+      }
+    }, [patchVM]);
     
     const onQuestionAsked = (question: string | null) => {
         setQuestionAsked(question);

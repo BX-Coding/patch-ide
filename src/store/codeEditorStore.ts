@@ -52,6 +52,9 @@ export const createCodeEditorSlice: StateCreator<
         const ids = typeof id === "string" ? [id] : id;
         const newThreads = { ...state.threads };
         ids.forEach((id) => {
+            if (!newThreads[id]) {
+                return;
+            }
             newThreads[id].saved = true;
             newThreads[id].thread.updateThreadScript(newThreads[id].text);
         });
@@ -61,8 +64,7 @@ export const createCodeEditorSlice: StateCreator<
         const editingThreadIds = Object.keys(target.threads);
     
         editingThreadIds.forEach(threadId => {
-          const thread = target.getThread(threadId);
-          get().saveThread(thread.id);
+          get().saveThread(threadId);
         });
     },
     saveAllThreads: async () => { 

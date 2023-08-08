@@ -31,7 +31,6 @@ export const CodeEditor = () => {
 // Returns an array of threads
 const useThreads = () => {
     const threads = usePatchStore((state) => state.threads);
-    console.warn("useThreads called", threads);
     
     return Object.values(threads);
 }

@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
-import { Sound } from '../components/EditorPane/types'
+import { Sound, Target } from '../components/EditorPane/types'
 
 type Asset = {
     data: number[]
@@ -17,6 +17,9 @@ export interface SoundEditorState {
     // Actions
     setSounds: (sounds: Sound[]) => void,
     setSelectedSoundIndex: (index: number) => void,
+    loadTargetSounds: (target: Target) => void,
+
+    // Preview Actions
     setContext: (context: AudioContext) => void,
     setBuf: (buf: AudioBuffer) => void,
 }
@@ -49,6 +52,9 @@ export const createSoundEditorSlice: StateCreator<
     // Actions
     setSounds: (sounds: Sound[]) => set({ sounds: sounds }),
     setSelectedSoundIndex: (index: number) => set({ selectedSoundIndex: index }),
+    loadTargetSounds: (target: Target) => set({ sounds: target.sprite.sounds }),
+
+    // Preview Actions
     setContext: (context: AudioContext) => set({ context: context }),
     setBuf: (buf: AudioBuffer) => set({ buf: buf }),
 })

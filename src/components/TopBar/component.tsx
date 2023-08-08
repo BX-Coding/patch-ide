@@ -8,6 +8,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import { HorizontalButtons, TextButton, IconButton } from '../PatchButton';
 import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
+import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 
 type TopBarProps = {
   mode: string,
@@ -104,10 +105,7 @@ export function FileName() {
 export function FileButton() {
   const projectChanged = usePatchStore((state) => state.projectChanged);
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const saveToLocalStorage = usePatchStore((state) => state.saveToLocalStorage);
-  const loadFromLocalStorage = usePatchStore((state) => state.loadFromLocalStorage);
-  const downloadProject = usePatchStore((state) => state.downloadProject);
-  const loadSerializedProject = usePatchStore((state) => state.loadSerializedProject);
+  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
 
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
