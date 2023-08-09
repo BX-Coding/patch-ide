@@ -26,11 +26,10 @@ import useConfirmClose from './useConfirmClose';
 import useThreadAutoSave from './useThreadAutoSave';
 import useMonitorProjectChange from './useMonitorProjectChange';
 import useInitializedVm from './useInitializedVm';
+import { ModalSelector } from '../ModalSelector';
 
 
 const App = () => {
-  const renderEditor = usePatchStore((state) => state.renderEditor)
-  const projectChanged = usePatchStore((state) => state.projectChanged)
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged)
   const targetIds = usePatchStore((state) => state.targetIds)
   const patchVM = usePatchStore((state) => state.patchVM)
@@ -60,6 +59,7 @@ const App = () => {
             overflowY: "auto",
             backgroundColor: 'background.default'
           }}>
+            <ModalSelector />
             <TopBar mode={mode} setMode={setMode} />
             <Grid item className="leftContainer">
               <Grid item container className="assetHolder" sx={{

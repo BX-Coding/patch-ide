@@ -41,7 +41,7 @@ function GlobalVariablesInspector() {
 
 function PlusButton() {
     const patchVM = usePatchStore((state) => state.patchVM);
-    const setGlobalVariables = usePatchStore((state) => state.setGlobalVariables);
+    const setGlobalVariable = usePatchStore((state) => state.setGlobalVariable);
     const newVariableName = usePatchStore((state) => state.newVariableName);
     const newVariableValue = usePatchStore((state) => state.newVariableValue);
 
@@ -52,7 +52,7 @@ function PlusButton() {
             value = parseInt(value);
         }
         patchVM.updateGlobalVariable(name, value)
-        setGlobalVariables(patchVM.getGlobalVariables());
+        setGlobalVariable(name, value);
     };
 
     return (
@@ -78,6 +78,17 @@ function VarList() {
 }
 
 const GlobalVariableInputField = () => {
+    const setNewVariableName = usePatchStore((state) => state.setNewVariableName);
+    const setNewVariableValue = usePatchStore((state) => state.setNewVariableValue);
+
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewVariableName(event.target.value);
+    };
+
+    const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewVariableValue(event.target.value);
+    };
+
     return (
         <Typography fontSize={24} alignContent={"center"} margin='dense'>
             <HorizontalButtons>
@@ -85,6 +96,7 @@ const GlobalVariableInputField = () => {
                     label="Variable Name"
                     id="varName"
                     size="small"
+                    onChange={handleNameChange}
                     fullWidth
                 />
                 =
@@ -92,6 +104,7 @@ const GlobalVariableInputField = () => {
                     label="Value"
                     id="varValue"
                     size="small"
+                    onChange={handleValueChange}
                     fullWidth
                 />
                 <PlusButton />

@@ -34,7 +34,9 @@ export const createVariableEditorSlice: StateCreator<
 
     // Actions
     setGlobalVariable: (name: string, value: string | number | boolean) => set((state) => {
-        const newGlobalVariables = { ...state.globalVariables };
+        console.warn("Setting global variable " + name + " to " + value);
+        
+        const newGlobalVariables = [ ...state.globalVariables ];
         const foundVariable = newGlobalVariables.find((variable) => variable.name === name);
         if (foundVariable) {
             foundVariable.value = value;
@@ -44,14 +46,15 @@ export const createVariableEditorSlice: StateCreator<
         return { globalVariables: newGlobalVariables };
     }),
     setGlobalVariables: (variables: GlobalVariable[]) => set((state) => {
-        const newGlobalVariables = { ...state.globalVariables };
+        const newGlobalVariables = [ ...state.globalVariables ];
         variables.forEach((variable) => {
             get().setGlobalVariable(variable.name, variable.value);
         });
+        
         return { globalVariables: newGlobalVariables };
     }),
     deleteGlobalVariable: (name: string) => set((state) => {
-        const newGlobalVariables = { ...state.globalVariables };
+        const newGlobalVariables = [ ...state.globalVariables ];
         const foundVariableIndex = newGlobalVariables.findIndex((variable) => variable.name === name);
         if (foundVariableIndex !== -1) {
             newGlobalVariables.splice(foundVariableIndex, 1);

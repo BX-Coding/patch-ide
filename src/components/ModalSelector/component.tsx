@@ -2,25 +2,24 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { sprites } from '../../assets/sprites';
 import { sounds }  from '../../assets/sounds';
-import getCostumeUrl from '../../util/get-costume-url';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Grid } from '@mui/material';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';
-import { handleAddCostumesToEditingTarget } from '../EditorPane/SpriteEditor/handleUpload';
-import { onAddSprite } from '../SpritePane/onAddSpriteHandler';
+import { useAddSprite } from '../SpritePane/onAddSpriteHandler';
 import { SoundJson, SpriteJson } from '../EditorPane/types';
-import { handleAddSoundToEditingTarget } from '../EditorPane/SoundEditor/handleUpload';
+import { useSoundHandlers } from '../../hooks/useSoundUploadHandlers';
 import { ItemCard } from '../ItemCard';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { CostumeImage } from '../CostumeImage';
-import { usePromise } from '../../hooks/usePromise';
+import { useCostumeHandlers } from '../../hooks/useCostumeUploadHandlers';
 
 export const ModalSelector = () => {
     const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
     const modalSelectorOpen = usePatchStore((state) => state.modalSelectorOpen);
     const hideModalSelector = usePatchStore((state) => state.hideModalSelector);
+    const { handleAddSoundToEditingTarget } = useSoundHandlers();
+    const { handleAddCostumesToEditingTarget} = useCostumeHandlers();
+    const onAddSprite = useAddSprite();
 
 
 
@@ -38,49 +37,44 @@ export const ModalSelector = () => {
         hideModalSelector();
     }
 
-    const internalAssets = modalSelectorType === ModalSelectorType.SPRITE ? sprites : sounds;
+    const internalAssets = modalSelectorType === ModalSelectorType.SOUND ? sounds : sprites;
 
     return (
         <Box className="costumeSelectorHolder" sx={{ display: modalSelectorOpen ? "block" : "none", backgroundColor: 'panel.dark' }}>
             <center>
                 <HorizontalButtons sx={{ justifyContent: "center", borderBottomWidth: "1px", borderBottomStyle: "solid", borderBottomColor: "divider" }}>
-                    <Typography fontSize="18pt" marginBottom="8px">Choose a Costume</Typography>
+                    <Typography fontSize="18pt" marginBottom="8px">Choose a {modalSelectorType}</Typography>
                     <IconButton color="error" variant="text" icon={<CancelIcon />} onClick={() => hideModalSelector()} />
                 </HorizontalButtons>
                 <Box sx={{ height: "4px" }} />
-                {internalAssets.map((asset, i) => {
-                    return <ItemCard 
-                        title={asset.name} 
-                        selected={false}
-                        onClick={() => onClick(asset)}
-                        width={84}
-                        height={84}>
-                            <AssetImage asset={asset} />
-                        </ItemCard>
-                })}
+                <Grid container justifyContent="center" spacing={0.5}>
+                    {internalAssets.map((asset, i) =>
+                        <Grid item key={i}> 
+                            <ItemCard 
+                            title={asset.name} 
+                            selected={false}
+                            onClick={() => onClick(asset)}
+                            width={84}
+                            height={84}>
+                                {modalSelectorType === ModalSelectorType.SOUND ? <VolumeUpIcon /> : <AssetImage sprite={asset as SpriteJson}/>}
+                            </ItemCard>
+                        </Grid>
+                    )}
+                </Grid>
             </center>
         </Box>
     );
 }
 
-const AssetImage = ({ asset }: { asset: SpriteJson | SoundJson }) => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
+type AssetImageProps = {
+    sprite: SpriteJson
+}
 
-    const getDisplayElement = async (asset: SpriteJson | SoundJson) => {
-        if (modalSelectorType === ModalSelectorType.SPRITE || modalSelectorType === ModalSelectorType.COSTUME) {
-            const sprite = asset as SpriteJson;
-            const costume = await patchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], patchVM.runtime);
-            return <CostumeImage costume={costume} className="costumeCardImage" />
-        } else if (modalSelectorType === ModalSelectorType.SOUND) {
-            return <VolumeUpIcon />
-        }
-    }
-    const {loading, error, data} = usePromise(getDisplayElement(asset));
+const AssetImage = ({ sprite }: AssetImageProps) => {
+    const patchVM = usePatchStore((state) => state.patchVM);
+    // const costumeUrlPromise = patchVM.loadCostumeWrap(sprite.costumes[0].md5ext, sprite.costumes[0], patchVM.runtime);
 
     return <>
-        {loading && <HourglassEmptyIcon />}
-        {error && <ErrorOutlineIcon />}
-        {(!loading && !error) && data}
+        <HourglassEmptyIcon />
     </>;
 }

@@ -4,11 +4,13 @@ import { AddButton, DeleteButton, HorizontalButtons, IconButton } from '../../Pa
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { ItemCard } from '../../ItemCard';
 import usePatchStore, { ModalSelectorType } from '../../../store';
-import { handleUploadSound } from './handleUpload';
+import { useSoundHandlers } from '../../../hooks/useSoundUploadHandlers';
 import { useAudioPlayback } from './useAudioPlayback';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useEditingTarget } from '../../../hooks/useEditingTarget';
 import { Target } from '../types';
+import { DropdownMenu } from '../../DropdownMenu';
+import AddIcon from '@mui/icons-material/Add';
 
 export function SoundEditor() {
     return (
@@ -20,50 +22,24 @@ export function SoundEditor() {
     );
 }
 
-type AddSoundButtonProps = {
-    reloadSoundEditor: () => void
-}
-
-function AddSoundButton({ reloadSoundEditor }: AddSoundButtonProps) {
+function AddSoundButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
+    const { handleUploadSound } = useSoundHandlers();
 
-    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const [editingTarget] = useEditingTarget() as [Target, (target: Target) => void];
 
     const handleBuiltIn = () => {
-        handleClose();
         showModalSelector(ModalSelectorType.SOUND);
     }
 
-    return <>
-        <AddButton
-            id='addNewSound'
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick} />
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-                'aria-labelledby': 'basic-button',
-            }}
-        >
-            <MenuItem id="builtin" onClick={() => { handleBuiltIn(); }}>From Built-In</MenuItem>
-            <MenuItem id="upload" onClick={() => { handleUploadSound(editingTarget.id).then((result) => { reloadSoundEditor(); }); handleClose(); }}>From Upload</MenuItem>
-        </Menu >
-    </>
+    const handleFromUpload = () => {
+        handleUploadSound(editingTarget.id);
+    }
+
+    return <DropdownMenu type="icon" icon={<AddIcon />} options={[
+        { label: 'From Built-In', onClick: handleBuiltIn },
+        { label: 'From Upload', onClick: handleFromUpload },
+    ]}/>
 }
 
 type SoundDetailsProps = {
@@ -107,25 +83,18 @@ function SoundInspector() {
         setSounds(editingTarget.getSounds());
     }, [editingTarget, patchVM]);
 
-    const handleDeleteClick = (index: number) => {
-        editingTarget.deleteSound(index);
+    const handleDeleteClick = () => {
+        editingTarget.deleteSound(selectedSoundIndex);
         let newSounds = editingTarget.getSounds();
-        setSelectedSoundIndex(Math.max(0, index - 1));
+        setSelectedSoundIndex(Math.max(0, selectedSoundIndex - 1));
         setSounds([...newSounds]);
     }
 
-    const handlePlayClick = (index: number) => {
-        const sound = sounds[index];
+    const handlePlayClick = () => {
+        const sound = sounds[selectedSoundIndex];
         if (sound?.asset?.data) {
             playByteArray(sound.asset.data);
         }
-    }
-
-    const handleDeleteCurrentClick = () => handleDeleteClick(selectedSoundIndex);
-
-    const reloadSoundEditor = () => {
-        const newSounds = patchVM.editingTarget.getSounds();
-        setSounds([...newSounds]);
     }
 
     return (
@@ -139,9 +108,9 @@ function SoundInspector() {
                     marginLeft: "4px",
                     marginTop: "4px"
                 }}>
-                    <AddSoundButton reloadSoundEditor={reloadSoundEditor} />
-                    <DeleteButton red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} />
-                    <IconButton icon={<PlayArrowIcon />} disabled={sounds[selectedSoundIndex].rate === 22050} onClick={() => { handlePlayClick(selectedSoundIndex); }} />
+                    <AddSoundButton />
+                    <DeleteButton red={true} variant={"contained"} onClick={handleDeleteClick} onClickArgs={[]} />
+                    <IconButton icon={<PlayArrowIcon />} disabled={sounds[selectedSoundIndex].rate === 22050} onClick={handlePlayClick} />
                 </HorizontalButtons>
             </Grid>
             <Grid item xs>

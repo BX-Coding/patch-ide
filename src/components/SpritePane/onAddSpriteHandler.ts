@@ -20,12 +20,15 @@ export const changeSpriteValues = (eventSource: Target | null = null, setEditing
   }
 
 
-const addSprite = async (sprite: Sprite | SpriteJson) => {
-    const patchVM = usePatchStore((state) => state.patchVM);
-    const setTargetIds = usePatchStore((state) => state.setTargetIds);
-    const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
-    const [editingTarget, setEditingTarget] = useEditingTarget();
+export const useAddSprite = () => {
+  const patchVM = usePatchStore((state) => state.patchVM);
+  const setTargetIds = usePatchStore((state) => state.setTargetIds);
+  const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
+  const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads);
+  const [editingTarget, setEditingTarget] = useEditingTarget();
 
+
+  const addSprite = async (sprite: Sprite | SpriteJson) => {
     await patchVM.addSprite(sprite);
     const targets: Target[] = patchVM.getAllRenderedTargets();
     const newTarget = targets[targets.length - 1];
@@ -34,16 +37,16 @@ const addSprite = async (sprite: Sprite | SpriteJson) => {
     setEditingTarget(newTarget.id);
 
     newTarget.on('EVENT_TARGET_VISUAL_CHANGE', (eventSource: Target | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
-}
+  }
 
-export const onAddSprite = async (sprite?: Sprite | SpriteJson) => {
-    const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads);
-    const [editingTarget] = useEditingTarget();
-
+  const onAddSprite = async (sprite?: Sprite | SpriteJson) => {
     if (editingTarget) {
       saveTargetThreads(editingTarget);
     }
     const validatedSprite = sprite ? sprite : sprites[0];
     await addSprite(validatedSprite);
     return editingTarget?.id;
+  }
+
+  return onAddSprite;
 }

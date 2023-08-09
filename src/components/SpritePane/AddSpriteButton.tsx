@@ -5,52 +5,31 @@ import MenuItem from '@mui/material/MenuItem';
 
 import { AddButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';
-import { handleUploadCostume } from '../EditorPane/SpriteEditor/handleUpload';
-import { onAddSprite } from './onAddSpriteHandler';
+import { useAddSprite } from './onAddSpriteHandler';
+import { useCostumeHandlers } from '../../hooks/useCostumeUploadHandlers';
+import { DropdownMenu } from '../DropdownMenu';
+import AddIcon from '@mui/icons-material/Add';
 
 export function AddSpriteButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
-
-    const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-    const menuOpen = Boolean(menuAnchorEl);
-
-    const handleButtonClick = (event: any) => {
-        setMenuAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setMenuAnchorEl(null);
-    };
+    const { handleUploadCostume } = useCostumeHandlers();
+    const onAddSprite = useAddSprite();
 
     const handleUploadNew = async () => {
         var newId = await onAddSprite();
         handleUploadCostume(newId);
     };
 
-    const handleExistingClick = () => {
+    const handleBuiltIn = () => {
         showModalSelector(ModalSelectorType.SPRITE);
-        handleMenuClose();
     }
 
     return (
         <Grid container justifyContent="center">
-            <AddButton onClick={handleButtonClick} />
-            <Menu
-                open={menuOpen}
-                anchorEl={menuAnchorEl}
-                onClose={handleMenuClose}
-                PaperProps={{
-                    style: {
-                        maxHeight: '20ch',
-                    }
-                }}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                <MenuItem key="existing" onClick={handleExistingClick}>Use existing costume</MenuItem>
-                <MenuItem key="new" onClick={handleUploadNew}>Upload new costume</MenuItem>
-            </Menu>
+            <DropdownMenu type="icon" icon={<AddIcon />} options={[
+                { label: 'From Built-In', onClick: handleBuiltIn },
+                { label: 'From Upload', onClick: handleUploadNew },
+            ]}/>
         </Grid>
     );
 }

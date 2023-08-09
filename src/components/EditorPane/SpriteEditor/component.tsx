@@ -4,10 +4,12 @@ import getCostumeUrl from '../../../util/get-costume-url';
 import { AddButton, DeleteButton, HorizontalButtons } from '../../PatchButton';
 import { ItemCard } from '../../ItemCard';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';
-import { handleUploadCostume } from './handleUpload';
 import { Costume, Target } from '../types';
 import { useEditingTarget } from '../../../hooks/useEditingTarget';
 import { CostumeImage } from '../../CostumeImage';
+import { DropdownMenu } from '../../DropdownMenu';
+import AddIcon from '@mui/icons-material/Add';
+import { useCostumeHandlers } from '../../../hooks/useCostumeUploadHandlers';
 
 
 export function SpriteEditor() {
@@ -23,43 +25,20 @@ export function SpriteEditor() {
 
 function AddCostumeButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const { handleUploadCostume } = useCostumeHandlers();
 
     const handleBuiltIn = () => {
-        handleClose();
         showModalSelector(ModalSelectorType.COSTUME);
     }
 
     const handleFromUpload = () => {
         handleUploadCostume(); 
-        handleClose();
     }
 
-    return (
-        <>
-            <AddButton variant='contained' onClick={handleClick}/>
-            <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                <MenuItem id="builtin" onClick={handleBuiltIn}>From Built-In</MenuItem>
-                <MenuItem id="upload" onClick={handleFromUpload}>From Upload</MenuItem>
-            </Menu>
-        </>
-    );
+    return <DropdownMenu type="icon" icon={<AddIcon />} options={[
+        { label: 'From Built-In', onClick: handleBuiltIn },
+        { label: 'From Upload', onClick: handleFromUpload },
+    ]}/>
 }
 
 type SpriteDetailsProps = {

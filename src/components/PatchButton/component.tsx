@@ -37,7 +37,7 @@ type PatchButtonProps = {
     disabled?: boolean
 }
 
-const PatchButton = ({ id, onClick, onClickArgs, variant, color, textColor, icon, sx, disabled }: PatchButtonProps) => {
+const PatchButton = ({ id, onClick, onClickArgs, variant, color, textColor, icon, sx, disabled, ...props }: PatchButtonProps) => {
     const onClickWithArgs = () => {
         if (onClickArgs) {
             onClick(...onClickArgs);
@@ -45,7 +45,7 @@ const PatchButton = ({ id, onClick, onClickArgs, variant, color, textColor, icon
             onClick();
         }
     }
-    return <Button id={id} disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickWithArgs} color={color}>{icon}</Button>
+    return <Button id={id} disabled={disabled ? disabled : false } sx={{color: textColor ? textColor : '', ...sx}} variant={variant} onClick={onClickWithArgs} color={color} {...props}>{icon}</Button>
 }
 
 type AddButtonProps = {
@@ -95,10 +95,10 @@ type TextButtonProps = {
     text: string,
     textColor?: string,
     sx?: any,
-    disabled?: boolean
+    disabled?: boolean,
 }
 
-export const TextButton = ({ onClick, onClickArgs, variant, text, textColor, sx, disabled }: TextButtonProps) => {
-    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} textColor={textColor ? textColor : ''} icon={text} />
+export const TextButton = ({ onClick, onClickArgs, variant, text, textColor, sx, disabled, ...props }: TextButtonProps) => {
+    return <PatchButton disabled={disabled} sx={sx} variant={variant ? variant : "contained"} onClick={onClick} onClickArgs={onClickArgs} textColor={textColor ? textColor : ''} icon={text} {...props} />
 }
 

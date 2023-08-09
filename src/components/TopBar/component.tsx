@@ -9,6 +9,7 @@ import { HorizontalButtons, TextButton, IconButton } from '../PatchButton';
 import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
 import { usePatchSerialization } from '../../hooks/usePatchSerialization';
+import { DropdownMenu } from '../DropdownMenu';
 
 type TopBarProps = {
   mode: string,
@@ -165,30 +166,20 @@ export function FileButton() {
   return (
     <HorizontalButtons>
       <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
-      <TextButton
-        variant="contained"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+      <DropdownMenu 
+        type="text"
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
+        options={[
+          { label: "New", onClick: handleNew},
+          { label: "Save Now", onClick: handleSaveNow},
+          { label: "Save As A Copy", onClick: () => {}},
+          { label: "Load From Your Computer", onClick: handleUpload},
+          { label: "Save To Your Computer", onClick: handleDownload},
+        ]}
       />
       <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} disabled={!projectChanged} variant={"contained"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem id="new" onClick={handleNew}>New</MenuItem>
-        <MenuItem id="saveNow" onClick={handleSaveNow}>Save Now</MenuItem>
-        <MenuItem id="saveCopy" onClick={handleClose}>Save As A Copy</MenuItem>
-        <MenuItem id="load" onClick={handleUpload}>Load From Your Computer</MenuItem>
-        <MenuItem id="localSave" onClick={handleDownload}>Save To Your Computer</MenuItem>
-      </Menu>
+
     </HorizontalButtons>
   );
 }
