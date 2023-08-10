@@ -42,6 +42,7 @@ canvas, .canvasBox {
 @media screen and (min-width: 1080px) {
     .leftContainer {
         width: calc(100% - 617px);
+        max-width: calc(100% - 617px);
         margin-top: 0px;
     }
     .rightContainer {

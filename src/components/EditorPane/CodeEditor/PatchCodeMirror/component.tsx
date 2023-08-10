@@ -30,7 +30,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
             theme="dark"
             extensions={[python(), autocompletion({override: [completions(patchVM)]}), pythonLinter(console.log, patchVM, thread.id), lintGutter(), indentationMarkers()]}
             onChange={handleCodeChange}
-            height="calc(100vh - 169px)"
+            height="calc(100vh - 209px)"
         />
     );
 }

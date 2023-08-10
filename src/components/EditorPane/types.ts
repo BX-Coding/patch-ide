@@ -42,6 +42,7 @@ export interface Thread {
     loadPromise: Promise<boolean>,
     interruptThread: boolean,
     running: boolean,
+    displayName: string,
 
     updateThreadScript: (script: string) => void,
     updateThreadTriggerEvent: (trigger: string) => void,
