@@ -91,7 +91,7 @@ function SpriteInspector() {
 
     return (
         <Grid container direction="column" className="assetHolder" sx={{
-            backgroundColor: 'panel.default',
+            backgroundColor: 'panel.main',
             minHeight: "calc(100% + 40px)",
             marginBottom: "0px"
         }}>
@@ -115,7 +115,7 @@ function SpriteInspector() {
                 <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
                     <Grid container direction="row" spacing={1} sx={{
                         margin: "0px",
-                        backgroundColor: 'panel.default',
+                        backgroundColor: 'panel.main',
                         padding: "4px",
                         width: "100%",
                         minHeight: "100%"

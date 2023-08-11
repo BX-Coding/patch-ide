@@ -45,46 +45,47 @@ const App = () => {
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
       <SplashScreen renderCondition={true}>
-          <Grid container item direction="row" width={'100%'} sx={{
-            position: "absolute",
-            width: "100%",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            padding: 0,
-            margin: 0,
-            paddingBottom: "0px",
-            zIndex: -1,
-            overflowY: "auto",
-            backgroundColor: 'background.default'
-          }}>
-            <ModalSelector />
-            <TopBar mode={mode} setMode={setMode} />
-            <Grid item container direction="row" className="leftContainer">
-              <Grid item className="assetHolder" sx={{
-                padding: "8px",
-                paddingRight: "2px",
-                borderRightWidth: "1px",
-                borderColor: 'divider',
-              }}>
-                <VerticalButtons>
-                  <EditorTabButton tab={EditorTab.CODE} icon={<DataObjectIcon/>}/>
-                  <EditorTabButton tab={EditorTab.COSTUMES} icon={<TheaterComedyIcon/>}/>
-                  <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon/>}/>
-                  <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon/>}/>
-                </VerticalButtons>
-              </Grid>
-              <Grid item xs>
-                <EditorPane />
-              </Grid>
+        <Grid container item direction="row" width={'100%'} sx={{
+          position: "absolute",
+          width: "100%",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          padding: 0,
+          margin: 0,
+          paddingBottom: "0px",
+          zIndex: -1,
+          overflowY: "auto",
+          backgroundColor: 'background.default',
+          color: "text.primary",
+        }}>
+          <ModalSelector />
+          <TopBar mode={mode} setMode={setMode} />
+          <Grid item className="leftContainer">
+            <Grid item container className="assetHolder" sx={{
+              paddingTop: "8px",
+              paddingLeft: "8px",
+              paddingRight: "8px",
+              paddingBottom: "2px",
+              borderBottomWidth: "1px",
+              borderColor: 'divider',
+            }}>
+              <VerticalButtons>
+                <EditorTabButton tab={EditorTab.CODE} icon={<DataObjectIcon />} />
+                <EditorTabButton tab={EditorTab.COSTUMES} icon={<TheaterComedyIcon />} />
+                <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon />} />
+                <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon />} />
+              </VerticalButtons>
             </Grid>
-            <Grid item className="rightContainer">
-              <GamePane />
-              <SpritePane />
-            </Grid>
+            <EditorPane />
           </Grid>
-        </SplashScreen>
+          <Grid item className="rightContainer">
+            <GamePane />
+            <SpritePane />
+          </Grid>
+        </Grid>
+      </SplashScreen>
     </ThemeProvider>
   );
 }

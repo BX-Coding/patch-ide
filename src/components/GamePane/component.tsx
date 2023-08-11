@@ -21,13 +21,13 @@ export const GamePane = () => {
             </HorizontalButtons>
         </Grid>
         <Box className="assetHolder" sx={{
-            backgroundColor: 'panel.default',
+            backgroundColor: 'panel.main',
             padding: "8px",
             borderLeftWidth: "1px",
             borderColor: 'divider',
         }}>
             <Box className="canvasBox" sx={{
-                backgroundColor: 'panel.default',
+                backgroundColor: 'panel.main',
                 borderColor: 'divider',
                 borderRadius: "8px",
                 overflow: "clip",

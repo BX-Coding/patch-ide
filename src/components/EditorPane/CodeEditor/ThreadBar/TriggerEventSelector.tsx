@@ -54,7 +54,7 @@ export const TriggerEventSelector = ({ thread }: TriggerEventSelectorProps) => {
                 onChange={handleEventChange}
                 size="small"
                 fullWidth
-                sx={{ backgroundColor: 'panel.default' }}
+                sx={{ backgroundColor: 'panel.main' }}
                 componentsProps={{
                     paper: {
                         sx: {
@@ -78,7 +78,7 @@ export const TriggerEventSelector = ({ thread }: TriggerEventSelectorProps) => {
                 onChange={handleEventOptionChange}
                 size="small"
                 fullWidth
-                sx={{ backgroundColor: 'panel.default' }}
+                sx={{ backgroundColor: 'panel.main' }}
                 renderInput={(params) =>
                     <TextField {...params} />
                 }

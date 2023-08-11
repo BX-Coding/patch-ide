@@ -14,7 +14,7 @@ export const CodeEditor = () => {
 
     return (
         <Grid container direction="column" className="assetHolder" sx={{
-            backgroundColor: 'panel.default',
+            backgroundColor: 'panel.main',
             borderColor: 'divider',
             minHeight: "calc(100% - 40px)",
             marginBottom: "0px",

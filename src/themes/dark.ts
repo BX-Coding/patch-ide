@@ -56,7 +56,7 @@ const theme: Theme = createTheme(
       },
       "background": {
         "paper": "#242424",
-        "default": "#242424"
+        "default": "#242424",
       },
       "panel": {
         "main": "rgba(0, 0, 0, 0.16)",
@@ -74,18 +74,7 @@ const theme: Theme = createTheme(
       "MuiButton": {
         "defaultProps": {
           "disableElevation": true
-        },
-        "styleOverrides": {},
-        "variants": [
-          {
-            "props": {
-              "variant": "outlined"
-            },
-            "style": {
-              "border": "1px solid #000"
-            }
-          }
-        ]
+        }
       }
     }
   });
