@@ -13,14 +13,14 @@ export const CodeEditor = () => {
     const setCurrentThreadId = usePatchStore((state) => state.setCodeThreadId);
 
     return (
-        <Grid container direction="column" className="assetHolder" sx={{
+        <Grid container direction="column" className="assetHolder" spacing={0} sx={{
             backgroundColor: 'panel.main',
             borderColor: 'divider',
             minHeight: "calc(100% - 40px)",
             marginBottom: "0px",
-            padding: "8px"
+            padding: "8px",
         }}>
-            <HorizontalButtons sx={{ marginTop: "4px" }}>
+            <HorizontalButtons sx={{borderBottomWidth: "1px", borderBottomColor: "divider", borderBottomStyle: "solid", marginLeft: "-7px", marginRight: "-12px", marginTop: "-12px", padding: "2px", paddingTop: "8px", paddingBottom: "8px", width: "calc(100% + 18px)"}}>
                 {threads.map((thread, i) =>
                     <TextButton variant={thread.thread.id === currentThreadId ? "contained" : "outlined"} onClick={() => { setCurrentThreadId(thread.thread.id); }} text={thread.thread.displayName} />
                 )}
