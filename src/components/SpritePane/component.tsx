@@ -12,6 +12,7 @@ import usePatchStore from '../../store';
 import { Target } from '../EditorPane/types';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { useStageTarget } from './useStageTarget';
+import { Box } from '@mui/material';
 
 export default function SpritePane(){
     const patchVM = usePatchStore((state) => state.patchVM);
@@ -19,7 +20,13 @@ export default function SpritePane(){
     const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
     
     return(
-        <Grid>
+        <Box className="assetHolder" sx={{
+            backgroundColor: 'panel.main',
+            padding: "8px",
+            paddingTop: "0px",
+            borderLeftWidth: "1px",
+            borderColor: 'divider',
+        }}>
             <Grid container justifyContent = "center">
                 <Grid item xs={12}>
                     <SpriteAttributePane/>
@@ -35,7 +42,7 @@ export default function SpritePane(){
                 {editingTarget && <DeleteSpriteButton /> }
             </HorizontalButtons>
             <Grid container direction="row" spacing={"8px"} xs={12} sx={{
-                backgroundColor: 'panel.default',
+                backgroundColor: 'panel.main',
                 margin: '-8px',
                 marginTop: '0px',
                 minWidth: 'calc(100% + 16px)',
@@ -57,7 +64,7 @@ export default function SpritePane(){
                     <StageButton/>
                 </Grid>
             </Grid>
-        </Grid>
+        </Box>
     );
 }
 

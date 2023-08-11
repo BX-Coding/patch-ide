@@ -19,7 +19,7 @@ type ThreadEditorProps = {
 export const ThreadBar = ({ thread, first, final }: ThreadEditorProps) => {
 
     return (
-        <Grid container direction="row" spacing={"1px"}>
+        <Grid container direction="row" spacing={"1px"} mb={"4px"}>
             <TriggerEventSelector thread={thread} />
             <Grid item sx={{ width: (/* !first XOR final */ !first !== final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
                 <HorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>

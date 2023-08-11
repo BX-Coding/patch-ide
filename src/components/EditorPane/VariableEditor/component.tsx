@@ -22,7 +22,7 @@ function GlobalVariablesInspector() {
         <Box
             sx={{
                 borderTop: '1px solid divider',
-                backgroundColor: 'panel.default',
+                backgroundColor: 'panel.main',
                 minHeight: "calc(100vh - 123px)",
                 padding: '8px',
             }}>

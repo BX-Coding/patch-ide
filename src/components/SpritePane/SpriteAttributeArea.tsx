@@ -10,6 +10,6 @@ export function SpriteAttributePane() {
     const editingTargetDirection = usePatchStore((state) => state.editingTargetDirection);
 
     return(
-        <Typography variant="h5" align = "center">X: {Math.round(editingTargetX)} Y: {Math.round(editingTargetY)} Size: {Math.round(editingTargetSize)} Direction: {Math.round(editingTargetDirection)} </Typography>
+        <Typography variant="h5" fontWeight="light" align = "center" sx={{marginTop: "-8px"}}>X: {Math.round(editingTargetX)} Y: {Math.round(editingTargetY)} Size: {Math.round(editingTargetSize)} Direction: {Math.round(editingTargetDirection)} </Typography>
     );
 }
