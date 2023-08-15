@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 import './style.css'
 import { TopBar } from '../TopBar';
 import { EditorPane, EditorTabButton } from '../EditorPane';
-import { HorizontalButtons } from '../PatchButton';
+import { VerticalButtons } from '../PatchButton';
 import { ThemeProvider } from '@emotion/react';
 
 import darkTheme from '../../themes/dark';
@@ -62,24 +62,23 @@ const App = () => {
         }}>
           <ModalSelector />
           <TopBar mode={mode} setMode={setMode} />
-          <Grid item className="leftContainer">
-            <Grid item container className="assetHolder" sx={{
-              paddingTop: "8px",
-              paddingLeft: "8px",
-              paddingRight: "8px",
-              paddingBottom: "2px",
-              borderBottomWidth: "1px",
-              borderColor: 'divider',
-            }}>
-              <HorizontalButtons>
-                <EditorTabButton tab={EditorTab.CODE} icon={<DataObjectIcon />} />
-                <EditorTabButton tab={EditorTab.COSTUMES} icon={<TheaterComedyIcon />} />
-                <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon />} />
-                <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon />} />
-              </HorizontalButtons>
+          <Grid item container direction="row" className="leftContainer">
+              <Grid item className="assetHolder" sx={{
+                padding: "8px",
+                borderRightWidth: "1px",
+                borderColor: 'divider',
+              }}>
+                <VerticalButtons>
+                  <EditorTabButton tab={EditorTab.CODE} icon={<DataObjectIcon/>}/>
+                  <EditorTabButton tab={EditorTab.COSTUMES} icon={<TheaterComedyIcon/>}/>
+                  <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon/>}/>
+                  <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon/>}/>
+                </VerticalButtons>
+              </Grid>
+              <Grid item xs>
+                <EditorPane />
+              </Grid>
             </Grid>
-            <EditorPane />
-          </Grid>
           <Grid item className="rightContainer">
             <GamePane />
             <SpritePane />

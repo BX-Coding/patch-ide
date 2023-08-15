@@ -29,7 +29,7 @@
 .leftContainer {
     /*background-color: rgba(255, 255, 255, 0.05);*/
     width: 100%;
-    height: calc(100vh - 56px);
+    min-height: calc(100vh - 56px);
     margin: 0px;
     margin-top: 16px;
 }
@@ -42,7 +42,9 @@ canvas, .canvasBox {
 @media screen and (min-width: 1080px) {
     .leftContainer {
         width: calc(100% - 617px);
+        max-width: calc(100% - 617px);
         margin-top: 0px;
+        height: calc(100vh - 56px);
     }
     .rightContainer {
         width: 617px;

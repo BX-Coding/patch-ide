@@ -24,6 +24,23 @@ export const HorizontalButtons = ({ children, sx, spacing, mb }: HorizontalButto
     );
 }
 
+type VerticalButtonsProps = {
+    children: ReactNode,
+    sx?: any,
+    spacing?: GridSpacing,
+    mb?: GridSize
+}
+
+export const VerticalButtons = ({ children, sx, spacing, mb }: VerticalButtonsProps) => {
+    return (
+        <Grid container direction="column" spacing={spacing ? spacing : "4px"} mb={mb ? mb : "4px"} sx={sx}>
+            {(Array.isArray(children) ? children : [children]).map((child, i) => {
+                return <Grid item key={i}>{child}</Grid>
+            })}
+        </Grid>
+    );
+}
+
 
 type PatchButtonProps = {
     id?: string,

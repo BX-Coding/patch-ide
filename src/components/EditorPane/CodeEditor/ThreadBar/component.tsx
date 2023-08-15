@@ -12,20 +12,19 @@ import { TriggerEventSelector } from './TriggerEventSelector';
 
 type ThreadEditorProps = {
     thread: Thread,
-    first: boolean,
-    final: boolean,
+    deletable: boolean,
 }
 
-export const ThreadBar = ({ thread, first, final }: ThreadEditorProps) => {
+export const ThreadBar = ({ thread, deletable }: ThreadEditorProps) => {
 
     return (
         <Grid container direction="row" spacing={"1px"} mb={"4px"}>
             <TriggerEventSelector thread={thread} />
-            <Grid item sx={{ width: (/* !first XOR final */ !first !== final) ? 134 : ((!first && final) ? 198 : 68), padding: 0 }}>
+            <Grid item sx={{ width: deletable ? 198 : 134, padding: 0 }}>
                 <HorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
                     <SaveThreadButton thread={thread}/>
-                    {!first && <DeleteThreadButton thread={thread} />}
-                    {final && <AddThreadButton />}
+                    {deletable && <DeleteThreadButton thread={thread} />}
+                    <AddThreadButton />
                 </HorizontalButtons>
             </Grid>
         </Grid>

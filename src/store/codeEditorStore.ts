@@ -10,6 +10,8 @@ type ThreadState = {
 
 export interface CodeEditorState {
     threads: { [key: string]: ThreadState};
+    codeThreadId: string;
+    nextThreadNumber: number;
 
     // Actions
     addThread: (target: Target) => void,
@@ -20,6 +22,8 @@ export interface CodeEditorState {
     saveAllThreads: () => void,
     deleteThread: (id: string) => void,
     getThread: (id: string) => ThreadState,
+    getCodeThreadId: () => string,
+    setCodeThreadId: (id: string) => void,
 }
 
 export const createCodeEditorSlice: StateCreator<
@@ -29,24 +33,42 @@ export const createCodeEditorSlice: StateCreator<
     CodeEditorState
 > = (set, get) => ({
     threads: {},
+    codeThreadId: "",
+    nextThreadNumber: 0,
 
     // Actions
     addThread: async (target: Target) => {
         const id = await target.addThread("", "event_whenflagclicked", "");
         const thread = target.getThread(id);
+        thread.displayName = "Thread " + get().nextThreadNumber;
         set((state) => {
+            state.nextThreadNumber++;
             const newThreads = { ...state.threads };
             newThreads[id] = { thread, text: "", saved: true };
-            return { threads: newThreads };
+
+            const newState = { ...state, threads: newThreads };
+            newState.codeThreadId = id;
+            return newState;
         }
     )},
     updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
     loadTargetThreads: (target: Target) => set((state) => {
         const newThreads: { [key: string]: ThreadState} = {};
-        Object.keys(target.threads).forEach((id) => {
+        
+        let nextThreadNumber = state.nextThreadNumber;
+
+        const keys = Object.keys(target.threads);
+        keys.forEach((id) => {
             newThreads[id] = { thread: target.getThread(id), text: target.getThread(id).script, saved: true };
+            if (!newThreads[id].thread.displayName) {
+                newThreads[id].thread.displayName = "Thread " + nextThreadNumber;
+                nextThreadNumber++;
+            }
         });
-        return { threads: newThreads };
+
+        const newState = { ...state, threads: newThreads, nextThreadNumber: nextThreadNumber };
+        newState.codeThreadId = (keys.length > 0) ? target.threads[keys[0]].id : "";
+        return newState;
     }),
     saveThread: (id: string | string[]) => set((state) => {
         const ids = typeof id === "string" ? [id] : id;
@@ -58,7 +80,7 @@ export const createCodeEditorSlice: StateCreator<
             newThreads[id].saved = true;
             newThreads[id].thread.updateThreadScript(newThreads[id].text);
         });
-        return { threads: newThreads };
+        return { ...state, threads: newThreads };
     }),
     saveTargetThreads: (target: Target) => {
         const editingThreadIds = Object.keys(target.threads);
@@ -78,15 +100,26 @@ export const createCodeEditorSlice: StateCreator<
             Object.keys(newThreads).forEach((id) => {
                 newThreads[id].saved = true;
             });
-            return { threads: newThreads };
+            return { ...state, threads: newThreads };
         }
         )},
     deleteThread: (id: string) => set((state) => {
         const newThreads = { ...state.threads };
         delete newThreads[id];
         get().patchVM.deleteThread(id);
-        return { threads: newThreads };
+
+        const newState = { ...state, threads: newThreads };
+
+        const keys = Object.keys(newThreads);
+        const oldIndex = Object.keys(state.threads).indexOf(state.codeThreadId);
+
+        newState.codeThreadId = keys.length > 0 ? newThreads[keys[(oldIndex > 0) ? oldIndex - 1 : 0]].thread.id : "";
+        return newState;
     }),
     getThread: (id: string) => get().threads[id],
+    getCodeThreadId: () => get().codeThreadId,
+    setCodeThreadId: (id: string) => set((state) => {
+        return { ...state, codeThreadId: id };
+    }),
     
 })
