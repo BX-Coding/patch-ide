@@ -10,6 +10,11 @@ import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
 import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 import { DropdownMenu } from '../DropdownMenu';
+import { auth } from '../Firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { SignInButton } from './SignInButton';
+import { SignUpButton } from './SignUpButton';
+import { SignOutButton } from './SignOutButton';
 
 type TopBarProps = {
   mode: string,
@@ -17,6 +22,7 @@ type TopBarProps = {
 }
 
 export function TopBar({ mode, setMode }: TopBarProps) {
+  const [user, loading, error] = useAuthState(auth);
 
   return (
     <Grid container item direction="row" sx={{
@@ -36,8 +42,10 @@ export function TopBar({ mode, setMode }: TopBarProps) {
       <Grid container item xs={4} justifyContent="flex-end">
         <Grid item>
           <HorizontalButtons>
-            <ProjectButton />
-            <SignOutButton />
+            {user && <ProjectButton />}
+            {user && <SignOutButton />}
+            {!user && <SignInButton />}
+            {!user && <SignUpButton />}
             <ThemeButton mode={mode} setMode={setMode} />
           </HorizontalButtons>
         </Grid>
@@ -60,16 +68,6 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
         localStorage.setItem("theme", newMode);
           }} />
     );
-}
-
-export function SignOutButton() {
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event.currentTarget.id);
-  };
-
-  return (
-    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Out" variant="contained" onClick={handleClick} />
-  );
 }
 
 export function ProjectButton() {
@@ -107,27 +105,13 @@ export function FileButton() {
   const projectChanged = usePatchStore((state) => state.projectChanged);
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
   const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
-
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [user, loading, error] = useAuthState(auth);
 
   const handleSaveNow = async () => {
     await saveAllThreads();
     saveToLocalStorage();
   };
 
-  const handleLoadFromLocalStorage = () => {
-    loadFromLocalStorage();
-  }
   const handleNew = () => {
     /* For now, this will just clear the project from localStorage and reload. */
     localStorage.removeItem("proj");
@@ -163,6 +147,21 @@ export function FileButton() {
     input.click();
   }
 
+  const authenticatedOptions = [
+    { label: "New", onClick: handleNew},
+    { label: "Save Now", onClick: handleSaveNow},
+    { label: "Save As A Copy", onClick: () => {}},
+    { label: "Load From Your Computer", onClick: handleUpload},
+    { label: "Save To Your Computer", onClick: handleDownload},
+  ]
+
+  const unathenticatedOptions = [
+    { label: "New", onClick: handleNew},
+    { label: "Load From Your Computer", onClick: handleUpload},
+    { label: "Save To Your Computer", onClick: handleDownload},
+  ]
+
+
   return (
     <HorizontalButtons>
       <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
@@ -170,13 +169,7 @@ export function FileButton() {
         type="text"
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
-        options={[
-          { label: "New", onClick: handleNew},
-          { label: "Save Now", onClick: handleSaveNow},
-          { label: "Save As A Copy", onClick: () => {}},
-          { label: "Load From Your Computer", onClick: handleUpload},
-          { label: "Save To Your Computer", onClick: handleDownload},
-        ]}
+        options={user ? authenticatedOptions : unathenticatedOptions}
       />
       <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} disabled={!projectChanged} variant={"contained"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
 
