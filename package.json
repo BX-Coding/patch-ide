@@ -44,7 +44,7 @@
   },
   "scripts": {
     "dev": "webpack serve",
-    "build": "webpack"
+    "build": "webpack && cp src/assets/websiteIcon.png build/favicon.ico"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
@@ -63,6 +63,7 @@
     "esbuild-plugin-polyfill-node": "^0.2.0",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "firebase-tools": "^12.4.8",
     "html-webpack-plugin": "^5.5.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "rollup-plugin-base64": "^1.0.1",
