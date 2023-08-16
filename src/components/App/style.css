@@ -1,0 +1,83 @@
+.scrollEffect {
+    overflow-y: scroll;
+}
+
+/*https://stackoverflow.com/questions/11931154/how-to-position-three-divs-in-html-horizontally*/
+.floatItem {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.floatBox {
+    height: 100%;
+    width: 100%;
+}
+
+.assetHolder {
+    border-width: 0px;
+    border-style: solid;
+}
+
+.rightContainer {
+    width: 100%;
+    /*background-color: rgba(255, 255, 255, 0.05);*/
+    height: calc(100vh - 56px);
+    margin: 0px;
+    margin-top: 16px;
+}
+
+.leftContainer {
+    /*background-color: rgba(255, 255, 255, 0.05);*/
+    width: 100%;
+    min-height: calc(100vh - 56px);
+    margin: 0px;
+    margin-top: 16px;
+}
+
+canvas, .canvasBox {
+    width: 600px;
+    height: 400px;
+}
+
+@media screen and (min-width: 1080px) {
+    .leftContainer {
+        width: calc(100% - 617px);
+        max-width: calc(100% - 617px);
+        margin-top: 0px;
+        height: calc(100vh - 56px);
+    }
+    .rightContainer {
+        width: 617px;
+        margin-top: 0px;
+    }
+}
+
+.costumeCardImage {
+    height: 70%;
+}
+
+.spriteChooserImage, .soundChooserImage {
+    width: 64px;
+    height: 64px;
+}
+
+.costumeSelectorHolder, .soundSelectorHolder {
+    position: fixed;
+    /*width: 80%;
+    height: 60%;
+    top: 10%;
+    left: 10%;*/
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+    top: 0;
+    left: 0;
+    padding: 8px;
+    /*padding: 8px;*/
+    overflow-y: scroll;
+    border-width: 2px;
+    /*border-color: #000000;*/
+    /*background-color: rgba(60, 60, 60, 1);*/
+    z-index: 20;
+}

@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-react": "^7.22.5",
     "@codemirror/lang-python": "^6.1.2",
     "@codemirror/language": "^6.8.0",
     "@codemirror/lint": "^6.2.2",
@@ -13,11 +15,15 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.11.15",
     "@replit/codemirror-indentation-markers": "^6.4.2",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
     "@uiw/codemirror-theme-material": "^4.19.16",
     "@uiw/react-codemirror": "^4.19.16",
+    "babel-loader": "^9.1.3",
     "buffer": "^6.0.3",
     "file-loader": "^6.2.0",
     "lodash.omit": "^4.5.0",
+    "material-ui-popup-state": "^5.0.9",
     "omggif": "^1.0.10",
     "pyatch-vm": "^1.2.5",
     "react": "^18.2.0",
@@ -33,17 +39,14 @@
     "scratch-storage": "github:BX-Coding/scratch-storage-webpack-5",
     "scratch-storage-vite": "^0.0.1-development",
     "scratch-svg-renderer": "^0.2.0-prerelease.20230224194137",
-    "to-style": "^1.3.3"
+    "to-style": "^1.3.3",
+    "zustand": "^4.3.9"
   },
   "scripts": {
     "dev": "webpack serve",
     "build": "webpack"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
-    "@babel/preset-react": "^7.18.6",
-    "@craco/craco": "^7.0.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@rollup/plugin-alias": "^5.0.0",
@@ -52,12 +55,10 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-replace": "^5.0.2",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
+    "@types/react": "^18.2.17",
+    "@types/react-dom": "^18.2.7",
     "@wemap/rollup-plugin-arraybuffer": "^0.1.2",
     "arraybuffer-loader": "^1.0.8",
-    "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
     "esbuild-plugin-polyfill-node": "^0.2.0",
     "eslint-plugin-react": "^7.33.0",
@@ -66,15 +67,14 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "rollup-plugin-base64": "^1.0.1",
     "rollup-plugin-node-builtins": "^2.1.2",
+    "source-map-loader": "^4.0.1",
     "style-loader": "^3.3.2",
-    "vite-plugin-glsl": "^1.1.2",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
     "webpack": "^5.79.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.2",
     "worker-loader": "^3.0.8",
     "worker-plugin": "^5.0.1"
-  },
-  "volta": {
-    "node": "19.8.1"
   }
 }
