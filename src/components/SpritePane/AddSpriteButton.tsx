@@ -13,11 +13,12 @@ import AddIcon from '@mui/icons-material/Add';
 export function AddSpriteButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
     const { handleUploadCostume } = useCostumeHandlers();
-    const onAddSprite = useAddSprite();
+    const { onAddSprite, handleUploadedSprite } = useAddSprite();
 
     const handleUploadNew = async () => {
         var newId = await onAddSprite();
         handleUploadCostume(newId);
+        handleUploadedSprite(newId);
     };
 
     const handleBuiltIn = () => {

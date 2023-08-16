@@ -31,7 +31,7 @@ export const useCostumeHandlers = () => {
             handleFileUpload(e.target, (buffer: string |ArrayBuffer, fileType: string, fileName: string , fileIndex: number, fileCount: number) => {
                 costumeUpload(buffer, fileType, patchVM.runtime.storage, async (vmCostumes: Costume[]) => {
                     vmCostumes.forEach((costume, i) => {
-                    costume.name = `${fileName}${i ? i + 1 : ''}`;
+                        costume.name = `${fileName}${i ? i + 1 : ''}`;
                     });
 
                     if (targetId == undefined || targetId == null) {

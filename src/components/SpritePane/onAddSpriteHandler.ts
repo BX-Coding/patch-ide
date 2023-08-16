@@ -37,6 +37,12 @@ export const useAddSprite = () => {
     setEditingTarget(newTarget.id);
 
     newTarget.on('EVENT_TARGET_VISUAL_CHANGE', (eventSource: Target | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
+    return newTarget;
+  }
+
+  const handleUploadedSprite = (newTargetId: string) => {
+    const newTarget = patchVM.runtime.getTargetById(newTargetId);
+    newTarget.deleteCostume(0);
   }
 
   const onAddSprite = async (sprite?: Sprite | SpriteJson) => {
@@ -44,9 +50,9 @@ export const useAddSprite = () => {
       saveTargetThreads(editingTarget);
     }
     const validatedSprite = sprite ? sprite : sprites[0];
-    await addSprite(validatedSprite);
-    return editingTarget?.id;
+    const newTarget = await addSprite(validatedSprite);
+    return newTarget?.id;
   }
 
-  return onAddSprite;
+  return {onAddSprite, handleUploadedSprite};
 }

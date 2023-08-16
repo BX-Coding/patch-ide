@@ -19,7 +19,7 @@ export const ModalSelector = () => {
     const hideModalSelector = usePatchStore((state) => state.hideModalSelector);
     const { handleAddSoundToEditingTarget } = useSoundHandlers();
     const { handleAddCostumesToEditingTarget} = useCostumeHandlers();
-    const onAddSprite = useAddSprite();
+    const { onAddSprite } = useAddSprite();
 
 
 

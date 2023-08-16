@@ -2,6 +2,24 @@ import { SpriteJson } from "../components/EditorPane/types";
 
 export const sprites: SpriteJson[] = [
     {
+        "name": "new sprite",
+        "tags": [
+        ],
+        "isStage": false,
+        "variables": {},
+        "costumes": [{
+            "assetId": "71ced7c192168c7b221d16b4eaff440e",
+            "name": "button4-a",
+            "bitmapResolution": 1,
+            "md5ext": "71ced7c192168c7b221d16b4eaff440e.svg",
+            "dataFormat": "svg",
+            "rotationCenterX": 35,
+            "rotationCenterY": 34
+        },],
+        "sounds": [],
+        "blocks": {}
+    },
+    {
         "name": "Abby",
         "tags": [
             "people",
