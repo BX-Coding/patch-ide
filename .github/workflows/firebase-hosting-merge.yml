@@ -11,10 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: "npm ci && npm run build"
+      - name: Build
+        run: npm ci && npm run build
+        env:
+          ENVIRONMENT: "production"
+          FIREBASE_WEB_API_KEY: "${{ secrets.FIREBASE_PROD_WEB_API_KEY }}"
+          FIREBASE_AUTH_DOMAIN: "${{ vars.FIREBASE_PROD_AUTH_DOMAIN }}"
+          FIREBASE_PROJECT_ID: "${{ vars.FIREBASE_PROD_PROJECT_ID }}"
+          FIREBASE_STORAGE_BUCKET: "${{ vars.FIREBASE_PROD_STORAGE_BUCKET }}"
+          FIREBASE_MESSAGING_SENDER_ID: "${{ vars.FIREBASE_PROD_MESSAGING_SENDER_ID }}"
+          FIREBASE_APP_ID: "${{ secrets.FIREBASE_PROD_APP_ID }}"
+          FIREBASE_MEASUREMENT_ID: "${{ secrets.FIREBASE_PROD_MEASUREMENT_ID }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PATCH_271D1 }}"
           channelId: live
-          projectId: patch-271d1
+          projectId: "${{ vars.FIREBASE_PROD_PROJECT_ID }}"
