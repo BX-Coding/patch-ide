@@ -46,6 +46,7 @@
   },
   "scripts": {
     "dev": "webpack serve",
+    "emu": "(trap 'kill 0' SIGINT; npm run dev & node_modules/.bin/firebase emulators:start)", 
     "build": "webpack && cp src/assets/websiteIcon.png build/favicon.ico"
   },
   "devDependencies": {
@@ -62,6 +63,7 @@
     "@wemap/rollup-plugin-arraybuffer": "^0.1.2",
     "arraybuffer-loader": "^1.0.8",
     "css-loader": "^6.7.3",
+    "dotenv-webpack": "^8.0.1",
     "esbuild-plugin-polyfill-node": "^0.2.0",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",

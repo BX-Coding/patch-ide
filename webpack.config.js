@@ -1,6 +1,7 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
+import Dotenv from 'dotenv-webpack';
 
 import * as url from 'url';
 
@@ -60,6 +61,14 @@ export default {
       template: path.join(__dirname, "public", "index.html"),
     }),
     new NodePolyfillPlugin(),
+    new Dotenv({
+      path: path.join(__dirname, ".env"),
+      safe: true,
+      allowEmptyValues: true,
+      systemvars: true,
+      silent: true,
+      defaults: false
+    })
   ],
   resolve: {
     extensions: ['', '.js', '.jsx', '.ts', '.tsx'],

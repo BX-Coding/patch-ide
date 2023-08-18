@@ -4,7 +4,7 @@ import { Analytics, getAnalytics } from "firebase/analytics";
 import { Auth, getAuth, connectAuthEmulator } from 'firebase/auth';
 import { FirebaseApp } from "firebase/app";
 
-const initializeLiveApp = () => {
+const initializeFirebaseApp = () => {
 
     type FirebaseConfig = {
         apiKey: string | undefined,
@@ -50,10 +50,9 @@ const getFirebaseServices = (app?: FirebaseApp): PatchFirebaseServices => {
     return { auth, analytics };
 }
 
-let app = undefined;
-if (process.env.ENVIRONMENT === 'production' || process.env.ENVIRONMENT === 'development') {
-    app = initializeLiveApp();
-} else if (process.env.ENVIRONMENT === 'local') {
+const app = initializeFirebaseApp();
+
+if (process.env.ENVIRONMENT === 'local') {
     console.warn('Using local Firebase emulator');
 }
 
