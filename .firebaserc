@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "patch-dev-e6061",
+    "prod": "patch-271d1",
+    "dev": "patch-dev-e6061"
+  },
+  "targets": {},
+  "etags": {}
+}

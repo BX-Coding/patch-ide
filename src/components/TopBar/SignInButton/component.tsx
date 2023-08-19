@@ -1,0 +1,92 @@
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { TextButton } from '../../PatchButton';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../Firebase';
+import { CircularProgress } from '@mui/material';
+
+type signInFormProps = {
+  onEmailTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  onPassTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+}
+
+const SignInForm = ({onEmailTextChange, onPassTextChange}: signInFormProps) => {
+  return <>
+    <DialogContentText>
+      Please sign into your Beta account here
+    </DialogContentText>
+    <TextField
+      autoFocus
+      margin="dense"
+      id="email"
+      label="Email Address"
+      type="email"
+      fullWidth
+      variant="standard"
+      onChange={onEmailTextChange}
+    />
+    <TextField
+      autoFocus
+      margin="dense"
+      id="pass"
+      label="Password"
+      type="password"
+      fullWidth
+      variant="standard"
+      onChange={onPassTextChange}
+    />
+  </>
+};
+
+
+export const SignInButton = () => {
+  const [open, setOpen] = React.useState(false);
+  const [emailText, setEmailText] = React.useState<string>('');
+  const [passwordText, setPasswordText] = React.useState<string>('');
+  const [user, loading, error] = useAuthState(auth);
+  
+
+  const onEmailTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailText(event.target.value);
+  }
+
+  const onPassTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordText(event.target.value);
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSignIn = async () => {
+    await signInWithEmailAndPassword(auth, emailText, passwordText);
+    handleClose();
+  }
+
+  return (
+    <div>
+      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign In" variant="contained" onClick={handleClickOpen} />
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Sign In</DialogTitle>
+        <DialogContent>
+          {loading ? <CircularProgress /> : <SignInForm onEmailTextChange={onEmailTextChange} onPassTextChange={onPassTextChange}/>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSignIn} disabled={loading}>Sign In</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
