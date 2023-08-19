@@ -22,6 +22,7 @@ jobs:
           FIREBASE_STORAGE_BUCKET: "${{ vars.FIREBASE_DEV_STORAGE_BUCKET }}"
           FIREBASE_MESSAGING_SENDER_ID: "${{ vars.FIREBASE_DEV_MESSAGING_SENDER_ID }}"
           FIREBASE_APP_ID: "${{ vars.FIREBASE_DEV_APP_ID }}"
+      - run: node_modules/.bin/firebase use dev
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
