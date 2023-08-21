@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { Auth, getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator, Firestore } from "firebase/firestore";
 import { FirebaseApp } from "firebase/app";
 
 const initializeFirebaseApp = () => {
@@ -36,18 +37,21 @@ const initializeFirebaseApp = () => {
 
 type PatchFirebaseServices = {
     auth: Auth,
+    db: Firestore,
     analytics?: Analytics,
 }
 
-const getFirebaseServices = (app?: FirebaseApp): PatchFirebaseServices => {
+const getFirebaseServices = (app: FirebaseApp): PatchFirebaseServices => {
     const auth = getAuth(app);
+    const db = getFirestore(app);
     let analytics = undefined;
     if (process.env.ENVIRONMENT === 'local') {
         connectAuthEmulator(auth, "http://127.0.0.1:9099");
+        connectFirestoreEmulator(db, '127.0.0.1', 8082);
     } else if (process.env.ENVIRONMENT === 'production') {
         analytics = getAnalytics(app);
     }
-    return { auth, analytics };
+    return { auth, analytics, db };
 }
 
 const app = initializeFirebaseApp();
@@ -58,4 +62,5 @@ if (process.env.ENVIRONMENT === 'local') {
 
 const services = getFirebaseServices(app);
 export const auth = services.auth;
+export const db = services.db;
 export const analytics = services.analytics;

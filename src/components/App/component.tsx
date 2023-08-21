@@ -21,12 +21,15 @@ import SplashScreen from '../SplashScreen/component';
 import usePatchStore from '../../store';
 
 
-// @ts-ignore
-import useConfirmClose from './useConfirmClose';
 import useThreadAutoSave from './useThreadAutoSave';
 import useMonitorProjectChange from './useMonitorProjectChange';
 import useInitializedVm from './useInitializedVm';
 import { ModalSelector } from '../ModalSelector';
+
+// @ts-ignore
+import defaultPatchProject from '../../assets/defaultProject.ptch1';
+import { useProjectActions } from '../../hooks/useProjectActions';
+import { useReadLocalStorage } from 'usehooks-ts'
 
 
 const App = () => {
@@ -35,12 +38,19 @@ const App = () => {
   const patchVM = usePatchStore((state) => state.patchVM)
   const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads)
   const editorTab = usePatchStore((state) => state.editorTab)
-  const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
+  const setSaveProject = usePatchStore((state) => state.setSaveProject)
 
-  useInitializedVm();
-  // useConfirmClose(projectChanged);
+  const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
+  const [ loadProject, _, saveProject ] = useProjectActions("N3JXaHgGXm4IpOMqAAk4");
+  const onVmInit = () => {
+      loadProject();
+      setSaveProject(saveProject);
+  }
+  useInitializedVm(onVmInit);
+
   useThreadAutoSave(patchVM, saveTargetThreads, editorTab);
   useMonitorProjectChange(setProjectChanged, [targetIds])
+  
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>

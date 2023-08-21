@@ -33,7 +33,7 @@ export function TopBar({ mode, setMode }: TopBarProps) {
     }}>
       <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
         <Grid item>
-          <FileButton />
+          <ProjectControls />
         </Grid>
         <Grid item xs={6}>
           <FileName />
@@ -101,10 +101,27 @@ export function FileName() {
   );
 }
 
-export function FileButton() {
-  const projectChanged = usePatchStore((state) => state.projectChanged);
+
+const SaveButton = () => {
+  const saveProject = usePatchStore((state) => state.saveProject);
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
+  const projectChanged = usePatchStore((state) => state.projectChanged);
+  const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+
+  const handleSaveNow = async () => {
+    await saveAllThreads();
+    saveProject();
+    setProjectChanged(false);
+  };
+
+  return (
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} disabled={!projectChanged}/>
+  );
+}
+
+const ProjectControls = () => {
+  const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
+  const { saveToLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
   const [user, loading, error] = useAuthState(auth);
 
   const handleSaveNow = async () => {
@@ -171,8 +188,7 @@ export function FileButton() {
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
         options={user ? authenticatedOptions : unathenticatedOptions}
       />
-      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} disabled={!projectChanged} variant={"contained"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
-
+      <SaveButton/>
     </HorizontalButtons>
   );
 }

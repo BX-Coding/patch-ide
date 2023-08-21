@@ -32,7 +32,7 @@ export const usePatchSerialization = () => {
     const setProjectChanged = usePatchStore(state => state.setProjectChanged);
     const [editingTarget, setEditingTarget] = useEditingTarget();
 
-    const loadSerializedProject = useCallback(async (vmState: Blob | string | ArrayBuffer) => {
+    const loadSerializedProject = useCallback(async (vmState: VmState | Blob | string | ArrayBuffer) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
             return;
