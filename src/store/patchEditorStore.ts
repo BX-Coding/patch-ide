@@ -35,7 +35,7 @@ export interface PatchEditorState {
     modalSelectorType: ModalSelectorType,
     modalSelectorOpen: boolean,
 
-    saveProject: () => void,
+    saveProject: (uid: string) => void,
 
     patchVM: any,
     patchStage: Stage,
@@ -56,7 +56,7 @@ export interface PatchEditorState {
     setPatchVM: any,
     setPatchStage: (stage: Stage) => void,
 
-    setSaveProject: (save: () => void) => void,
+    setSaveProject: (save: (uid: string) => void) => void,
 }
 
 export const createPatchEditorSlice: StateCreator<
@@ -98,5 +98,5 @@ export const createPatchEditorSlice: StateCreator<
     setPatchVM: (vm: any) => set({ patchVM: vm }),
     setPatchStage: (stage: Stage) => set({ patchStage: stage }),
     
-    setSaveProject: (save: () => void) => set({ saveProject: save })
+    setSaveProject: (save) => set({ saveProject: save })
 })

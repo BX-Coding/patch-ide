@@ -15,6 +15,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { SignInButton } from './SignInButton';
 import { SignUpButton } from './SignUpButton';
 import { SignOutButton } from './SignOutButton';
+import { useProjectActions } from '../../hooks/useProjectActions';
 
 type TopBarProps = {
   mode: string,
@@ -101,16 +102,22 @@ export function FileName() {
   );
 }
 
-
 const SaveButton = () => {
   const saveProject = usePatchStore((state) => state.saveProject);
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
   const projectChanged = usePatchStore((state) => state.projectChanged);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
 
+  const [user] = useAuthState(auth);
+  const { downloadProject } = usePatchSerialization();
+
   const handleSaveNow = async () => {
     await saveAllThreads();
-    saveProject();
+    if (user) {
+      saveProject(user.uid);
+    } else {
+      await downloadProject();
+    }
     setProjectChanged(false);
   };
 
@@ -121,12 +128,16 @@ const SaveButton = () => {
 
 const ProjectControls = () => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const { saveToLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
+  const saveProject = usePatchStore((state) => state.saveProject);
+
+  const { downloadProject, loadSerializedProject } = usePatchSerialization();
   const [user, loading, error] = useAuthState(auth);
 
   const handleSaveNow = async () => {
     await saveAllThreads();
-    saveToLocalStorage();
+    if (user) {
+      saveProject(user.uid);
+    }
   };
 
   const handleNew = () => {

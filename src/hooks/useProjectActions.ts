@@ -1,12 +1,13 @@
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '../components/Firebase'
+import { auth, db } from '../components/Firebase'
 import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
 import { VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
-export const useProjectActions = (project: string): [() => void, boolean, () => void, boolean] => {
+export const useProjectActions = (project: string): [() => void, boolean, (uid: string) => void, boolean] => {
     const projectReference = doc(db, 'projects', project);
     const [projectLoading, setProjectLoading] = useState(false);
     const [projectSaving, setProjectSaving] = useState(false);
@@ -25,7 +26,7 @@ export const useProjectActions = (project: string): [() => void, boolean, () => 
         setProjectLoading(false);
     }
 
-    const saveCloudProject = async () => {
+    const saveCloudProject = async (uid: string) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
             return;
@@ -38,6 +39,9 @@ export const useProjectActions = (project: string): [() => void, boolean, () => 
         setProjectSaving(true);
         
         const projectObject = await patchVM.serializeProject();
+        projectObject.lastEdited = new Date();
+        projectObject.owner = uid;
+        console.warn("Saving project: ", projectObject);
         updateDoc(projectReference, projectObject).then(() => {setProjectSaving(false)});
     }
 
