@@ -16,6 +16,7 @@ import { SignInButton } from './SignInButton';
 import { SignUpButton } from './SignUpButton';
 import { SignOutButton } from './SignOutButton';
 import { useProjectActions } from '../../hooks/useProjectActions';
+import { useLocalStorage } from 'usehooks-ts';
 
 type TopBarProps = {
   mode: string,
@@ -114,7 +115,7 @@ const SaveButton = () => {
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid);
+      saveProject(user.uid, false);
     } else {
       await downloadProject();
     }
@@ -131,18 +132,25 @@ const ProjectControls = () => {
   const saveProject = usePatchStore((state) => state.saveProject);
 
   const { downloadProject, loadSerializedProject } = usePatchSerialization();
+  const [_, setProjectId ] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
   const [user, loading, error] = useAuthState(auth);
 
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid);
+      saveProject(user.uid, false);
     }
   };
 
+  const handleSaveCopy = async () => {
+    await saveAllThreads();
+    if (user) {
+      saveProject(user.uid, true);
+    }
+  }
+
   const handleNew = () => {
-    /* For now, this will just clear the project from localStorage and reload. */
-    localStorage.removeItem("proj");
+    setProjectId("new");
     location.reload();
   }
   const handleDownload = async () => {
@@ -168,7 +176,7 @@ const ProjectControls = () => {
       reader.onloadend = (readerEvent: ProgressEvent<FileReader>) => {
         var content = readerEvent?.target?.result; // this is the content!
         if (!content) return;
-        loadSerializedProject(content);
+        loadSerializedProject(content, false);
       }
     }
 
@@ -178,7 +186,7 @@ const ProjectControls = () => {
   const authenticatedOptions = [
     { label: "New", onClick: handleNew},
     { label: "Save Now", onClick: handleSaveNow},
-    { label: "Save As A Copy", onClick: () => {}},
+    { label: "Save As A Copy", onClick: handleSaveCopy},
     { label: "Load From Your Computer", onClick: handleUpload},
     { label: "Save To Your Computer", onClick: handleDownload},
   ]

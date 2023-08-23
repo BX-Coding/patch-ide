@@ -26,10 +26,8 @@ import useMonitorProjectChange from './useMonitorProjectChange';
 import useInitializedVm from './useInitializedVm';
 import { ModalSelector } from '../ModalSelector';
 
-// @ts-ignore
-import defaultPatchProject from '../../assets/defaultProject.ptch1';
 import { useProjectActions } from '../../hooks/useProjectActions';
-import { useReadLocalStorage } from 'usehooks-ts'
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts'
 
 
 const App = () => {
@@ -41,7 +39,8 @@ const App = () => {
   const setSaveProject = usePatchStore((state) => state.setSaveProject)
 
   const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
-  const [ loadProject, _, saveProject ] = useProjectActions("N3JXaHgGXm4IpOMqAAk4");
+  const [projectId] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
+  const [ loadProject, _, saveProject ] = useProjectActions(projectId);
   const onVmInit = () => {
       loadProject();
       setSaveProject(saveProject);
