@@ -17,6 +17,7 @@ import { SignUpButton } from './SignUpButton';
 import { SignOutButton } from './SignOutButton';
 import { useProjectActions } from '../../hooks/useProjectActions';
 import { useLocalStorage } from 'usehooks-ts';
+import { ProjectButton } from './ProjectButton';
 
 type TopBarProps = {
   mode: string,
@@ -70,16 +71,6 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
         localStorage.setItem("theme", newMode);
           }} />
     );
-}
-
-export function ProjectButton() {
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event.currentTarget.id);
-  };
-
-  return (
-    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
-  );
 }
 
 export function FileName() {
