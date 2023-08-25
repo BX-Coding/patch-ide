@@ -69,7 +69,8 @@ Development is currently being managed by [BX Coding](https://bxcoding.org). The
 
 - [Elliot Roe](https://github.com/ElliotRoe)
 - [Duncan Johnson](https://github.com/DuncanAJohnson)
-- Benjamin Montgomery
+- [Benjamin Montgomery](https://github.com/benmontycomputer)
+- [Ava Wandersleben](https://github.com/Snoopy219)
 
 # Want to join?
 
