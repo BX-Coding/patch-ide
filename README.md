@@ -74,7 +74,7 @@ Development is currently being managed by [BX Coding](https://bxcoding.org). The
 
 # Want to join?
 
-Reach out to developer@bxcoding.org! We welcome all collaborators!
+[Join our Discord server!](https://discord.gg/c9WS6vuKUM) We welcome all collaborators!
 
 # Acknowledgments
 
