@@ -44,7 +44,7 @@ export const ProjectButton = () => {
     return (<>
         <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Sign In</DialogTitle>
+            <DialogTitle>Project Select</DialogTitle>
             <DialogContent>
                <ProjectGrid onSelect={onSelect} />
             </DialogContent>

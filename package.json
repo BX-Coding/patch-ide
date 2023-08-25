@@ -47,7 +47,7 @@
   },
   "scripts": {
     "dev": "webpack serve",
-    "emu": "(trap 'kill 0' SIGINT; npm run dev & node_modules/.bin/firebase emulators:start --import=./firebase_emulator)",
+    "emu": "(trap 'kill 0' SIGINT; npm run dev & node_modules/.bin/firebase emulators:start --import=./firebase_emulator --export-on-exit=./firebase_emulator)",
     "build": "webpack && cp src/assets/websiteIcon.png build/favicon.ico"
   },
   "devDependencies": {
