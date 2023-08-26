@@ -9,6 +9,9 @@
     },
     "firestore": {
       "port": 8082
+    },
+    "storage": {
+      "port": 9199
     }
   }
 }
