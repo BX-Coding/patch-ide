@@ -4,7 +4,7 @@ import React from "react";
 import { User } from "firebase/auth";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { useUser } from "../../../hooks/useUser";
-import { useLocalStorage } from "usehooks-ts";
+import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import { TextButton } from "../../PatchButton";
 
 type ProjectGridProps = {
@@ -13,12 +13,15 @@ type ProjectGridProps = {
 
 const ProjectGrid = ({ onSelect } : ProjectGridProps) => {
     const {userMeta, loading: userLoading, error: userError} = useUser();
+    const projectId = useReadLocalStorage("patchProjectId");
+
+    let untitledIndex = 0;
     if (userLoading) return <div>Loading...</div>;
     if (userError) return <div>{userError.message}</div>;
 
     return <Grid container spacing={2}>
-        {userMeta?.projects.map(project => <Grid item xs={12} key={project.id}>
-            <TextButton sx={{ height: "100px", width: "100px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={() => onSelect(project.id)} text={project.name} />
+        {userMeta?.projects.map(project => <Grid item xs={3} key={project.id}>
+            <TextButton sx={{ height: "100px", width: "100%", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant={projectId === project.id ? "contained" : "outlined"} onClick={() => onSelect(project.id)} text={project.name || `Untitled${++untitledIndex}`} />
         </Grid>)}
     </Grid>
 }
@@ -49,8 +52,26 @@ export const ProjectButton = () => {
             fullWidth={true}
             maxWidth="sm"
         >
-            <DialogTitle>Project Select</DialogTitle>
-            <DialogContent>
+            <DialogTitle sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderBottomLeftRadius: "0px",
+                borderBottomRightRadius: "0px",
+                borderBottomStyle: "none",
+            }}>Project Select</DialogTitle>
+            <DialogContent sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderTopLeftRadius: "0px",
+                borderTopRightRadius: "0px",
+                borderTopStyle: "none",
+            }}>
                <ProjectGrid onSelect={onSelect} />
             </DialogContent>
         </Dialog>

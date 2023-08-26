@@ -78,11 +78,36 @@ export const SignInButton = () => {
     <div>
       <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign In" variant="contained" onClick={handleClickOpen} />
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Sign In</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderBottomLeftRadius: "0px",
+                borderBottomRightRadius: "0px",
+                borderBottomStyle: "none",
+            }}>Sign In</DialogTitle>
+        <DialogContent sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "0px",
+                borderTopStyle: "none",
+            }}>
           {loading ? <CircularProgress /> : <SignInForm onEmailTextChange={onEmailTextChange} onPassTextChange={onPassTextChange}/>}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+                backgroundColor: 'background.default',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderTopStyle: "none",
+                borderTopLeftRadius: "0px",
+                borderTopRightRadius: "0px",
+            }}>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSignIn} disabled={loading}>Sign In</Button>
         </DialogActions>

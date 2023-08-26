@@ -23,13 +23,38 @@ export function SignUpButton() {
     <div>
       <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign Up" variant="contained" onClick={handleClickOpen} />
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Sign In</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderBottomLeftRadius: "0px",
+                borderBottomRightRadius: "0px",
+                borderBottomStyle: "none",
+            }}>Sign In</DialogTitle>
+        <DialogContent sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "0px",
+                borderTopStyle: "none",
+            }}>
           <DialogContentText>
             We are not currently allowing public sign ups for Patch. If you would like to join the beta, please select the "Join Discord" option below and message in the "Join Beta" channel.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+                backgroundColor: 'background.default',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderTopStyle: "none",
+                borderTopLeftRadius: "0px",
+                borderTopRightRadius: "0px",
+            }}>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleClose}>Join Discord</Button>
         </DialogActions>
