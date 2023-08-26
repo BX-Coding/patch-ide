@@ -118,3 +118,9 @@ export type VmState = {
         agent: string,
     }
 }
+
+export type Project = VmState & {
+    name: string,
+    lastEdited: Date,
+    owner: string,
+}

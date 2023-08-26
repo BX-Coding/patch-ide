@@ -2,7 +2,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase";
 import React from "react";
 import { User } from "firebase/auth";
-import { Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { useUser } from "../../../hooks/useUser";
 import { useLocalStorage } from "usehooks-ts";
 import { TextButton } from "../../PatchButton";
@@ -18,14 +18,14 @@ const ProjectGrid = ({ onSelect } : ProjectGridProps) => {
 
     return <Grid container spacing={2}>
         {userMeta?.projects.map(project => <Grid item xs={12} key={project.id}>
-            <button onClick={() => onSelect(project.id)}>{project.name}</button>
+            <TextButton sx={{ height: "100px", width: "100px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={() => onSelect(project.id)} text={project.name} />
         </Grid>)}
     </Grid>
 }
 
 export const ProjectButton = () => {
     const [open, setOpen] = React.useState(false);
-    const [_, setProjectId ] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
+    const [_, setProjectId ] = useLocalStorage("patchProjectId", "");
 
 
     const handleClose = () => {
@@ -43,7 +43,12 @@ export const ProjectButton = () => {
 
     return (<>
         <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog 
+            open={open} 
+            onClose={handleClose}
+            fullWidth={true}
+            maxWidth="sm"
+        >
             <DialogTitle>Project Select</DialogTitle>
             <DialogContent>
                <ProjectGrid onSelect={onSelect} />

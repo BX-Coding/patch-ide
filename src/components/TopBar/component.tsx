@@ -74,9 +74,10 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
 }
 
 export function FileName() {
+  const setProjectName = usePatchStore((state) => state.setProjectName);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
+    setProjectName(event.target.value);
   };
 
   return (
@@ -99,6 +100,8 @@ const SaveButton = () => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
   const projectChanged = usePatchStore((state) => state.projectChanged);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+  const isNewProject = usePatchStore((state) => state.isNewProject);
+  const projectName = usePatchStore((state) => state.projectName);
 
   const [user] = useAuthState(auth);
   const { downloadProject } = usePatchSerialization();
@@ -106,7 +109,7 @@ const SaveButton = () => {
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, false);
+      saveProject(user.uid, projectName, isNewProject);
     } else {
       await downloadProject();
     }
@@ -121,22 +124,24 @@ const SaveButton = () => {
 const ProjectControls = () => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
   const saveProject = usePatchStore((state) => state.saveProject);
+  const isNewProject = usePatchStore((state) => state.isNewProject);
+  const projectName = usePatchStore((state) => state.projectName);
 
   const { downloadProject, loadSerializedProject } = usePatchSerialization();
-  const [_, setProjectId ] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
+  const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
   const [user, loading, error] = useAuthState(auth);
 
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, false);
+      saveProject(user.uid, projectName, isNewProject);
     }
   };
 
   const handleSaveCopy = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, true);
+      saveProject(user.uid, projectName, true);
     }
   }
 

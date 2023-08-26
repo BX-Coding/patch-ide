@@ -2,7 +2,7 @@ import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore';
 import { auth, db } from '../components/Firebase'
 import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
-import { VmState } from '../components/EditorPane/types';
+import { Project, VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
 import { useAuthState } from 'react-firebase-hooks/auth';
 // @ts-ignore
@@ -10,13 +10,14 @@ import defaultPatchProject from '../assets/defaultProject.ptch1';
 import { useLocalStorage } from 'usehooks-ts';
 
 
-export const useProjectActions = (project: string): [() => void, boolean, (uid: string, createNewProject: boolean) => void, boolean] => {
+export const useProjectActions = (project: string): [() => void, boolean, (uid: string, name: string, createNewProject: boolean) => void, boolean] => {
     const projectReference = doc(db, 'projects', project);
     const [projectLoading, setProjectLoading] = useState(false);
     const [projectSaving, setProjectSaving] = useState(false);
-    const [isNewProject, setNewProject] = useState<boolean>(true);
-    const [ _, setProjectId ] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
-
+    const isNewProject = usePatchStore(state => state.isNewProject);
+    const setNewProject = usePatchStore(state => state.setNewProject);
+    const [ _, setProjectId ] = useLocalStorage("patchProjectId", "");
+    
     const { loadSerializedProject } = usePatchSerialization();
     const patchVM = usePatchStore(state => state.patchVM);
     
@@ -29,12 +30,42 @@ export const useProjectActions = (project: string): [() => void, boolean, (uid: 
             await loadSerializedProject(projectSnapshot.data() as VmState, true);
         } else {
             console.warn("Project does not exist. Creating default project.");
+            setNewProject(true);
             await loadSerializedProject(defaultPatchProject, false);
         }
         setProjectLoading(false);
     }
 
-    const saveCloudProject = async (uid: string, createNewProject: boolean) => {
+    const addProjectMeta = (uid: string, name: string, vmState: VmState) => {
+        const projectObject = vmState as Project;
+        projectObject.lastEdited = new Date();
+        projectObject.owner = uid;
+        projectObject.name = name;
+        return projectObject;
+    }
+
+    const updateUserMeta = async (uid: string, projectId: string, projectName: string) => {
+        const userMetaReference = doc(db, 'users', uid);
+        const userMetaSnapshot = await getDoc(userMetaReference);
+        if (userMetaSnapshot.exists()) {
+            console.warn("User meta exists. Updating.");
+            const userMeta = userMetaSnapshot.data();
+            userMeta.projects.push({ name: projectName, id: projectId });
+            await updateDoc(userMetaReference, userMeta);
+        } else {
+            console.warn("User meta does not exist. Exiting.");
+        }
+    }
+
+    const createNewProject = async (uid: string, projectObject: Project) => {
+        console.warn("Creating new project.");
+        const docRef = await addDoc(collection(db, "projects"), projectObject);
+        setProjectId(docRef.id);
+
+        updateUserMeta(uid, docRef.id, projectObject.name)
+    }
+
+    const saveCloudProject = async (uid: string, name: string, newProject: boolean) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
             return;
@@ -42,18 +73,15 @@ export const useProjectActions = (project: string): [() => void, boolean, (uid: 
 
         setProjectSaving(true);
         
-        const projectObject = await patchVM.serializeProject();
-        projectObject.lastEdited = new Date();
-        projectObject.owner = uid;
+        const projectObject = addProjectMeta(uid, name, await patchVM.serializeProject());
+        
         console.warn("Saving project: ", projectObject);
-        if (isNewProject || createNewProject) {
-            console.warn("Creating new project.");
-            const docRef = await addDoc(collection(db, "projects"), projectObject);
-            setProjectId(docRef.id);
-            setNewProject(true);
+        if (newProject) {
+            createNewProject(uid, projectObject);
         } else {
             await updateDoc(projectReference, projectObject);
         }
+        setNewProject(false);
         setProjectSaving(false);
     }
 
