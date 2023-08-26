@@ -19,9 +19,11 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
     const patchVM = usePatchStore((state) => state.patchVM);
     const getThread = usePatchStore((state) => state.getThread);
     const updateThread = usePatchStore((state) => state.updateThread);
+    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
 
     const handleCodeChange = (newScript: string) => {
         updateThread(thread.id, newScript);
+        setProjectChanged(true);
     }
 
     return (
