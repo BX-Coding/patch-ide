@@ -36,14 +36,12 @@ const App = () => {
   const patchVM = usePatchStore((state) => state.patchVM)
   const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads)
   const editorTab = usePatchStore((state) => state.editorTab)
-  const setSaveProject = usePatchStore((state) => state.setSaveProject)
 
   const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
   const [projectId] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
-  const [ loadProject, _, saveProject ] = useProjectActions(projectId);
+  const { loadProject } = useProjectActions(projectId);
   const onVmInit = () => {
       loadProject();
-      setSaveProject(saveProject);
   }
   useInitializedVm(onVmInit);
 

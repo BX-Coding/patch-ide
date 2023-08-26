@@ -4,25 +4,44 @@ import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
 import { Project, VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
-import { useAuthState } from 'react-firebase-hooks/auth';
 // @ts-ignore
 import defaultPatchProject from '../assets/defaultProject.ptch1';
 import { useLocalStorage } from 'usehooks-ts';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
-export const useProjectActions = (project: string): [() => void, boolean, (uid: string, name: string, createNewProject: boolean) => void, boolean] => {
-    const projectReference = doc(db, 'projects', project);
-    const [projectLoading, setProjectLoading] = useState(false);
-    const [projectSaving, setProjectSaving] = useState(false);
+export const useProjectActions = (defaultProjectId?: string) => {
+    const projectReference = usePatchStore(state => state.projectReference);
+    const setProjectReference = usePatchStore(state => state.setProjectReference);
     const isNewProject = usePatchStore(state => state.isNewProject);
     const setNewProject = usePatchStore(state => state.setNewProject);
+    const [user, loading, error] = useAuthState(auth);
+    const [projectLoading, setProjectLoading] = useState(false);
+    const [projectSaving, setProjectSaving] = useState(false);
+
     const [ _, setProjectId ] = useLocalStorage("patchProjectId", "");
     
     const { loadSerializedProject } = usePatchSerialization();
     const patchVM = usePatchStore(state => state.patchVM);
+
+    const getProjectReference = () => {
+        if (projectReference) {
+            return projectReference;
+        }
+        if (defaultProjectId) {
+            const newProjectReference = doc(db, 'projects', defaultProjectId);
+            setProjectReference(newProjectReference);
+            return newProjectReference;
+        }
+    }
     
     const loadCloudProject = async () => {
         setProjectLoading(true);
+        const projectReference = getProjectReference();
+        if (!projectReference) {
+            console.warn("Project reference was null. Aborting.");
+            return;
+        }
         const projectSnapshot = await getDoc(projectReference);
         if (projectSnapshot.exists()) {
             console.warn("Project exists. Loading.");
@@ -33,6 +52,7 @@ export const useProjectActions = (project: string): [() => void, boolean, (uid: 
             setNewProject(true);
             await loadSerializedProject(defaultPatchProject, false);
         }
+
         setProjectLoading(false);
     }
 
@@ -60,37 +80,47 @@ export const useProjectActions = (project: string): [() => void, boolean, (uid: 
     const createNewProject = async (uid: string, projectObject: Project) => {
         console.warn("Creating new project.");
         const docRef = await addDoc(collection(db, "projects"), projectObject);
+        setProjectReference(docRef);
         setProjectId(docRef.id);
 
         updateUserMeta(uid, docRef.id, projectObject.name)
     }
 
-    const saveCloudProject = async (uid: string, name: string, newProject: boolean) => {
+    const updateProject = async (projectObject: Project) => {
+        const projectReference = getProjectReference();
+        if (!projectReference) {
+            console.warn("Project reference was null. Aborting.");
+            return;
+        }
+        await updateDoc(projectReference, projectObject);
+    }
+
+    const saveCloudProject = async (name: string) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
+            return;
+        }
+        if (!user) {
+            console.warn("The user was null. Aborting.");
             return;
         }
 
         setProjectSaving(true);
         
-        const projectObject = addProjectMeta(uid, name, await patchVM.serializeProject());
+        const projectObject = addProjectMeta(user.uid, name, await patchVM.serializeProject());
         
         console.warn("Saving project: ", projectObject);
-        if (newProject) {
-            createNewProject(uid, projectObject);
+        if (isNewProject) {
+            createNewProject(user.uid, projectObject);
         } else {
-            await updateDoc(projectReference, projectObject);
+            updateProject(projectObject);
         }
         setNewProject(false);
         setProjectSaving(false);
     }
 
-    const loadLocalProject = () => {
-        loadSerializedProject(project, false);
-    }
-
     const saveProject = saveCloudProject;
     const loadProject = loadCloudProject;
 
-    return [loadProject, projectLoading ?? false, saveProject, projectSaving]
+    return {loadProject, projectLoading: projectLoading ?? false, saveProject, projectSaving}
 }

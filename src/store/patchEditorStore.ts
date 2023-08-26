@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
 import { DOMElement } from 'react'
+import { DocumentData, DocumentReference } from 'firebase/firestore'
 
 export enum EditorTab {
     CODE = "code",
@@ -37,8 +38,7 @@ export interface PatchEditorState {
 
     isNewProject: boolean,
     projectName: string,
-
-    saveProject: (uid: string, name: string, createNewProject: boolean) => void,
+    projectReference: DocumentReference<DocumentData, DocumentData> | null,
 
     patchVM: any,
     patchStage: Stage,
@@ -62,7 +62,7 @@ export interface PatchEditorState {
     setNewProject: (isNew: boolean) => void,
     setProjectName: (name: string) => void,
 
-    setSaveProject: (save: (uid: string, name: string, createNewProject: boolean) => void) => void,
+    setProjectReference: (ref: DocumentReference<DocumentData, DocumentData>) => void,
 }
 
 export const createPatchEditorSlice: StateCreator<
@@ -88,7 +88,8 @@ export const createPatchEditorSlice: StateCreator<
     },
     isNewProject: false,
     projectName: "",
-    saveProject: () => null,
+    projectReference: null,
+
 
     // Actions
     setTargetIds: (ids: string[]) => set({ targetIds: ids }),
@@ -109,5 +110,5 @@ export const createPatchEditorSlice: StateCreator<
     setNewProject: (isNew: boolean) => set({ isNewProject: isNew }),
     setProjectName: (name: string) => set({ projectName: name }),
 
-    setSaveProject: (save) => set({ saveProject: save })
+    setProjectReference: (ref: DocumentReference<DocumentData, DocumentData>) => set({ projectReference: ref }),
 })

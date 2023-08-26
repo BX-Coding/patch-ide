@@ -96,7 +96,6 @@ export function FileName() {
 }
 
 const SaveButton = () => {
-  const saveProject = usePatchStore((state) => state.saveProject);
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
   const projectChanged = usePatchStore((state) => state.projectChanged);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
@@ -105,11 +104,12 @@ const SaveButton = () => {
 
   const [user] = useAuthState(auth);
   const { downloadProject } = usePatchSerialization();
+  const { saveProject } = useProjectActions();
 
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, projectName, isNewProject);
+      saveProject(projectName);
     } else {
       await downloadProject();
     }
@@ -123,25 +123,25 @@ const SaveButton = () => {
 
 const ProjectControls = () => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const saveProject = usePatchStore((state) => state.saveProject);
   const isNewProject = usePatchStore((state) => state.isNewProject);
   const projectName = usePatchStore((state) => state.projectName);
 
   const { downloadProject, loadSerializedProject } = usePatchSerialization();
   const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
+  const { saveProject } = useProjectActions();
 
   const handleSaveNow = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, projectName, isNewProject);
+      saveProject(projectName);
     }
   };
 
   const handleSaveCopy = async () => {
     await saveAllThreads();
     if (user) {
-      saveProject(user.uid, projectName, true);
+      saveProject(projectName);
     }
   }
 
