@@ -1,8 +1,22 @@
 import EventEmitter from "events"
 
+export enum DataFormat {
+    SVG = "svg",
+    PNG = "png",
+    WAV = "wav",
+    JSON = "json",
+}
+
+export type AssetType = {
+    contentType: string,
+    name: string,
+    runtimeFormat: DataFormat,
+    immutable: boolean,
+}
+
 export type Asset = {
     assetId: string,
-    assetType: string,
+    assetType: AssetType,
     data: any,
     dataFormat: string,
 }

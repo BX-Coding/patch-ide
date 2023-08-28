@@ -1,19 +1,5 @@
-import { FirebaseStorage } from "firebase/storage";
-import { Asset } from "../components/EditorPane/types";
-
-enum DataFormat {
-    SVG = "svg",
-    PNG = "png",
-    WAV = "wav",
-    JSON = "json",
-}
-
-type AssetTypeMeta = {
-    contentType: string,
-    name: string,
-    runtimeFormat: DataFormat,
-    immutable: boolean,
-}
+import { FirebaseStorage, StorageReference } from "firebase/storage";
+import { Asset, AssetType, DataFormat } from "../components/EditorPane/types";
 
 type Store = {
     types: string[],
@@ -27,16 +13,17 @@ declare module "scratch-storage" {
         assetHost: string;
         stores: Store[];
 
-        addWebStore(types: AssetTypeMeta[], firebaseStorage: FirebaseStorage, path?: string): void;
-        createAsset(assetType: AssetTypeMeta, dataFormat: DataFormat, data: ArrayBuffer, id: string, generateId: string): Asset;
-        load(assetType: AssetTypeMeta, assetId: string, dataFormat: DataFormat): Promise<Asset>;
-        store(assetType: AssetTypeMeta, dataFormat: DataFormat, data: ArrayBuffer, assetId: string): Promise<Object>;
+        addFirebaseStore(types: AssetType[], storageReference: StorageReference): void;
+        createAsset(assetType: AssetType, dataFormat: DataFormat, data: ArrayBuffer, id: string, generateId: string): Asset;
+        load(assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset>;
+        store(assetType: AssetType, dataFormat: DataFormat, data: ArrayBuffer, assetId: string): Promise<Object>;
+        static get AssetType(): Record<string, AssetType>;
         get AssetType(): Record<string, AssetType>;
     }
 
     export abstract class Helper {
         constructor(parent: any);
 
-        load(assetType: AssetTypeMeta, assetId: string, dataFormat: DataFormat): Promise<Asset>;
+        load(assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset>;
     }
 }

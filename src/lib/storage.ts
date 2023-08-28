@@ -1,6 +1,5 @@
-import ScratchStorage, { AssetTypeMeta, DataFormat } from 'scratch-storage';
-import { Asset } from '../components/EditorPane/types';
-import { StorageReference, ref, getDownloadURL, FirebaseStorage } from 'firebase/storage';
+import ScratchStorage from 'scratch-storage';
+import { FirebaseStorage, ref } from 'firebase/storage';
 
 
 /**
@@ -12,11 +11,10 @@ class PatchFirebaseStorage extends ScratchStorage {
         super();
     }
 
-    addFirebaseStores (storage: FirebaseStorage) {
-        this.addWebStore(
+    addFirebaseStorageStores (storage: FirebaseStorage) {
+        this.addFirebaseStore(
             [this.AssetType.ImageVector, this.AssetType.ImageBitmap, this.AssetType.Sound],
-            storage,
-            'scratch'
+            ref(storage, 'scratch'),
         );
     }
 }

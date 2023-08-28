@@ -25,7 +25,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
           setPatchReady(false);
 
           const patchVM = new VirtualMachine();
-          patchStorage.addFirebaseStores(storage);
+          patchStorage.addFirebaseStorageStores(storage);
           patchVM.attachStorage(patchStorage);
           const scratchRenderer = new Renderer(patchStage.canvas);
           patchVM.attachRenderer(scratchRenderer);
