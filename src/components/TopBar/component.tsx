@@ -10,7 +10,7 @@ import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
 import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 import { DropdownMenu } from '../DropdownMenu';
-import { auth } from '../Firebase';
+import { auth } from '../../lib';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { SignInButton } from './SignInButton';
 import { SignUpButton } from './SignUpButton';

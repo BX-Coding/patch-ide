@@ -1,5 +1,5 @@
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../Firebase";
+import { auth } from "../../../lib/firebase";
 import React from "react";
 import { User } from "firebase/auth";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";

@@ -8,7 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { TextButton } from '../../PatchButton';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../Firebase';
+import { auth } from '../../../lib/firebase';
 
 export const SignOutButton = () => {
   const handleSignOut = () => {

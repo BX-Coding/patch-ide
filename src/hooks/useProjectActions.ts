@@ -1,5 +1,5 @@
 import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore';
-import { auth, db } from '../components/Firebase'
+import { auth, db } from '../lib/firebase'
 import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
 import { Project, VmState } from '../components/EditorPane/types';

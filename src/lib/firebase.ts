@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { Auth, getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, Firestore } from "firebase/firestore";
+import { getStorage, connectStorageEmulator, ref, uploadBytes, FirebaseStorage } from "firebase/storage"; 
 import { FirebaseApp } from "firebase/app";
 
 const initializeFirebaseApp = () => {
@@ -38,20 +39,23 @@ const initializeFirebaseApp = () => {
 type PatchFirebaseServices = {
     auth: Auth,
     db: Firestore,
+    storage: FirebaseStorage,
     analytics?: Analytics,
 }
 
 const getFirebaseServices = (app: FirebaseApp): PatchFirebaseServices => {
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
     let analytics = undefined;
     if (process.env.ENVIRONMENT === 'local') {
         connectAuthEmulator(auth, "http://127.0.0.1:9099");
         connectFirestoreEmulator(db, '127.0.0.1', 8082);
+        connectStorageEmulator(storage, '127.0.0.1', 9199);
     } else if (process.env.ENVIRONMENT === 'production') {
         analytics = getAnalytics(app);
     }
-    return { auth, analytics, db };
+    return { auth, analytics, db, storage };
 }
 
 const app = initializeFirebaseApp();
@@ -63,4 +67,5 @@ if (process.env.ENVIRONMENT === 'local') {
 const services = getFirebaseServices(app);
 export const auth = services.auth;
 export const db = services.db;
+export const storage = services.storage;
 export const analytics = services.analytics;

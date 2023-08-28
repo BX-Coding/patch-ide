@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { TextButton } from '../../PatchButton';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../Firebase';
+import { auth } from '../../../lib/firebase';
 import { CircularProgress } from '@mui/material';
 
 type signInFormProps = {

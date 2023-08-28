@@ -1,6 +1,6 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
-import { auth, db } from "../components/Firebase";
+import { auth, db } from "../lib";
 import { FirestoreError, doc } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { UserMeta } from "../types/userMeta";
