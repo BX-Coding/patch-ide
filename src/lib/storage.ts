@@ -1,6 +1,11 @@
 import ScratchStorage from 'scratch-storage';
 import { FirebaseStorage, ref } from 'firebase/storage';
+import { Asset, AssetType, DataFormat } from '../components/EditorPane/types';
 
+const SCRATCH_PATH = 'scratch'
+const URL_SLASH = '%2F';
+
+const FIREBASE_STORAGE_URL = "https://firebasestorage.googleapis.com/v0/b/"
 
 /**
  * Wrapper for ScratchStorage which adds default web sources.
@@ -12,9 +17,13 @@ class PatchFirebaseStorage extends ScratchStorage {
     }
 
     addFirebaseStorageStores (storage: FirebaseStorage) {
-        this.addFirebaseStore(
+        const getFirebaseAssetUrl = (asset: Asset) => `${FIREBASE_STORAGE_URL}${storage.app.options.storageBucket}/o/${SCRATCH_PATH}${URL_SLASH}${asset.assetId}.${asset.dataFormat}?alt=media`;
+        const postFirebaseAssetUrl = (asset: Asset) => `${FIREBASE_STORAGE_URL}${storage.app.options.storageBucket}/o/${SCRATCH_PATH}${URL_SLASH}${asset.assetId}.${asset.dataFormat}`;
+        this.addWebStore(
             [this.AssetType.ImageVector, this.AssetType.ImageBitmap, this.AssetType.Sound],
-            ref(storage, 'scratch'),
+            getFirebaseAssetUrl,
+            postFirebaseAssetUrl,
+            postFirebaseAssetUrl,
         );
     }
 }

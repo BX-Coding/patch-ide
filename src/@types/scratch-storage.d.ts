@@ -13,7 +13,7 @@ declare module "scratch-storage" {
         assetHost: string;
         stores: Store[];
 
-        addFirebaseStore(types: AssetType[], storageReference: StorageReference): void;
+        addWebStore(types: AssetType[], getFunction: (asset: Asset) => void, createFunction: (asset: Asset) => void, updateFunction: (asset: Asset) => void): void;
         createAsset(assetType: AssetType, dataFormat: DataFormat, data: ArrayBuffer, id: string, generateId: string): Asset;
         load(assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset>;
         store(assetType: AssetType, dataFormat: DataFormat, data: ArrayBuffer, assetId: string): Promise<Object>;
