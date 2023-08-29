@@ -264,13 +264,13 @@ const spriteUpload = function (
     fileType: string,
     spriteName: string,
     storage: ScratchStorage,
-    handleSprite: (spriteJson: SpriteJson) => void, 
+    handleSprite: (spriteJson: SpriteJson | Uint8Array) => void, 
     handleError = () => {}
     ): void {
     switch (fileType) {
     case '':
     case 'application/zip': { // We think this is a .sprite2 or .sprite3 file
-        // handleSprite(new Uint8Array(fileData));
+        handleSprite(new Uint8Array(fileData));
         return;
     }
     case 'image/svg+xml':

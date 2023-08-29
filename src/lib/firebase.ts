@@ -51,7 +51,7 @@ const getFirebaseServices = (app: FirebaseApp): PatchFirebaseServices => {
     if (process.env.ENVIRONMENT === 'local') {
         connectAuthEmulator(auth, "http://127.0.0.1:9099");
         connectFirestoreEmulator(db, '127.0.0.1', 8082);
-        connectStorageEmulator(storage, '127.0.0.1', 9199);
+        // connectStorageEmulator(storage, '127.0.0.1', 9199);
     } else if (process.env.ENVIRONMENT === 'production') {
         analytics = getAnalytics(app);
     }

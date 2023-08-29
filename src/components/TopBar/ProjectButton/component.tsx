@@ -28,7 +28,7 @@ const ProjectGrid = ({ onSelect } : ProjectGridProps) => {
 
 export const ProjectButton = () => {
     const [open, setOpen] = React.useState(false);
-    const [_, setProjectId ] = useLocalStorage("patchProjectId", "");
+    const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
 
 
     const handleClose = () => {

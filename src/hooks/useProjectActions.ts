@@ -2,7 +2,7 @@ import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase'
 import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
-import { Project, VmState } from '../components/EditorPane/types';
+import { Asset, Project, VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
 // @ts-ignore
 import defaultPatchProject from '../assets/defaultProject.ptch1';
@@ -19,7 +19,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
     const [projectLoading, setProjectLoading] = useState(false);
     const [projectSaving, setProjectSaving] = useState(false);
 
-    const [ _, setProjectId ] = useLocalStorage("patchProjectId", "");
+    const [ _, setProjectId ] = useLocalStorage("patchProjectId", "new");
     
     const { loadSerializedProject } = usePatchSerialization();
     const patchVM = usePatchStore(state => state.patchVM);
@@ -43,11 +43,18 @@ export const useProjectActions = (defaultProjectId?: string) => {
             return;
         }
         const projectSnapshot = await getDoc(projectReference);
+        let loadFailed = false;
         if (projectSnapshot.exists()) {
             console.warn("Project exists. Loading.");
             setNewProject(false);
-            await loadSerializedProject(projectSnapshot.data() as VmState, true);
-        } else {
+            try {
+                await loadSerializedProject(projectSnapshot.data() as VmState, true);
+            } catch (error) {
+                console.error("Failed to load project: ", error);
+                loadFailed = true;
+            }
+        } 
+        if (!projectSnapshot.exists() || loadFailed) {
             console.warn("Project does not exist. Creating default project.");
             setNewProject(true);
             await loadSerializedProject(defaultPatchProject, false);
@@ -95,6 +102,25 @@ export const useProjectActions = (defaultProjectId?: string) => {
         await updateDoc(projectReference, projectObject);
     }
 
+    const saveProjectAssets = () => {
+        console.warn("Saving project assets.");
+        
+        const storage = patchVM.runtime.storage;
+        const assets: Asset[] = patchVM.assets;
+        const storePromise = assets.filter(asset => !asset.clean).map(async (asset) => {
+            const response = await storage.store(asset.assetType, asset.dataFormat, asset.data, asset.assetId)
+            console.warn("Saving asset: ", asset);
+            
+            if (response.status === 200) {
+                console.warn("Asset stored: ", asset);
+            } else {
+                console.warn("Asset failed to store: ", asset);
+                return Promise.reject();
+            }
+        });
+        return Promise.all(storePromise);
+    }
+
     const saveCloudProject = async (name: string) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
@@ -115,6 +141,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         } else {
             updateProject(projectObject);
         }
+        saveProjectAssets();
         setNewProject(false);
         setProjectSaving(false);
     }

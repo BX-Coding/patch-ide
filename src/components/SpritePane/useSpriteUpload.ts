@@ -39,7 +39,7 @@ export const useUploadSprite = () => {
         const storage = patchVM.runtime.storage;
         const arrayBuffer = await file.arrayBuffer();
         spriteUpload(arrayBuffer, file.type, file.name, storage, newSprite => {
-            handleNewSprite(newSprite);
+            handleNewSprite(newSprite as SpriteJson);
         }, console.log);
     };
 

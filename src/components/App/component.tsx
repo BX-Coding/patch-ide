@@ -38,7 +38,7 @@ const App = () => {
   const editorTab = usePatchStore((state) => state.editorTab)
 
   const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
-  const [projectId] = useLocalStorage("patchProjectId", "N3JXaHgGXm4IpOMqAAk4");
+  const [projectId] = useLocalStorage("patchProjectId", "new");
   const { loadProject } = useProjectActions(projectId);
   const onVmInit = () => {
       loadProject();

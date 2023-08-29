@@ -19,6 +19,7 @@ export type Asset = {
     assetType: AssetType,
     data: any,
     dataFormat: string,
+    clean?: boolean,
 }
 
 export type Costume = {
