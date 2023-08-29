@@ -73,7 +73,7 @@ export interface Sprite {
 
 export interface SpriteJson {
     name: string,
-    tags: string[],
+    tags?: string[],
     isStage: boolean,
     variables?: {},
     costumes: Costume[],

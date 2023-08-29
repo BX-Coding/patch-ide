@@ -1,4 +1,4 @@
-import { handleFileUpload, soundUpload } from '../util/file-uploader';
+import { handleFileUpload, soundUpload } from '../lib/file-uploader';
 import usePatchStore from '../store';
 import { Sound, SoundJson } from '../components/EditorPane/types';
 

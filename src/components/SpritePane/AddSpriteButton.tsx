@@ -1,24 +1,22 @@
-import React, { useContext, useCallback } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
-import { AddButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';
-import { useAddSprite } from './onAddSpriteHandler';
-import { useCostumeHandlers } from '../../hooks/useCostumeUploadHandlers';
 import { DropdownMenu } from '../DropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
+import { useUploadSprite } from './useSpriteUpload';
+import { useAssetFileSelector } from '../../hooks/useAssetFileSelector';
 
 export function AddSpriteButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
-    const { handleUploadCostume } = useCostumeHandlers();
-    const { onAddSprite, handleUploadedSprite } = useAddSprite();
+    const uploadSprite = useUploadSprite();
+    const openAssetFileSelector = useAssetFileSelector();
 
-    const handleUploadNew = async () => {
-        var newId = await onAddSprite();
-        handleUploadCostume(newId);
-        handleUploadedSprite(newId);
+
+    const handleUpload = async () => {
+        const selectedFile = await openAssetFileSelector();
+        console.warn("Selected File", selectedFile);
+        uploadSprite(selectedFile);
     };
 
     const handleBuiltIn = () => {
@@ -29,7 +27,7 @@ export function AddSpriteButton() {
         <Grid container justifyContent="center">
             <DropdownMenu type="icon" icon={<AddIcon />} options={[
                 { label: 'From Built-In', onClick: handleBuiltIn },
-                { label: 'From Upload', onClick: handleUploadNew },
+                { label: 'From Upload', onClick: handleUpload },
             ]}/>
         </Grid>
     );
