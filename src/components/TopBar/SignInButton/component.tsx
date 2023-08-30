@@ -11,6 +11,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../../lib/firebase';
 import { CircularProgress } from '@mui/material';
+import { toast } from 'react-toastify';
 
 type signInFormProps = {
   onEmailTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -29,17 +30,16 @@ const SignInForm = ({onEmailTextChange, onPassTextChange}: signInFormProps) => {
       label="Email Address"
       type="email"
       fullWidth
-      variant="standard"
+      variant="outlined"
       onChange={onEmailTextChange}
     />
     <TextField
-      autoFocus
       margin="dense"
       id="pass"
       label="Password"
       type="password"
       fullWidth
-      variant="standard"
+      variant="outlined"
       onChange={onPassTextChange}
     />
   </>
@@ -70,8 +70,12 @@ export const SignInButton = () => {
   };
 
   const handleSignIn = async () => {
-    await signInWithEmailAndPassword(auth, emailText, passwordText);
-    handleClose();
+    try {
+      await signInWithEmailAndPassword(auth, emailText, passwordText);
+      handleClose();
+    } catch (error) {
+      toast.error(error as string);
+    }
   }
 
   return (

@@ -28,6 +28,8 @@ import { ModalSelector } from '../ModalSelector';
 
 import { useProjectActions } from '../../hooks/useProjectActions';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const App = () => {
@@ -52,6 +54,10 @@ const App = () => {
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
       <SplashScreen renderCondition={true}>
+        <ToastContainer
+          theme="dark"
+          position="top-center"
+         />
         <Grid container item direction="row" width={'100%'} sx={{
           position: "absolute",
           width: "100%",
