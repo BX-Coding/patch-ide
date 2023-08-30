@@ -111,7 +111,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
             const response = await storage.store(asset.assetType, asset.dataFormat, asset.data, asset.assetId)
             console.warn("Saving asset: ", asset);
             
-            if (response.status === 200) {
+            if (response?.id) {
                 console.warn("Asset stored: ", asset);
             } else {
                 console.warn("Asset failed to store: ", asset);
