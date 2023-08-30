@@ -12,6 +12,7 @@ import { usePasswordValidator } from './usePasswordValidator';
 import { toast } from 'react-toastify';
 import { auth } from '../../../lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuthErrorMessage } from '../../../util/firebase-auth-errors';
 
 export function SignUpButton() {
   const { validatePassword } = usePasswordValidator();
@@ -60,8 +61,7 @@ export function SignUpButton() {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        toast.error(errorMessage);
+        toast.error(getAuthErrorMessage(errorCode));
       });
   }
 

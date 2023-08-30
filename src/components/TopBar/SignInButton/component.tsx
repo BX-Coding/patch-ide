@@ -12,6 +12,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../../lib/firebase';
 import { CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
+import { getAuthErrorMessage } from '../../../util/firebase-auth-errors';
 
 type signInFormProps = {
   onEmailTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -70,12 +71,14 @@ export const SignInButton = () => {
   };
 
   const handleSignIn = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, emailText, passwordText);
-      handleClose();
-    } catch (error) {
-      toast.error(error as string);
-    }
+    signInWithEmailAndPassword(auth, emailText, passwordText).catch((error) => {
+      toast.error(getAuthErrorMessage(error.code));
+    }).then((userCredential) => {
+      if (userCredential) {
+        toast.success("Signed in successfully!");
+        handleClose();
+      }
+    });
   }
 
   return (
