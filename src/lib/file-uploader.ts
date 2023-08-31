@@ -1,10 +1,11 @@
 // @ts-ignore
 import {BitmapAdapter, sanitizeSvg} from 'scratch-svg-renderer';
-import bmpConverter from './bmp-converter';
+import bmpConverter from '../util/bmp-converter';
 // @ts-ignore
-import gifDecoder from './gif-decoder';
+import gifDecoder from '../util/gif-decoder';
 // @ts-ignore
 import { ScratchStorage } from 'scratch-storage';
+import { SpriteJson } from '../components/EditorPane/types';
   
 type AssetType = ScratchStorage.AssetType;
 
@@ -263,7 +264,7 @@ const spriteUpload = function (
     fileType: string,
     spriteName: string,
     storage: ScratchStorage,
-    handleSprite: (spriteJson: string | Uint8Array) => void, 
+    handleSprite: (spriteJson: SpriteJson | Uint8Array) => void, 
     handleError = () => {}
     ): void {
     switch (fileType) {
@@ -299,8 +300,7 @@ const spriteUpload = function (
                 sounds: [] // TODO are all of these necessary?
             };
             // randomizeSpritePosition(newSprite);
-            // TODO probably just want sprite upload to handle this object directly
-            handleSprite(JSON.stringify(newSprite));
+            handleSprite(newSprite);
         }, handleError);
         return;
     }

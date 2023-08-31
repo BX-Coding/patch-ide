@@ -1,10 +1,25 @@
 import EventEmitter from "events"
 
+export enum DataFormat {
+    SVG = "svg",
+    PNG = "png",
+    WAV = "wav",
+    JSON = "json",
+}
+
+export type AssetType = {
+    contentType: string,
+    name: string,
+    runtimeFormat: DataFormat,
+    immutable: boolean,
+}
+
 export type Asset = {
     assetId: string,
-    assetType: string,
+    assetType: AssetType,
     data: any,
     dataFormat: string,
+    clean?: boolean,
 }
 
 export type Costume = {
@@ -59,7 +74,7 @@ export interface Sprite {
 
 export interface SpriteJson {
     name: string,
-    tags: string[],
+    tags?: string[],
     isStage: boolean,
     variables?: {},
     costumes: Costume[],
@@ -117,4 +132,10 @@ export type VmState = {
         vm: string,
         agent: string,
     }
+}
+
+export type Project = VmState & {
+    name: string,
+    lastEdited: Date,
+    owner: string,
 }

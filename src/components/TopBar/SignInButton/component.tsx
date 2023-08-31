@@ -9,8 +9,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { TextButton } from '../../PatchButton';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../Firebase';
+import { auth } from '../../../lib/firebase';
 import { CircularProgress } from '@mui/material';
+import { toast } from 'react-toastify';
+import { getAuthErrorMessage } from '../../../util/firebase-auth-errors';
 
 type signInFormProps = {
   onEmailTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -29,17 +31,16 @@ const SignInForm = ({onEmailTextChange, onPassTextChange}: signInFormProps) => {
       label="Email Address"
       type="email"
       fullWidth
-      variant="standard"
+      variant="outlined"
       onChange={onEmailTextChange}
     />
     <TextField
-      autoFocus
       margin="dense"
       id="pass"
       label="Password"
       type="password"
       fullWidth
-      variant="standard"
+      variant="outlined"
       onChange={onPassTextChange}
     />
   </>
@@ -70,19 +71,50 @@ export const SignInButton = () => {
   };
 
   const handleSignIn = async () => {
-    await signInWithEmailAndPassword(auth, emailText, passwordText);
-    handleClose();
+    signInWithEmailAndPassword(auth, emailText, passwordText).catch((error) => {
+      toast.error(getAuthErrorMessage(error.code));
+    }).then((userCredential) => {
+      if (userCredential) {
+        toast.success("Signed in successfully!");
+        handleClose();
+      }
+    });
   }
 
   return (
     <div>
       <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} text="Sign In" variant="contained" onClick={handleClickOpen} />
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Sign In</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderBottomLeftRadius: "0px",
+                borderBottomRightRadius: "0px",
+                borderBottomStyle: "none",
+            }}>Sign In</DialogTitle>
+        <DialogContent sx={{
+                backgroundColor: 'panel.dark',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "0px",
+                borderTopStyle: "none",
+            }}>
           {loading ? <CircularProgress /> : <SignInForm onEmailTextChange={onEmailTextChange} onPassTextChange={onPassTextChange}/>}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+                backgroundColor: 'background.default',
+                borderStyle: "solid", 
+                borderWidth: "1px", 
+                borderColor: "outlinedButtonBorder.main",
+                borderRadius: "8px",
+                borderTopStyle: "none",
+                borderTopLeftRadius: "0px",
+                borderTopRightRadius: "0px",
+            }}>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSignIn} disabled={loading}>Sign In</Button>
         </DialogActions>

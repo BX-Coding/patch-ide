@@ -1,6 +1,6 @@
 import { Costume } from "../components/EditorPane/types";
 import usePatchStore from "../store";
-import { costumeUpload, handleFileUpload } from "../util/file-uploader";
+import { costumeUpload, handleFileUpload } from "../lib/file-uploader";
 import { useEditingTarget } from "./useEditingTarget";
 
 export const useCostumeHandlers = () => {

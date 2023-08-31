@@ -1,4 +1,3 @@
-// @ts-ignore
 import ScratchStorage from 'scratch-storage';
 // @ts-ignore
 import {inlineSvgFonts} from 'scratch-svg-renderer';

@@ -75,7 +75,18 @@ const theme: Theme = createTheme(
         "defaultProps": {
           "disableElevation": true
         }
-      }
+      },
+      "MuiMenu": {
+        "styleOverrides": {
+          "paper": {
+            "background": "#1a1a1a",
+            "borderColor": "rgba(255, 255, 255, 0.16)",
+            "borderStyle": "solid", 
+            "borderWidth": "1px", 
+            "borderRadius": "8px",
+          }
+        }
+      },
     }
   });
 

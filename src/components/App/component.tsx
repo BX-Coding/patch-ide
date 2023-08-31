@@ -21,12 +21,15 @@ import SplashScreen from '../SplashScreen/component';
 import usePatchStore from '../../store';
 
 
-// @ts-ignore
-import useConfirmClose from './useConfirmClose';
 import useThreadAutoSave from './useThreadAutoSave';
 import useMonitorProjectChange from './useMonitorProjectChange';
 import useInitializedVm from './useInitializedVm';
 import { ModalSelector } from '../ModalSelector';
+
+import { useProjectActions } from '../../hooks/useProjectActions';
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const App = () => {
@@ -35,16 +38,26 @@ const App = () => {
   const patchVM = usePatchStore((state) => state.patchVM)
   const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads)
   const editorTab = usePatchStore((state) => state.editorTab)
-  const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
 
-  useInitializedVm();
-  // useConfirmClose(projectChanged);
+  const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
+  const [projectId] = useLocalStorage("patchProjectId", "new");
+  const { loadProject } = useProjectActions(projectId);
+  const onVmInit = () => {
+      loadProject();
+  }
+  useInitializedVm(onVmInit);
+
   useThreadAutoSave(patchVM, saveTargetThreads, editorTab);
   useMonitorProjectChange(setProjectChanged, [targetIds])
+  
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
       <SplashScreen renderCondition={true}>
+        <ToastContainer
+          theme="dark"
+          position="top-center"
+         />
         <Grid container item direction="row" width={'100%'} sx={{
           position: "absolute",
           width: "100%",

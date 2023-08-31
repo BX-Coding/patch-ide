@@ -31,7 +31,11 @@ export const DropdownMenu = ({ type, icon, text, options, sx }: DropdownMenuProp
         {type === "text" ? text : icon}
       </Button>
       <Menu {...bindMenu(popupState)}>
-        {options.map((option) => (<MenuItem onClick={() => {
+        {options.map((option, index) => (<MenuItem sx={{
+          borderTopStyle: index > 0 ? "solid": "none",
+          borderTopWidth: "1px",
+          borderTopColor: "outlinedButtonBorder.main",
+        }} onClick={() => {
           option.onClick()
           popupState.close()
           }}>{option.label}</MenuItem>))}

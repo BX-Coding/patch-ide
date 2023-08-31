@@ -10,11 +10,14 @@ import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
 import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 import { DropdownMenu } from '../DropdownMenu';
-import { auth } from '../Firebase';
+import { auth } from '../../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { SignInButton } from './SignInButton';
 import { SignUpButton } from './SignUpButton';
 import { SignOutButton } from './SignOutButton';
+import { useProjectActions } from '../../hooks/useProjectActions';
+import { useLocalStorage } from 'usehooks-ts';
+import { ProjectButton } from './ProjectButton';
 
 type TopBarProps = {
   mode: string,
@@ -33,7 +36,7 @@ export function TopBar({ mode, setMode }: TopBarProps) {
     }}>
       <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
         <Grid item>
-          <FileButton />
+          <ProjectControls />
         </Grid>
         <Grid item xs={6}>
           <FileName />
@@ -46,7 +49,6 @@ export function TopBar({ mode, setMode }: TopBarProps) {
             {user && <SignOutButton />}
             {!user && <SignInButton />}
             {!user && <SignUpButton />}
-            <ThemeButton mode={mode} setMode={setMode} />
           </HorizontalButtons>
         </Grid>
       </Grid>
@@ -70,20 +72,11 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
     );
 }
 
-export function ProjectButton() {
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event.currentTarget.id);
-  };
-
-  return (
-    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
-  );
-}
-
 export function FileName() {
+  const setProjectName = usePatchStore((state) => state.setProjectName);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
+    setProjectName(event.target.value);
   };
 
   return (
@@ -101,20 +94,58 @@ export function FileName() {
   );
 }
 
-export function FileButton() {
-  const projectChanged = usePatchStore((state) => state.projectChanged);
+const SaveButton = () => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const { saveToLocalStorage, loadFromLocalStorage, downloadProject, loadSerializedProject } = usePatchSerialization();
-  const [user, loading, error] = useAuthState(auth);
+  const projectChanged = usePatchStore((state) => state.projectChanged);
+  const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+  const isNewProject = usePatchStore((state) => state.isNewProject);
+  const projectName = usePatchStore((state) => state.projectName);
+
+  const [user] = useAuthState(auth);
+  const { downloadProject } = usePatchSerialization();
+  const { saveProject } = useProjectActions();
 
   const handleSaveNow = async () => {
     await saveAllThreads();
-    saveToLocalStorage();
+    if (user) {
+      saveProject(projectName);
+    } else {
+      await downloadProject();
+    }
+    setProjectChanged(false);
   };
 
+  return (
+    <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} disabled={!projectChanged}/>
+  );
+}
+
+const ProjectControls = () => {
+  const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
+  const isNewProject = usePatchStore((state) => state.isNewProject);
+  const projectName = usePatchStore((state) => state.projectName);
+
+  const { downloadProject, loadSerializedProject } = usePatchSerialization();
+  const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
+  const [user] = useAuthState(auth);
+  const { saveProject } = useProjectActions();
+
+  const handleSaveNow = async () => {
+    await saveAllThreads();
+    if (user) {
+      saveProject(projectName);
+    }
+  };
+
+  const handleSaveCopy = async () => {
+    await saveAllThreads();
+    if (user) {
+      saveProject(projectName);
+    }
+  }
+
   const handleNew = () => {
-    /* For now, this will just clear the project from localStorage and reload. */
-    localStorage.removeItem("proj");
+    setProjectId("new");
     location.reload();
   }
   const handleDownload = async () => {
@@ -140,7 +171,7 @@ export function FileButton() {
       reader.onloadend = (readerEvent: ProgressEvent<FileReader>) => {
         var content = readerEvent?.target?.result; // this is the content!
         if (!content) return;
-        loadSerializedProject(content);
+        loadSerializedProject(content, false);
       }
     }
 
@@ -150,7 +181,7 @@ export function FileButton() {
   const authenticatedOptions = [
     { label: "New", onClick: handleNew},
     { label: "Save Now", onClick: handleSaveNow},
-    { label: "Save As A Copy", onClick: () => {}},
+    { label: "Save As A Copy", onClick: handleSaveCopy},
     { label: "Load From Your Computer", onClick: handleUpload},
     { label: "Save To Your Computer", onClick: handleDownload},
   ]
@@ -171,8 +202,7 @@ export function FileButton() {
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
         options={user ? authenticatedOptions : unathenticatedOptions}
       />
-      <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} disabled={!projectChanged} variant={"contained"} onClick={handleSaveNow} text={projectChanged ? "Save" : "Saved"} />
-
+      <SaveButton/>
     </HorizontalButtons>
   );
 }

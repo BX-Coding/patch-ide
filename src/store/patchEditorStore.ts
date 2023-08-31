@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
 import { DOMElement } from 'react'
+import { DocumentData, DocumentReference } from 'firebase/firestore'
 
 export enum EditorTab {
     CODE = "code",
@@ -35,6 +36,10 @@ export interface PatchEditorState {
     modalSelectorType: ModalSelectorType,
     modalSelectorOpen: boolean,
 
+    isNewProject: boolean,
+    projectName: string,
+    projectReference: DocumentReference<DocumentData, DocumentData> | null,
+
     patchVM: any,
     patchStage: Stage,
 
@@ -53,6 +58,11 @@ export interface PatchEditorState {
 
     setPatchVM: any,
     setPatchStage: (stage: Stage) => void,
+    
+    setNewProject: (isNew: boolean) => void,
+    setProjectName: (name: string) => void,
+
+    setProjectReference: (ref: DocumentReference<DocumentData, DocumentData>) => void,
 }
 
 export const createPatchEditorSlice: StateCreator<
@@ -76,6 +86,11 @@ export const createPatchEditorSlice: StateCreator<
         height: 400,
         width: 600,
     },
+    isNewProject: false,
+    projectName: "",
+    projectReference: null,
+
+
     // Actions
     setTargetIds: (ids: string[]) => set({ targetIds: ids }),
     setEditingTargetId: (id: string) => set({ editingTargetId: id }),
@@ -91,4 +106,9 @@ export const createPatchEditorSlice: StateCreator<
 
     setPatchVM: (vm: any) => set({ patchVM: vm }),
     setPatchStage: (stage: Stage) => set({ patchStage: stage }),
+    
+    setNewProject: (isNew: boolean) => set({ isNewProject: isNew }),
+    setProjectName: (name: string) => set({ projectName: name }),
+
+    setProjectReference: (ref: DocumentReference<DocumentData, DocumentData>) => set({ projectReference: ref }),
 })

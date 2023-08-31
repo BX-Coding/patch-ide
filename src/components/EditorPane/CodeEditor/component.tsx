@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import SplitPane, { Pane } from 'react-split-pane-next';
 import usePatchStore from '../../../store';
 import { ThreadBar } from './ThreadBar';
@@ -20,9 +20,9 @@ export const CodeEditor = () => {
             marginBottom: "0px",
             padding: "8px",
         }}>
-            <HorizontalButtons sx={{borderBottomWidth: "1px", borderBottomColor: "divider", borderBottomStyle: "solid", marginLeft: "-7px", marginRight: "-12px", marginTop: "-12px", padding: "2px", paddingTop: "8px", paddingBottom: "8px", width: "calc(100% + 18px)"}}>
+            <HorizontalButtons sx={{borderBottomWidth: "1px", borderBottomColor: "divider", borderBottomStyle: "solid", marginLeft: "-8px", marginRight: "-12px", marginTop: "-12px", paddingTop: "8px", paddingBottom: "6px", width: "calc(100% + 18px)"}}>
                 {threads.map((thread, i) =>
-                    <TextButton variant={thread.thread.id === currentThreadId ? "contained" : "outlined"} onClick={() => { setCurrentThreadId(thread.thread.id); }} text={thread.thread.displayName} />
+                    <Button variant={thread.thread.id === currentThreadId ? "contained" : "outlined"} onClick={() => { setCurrentThreadId(thread.thread.id); }}>{thread.thread.displayName}</Button>
                 )}
             </HorizontalButtons>
             {threads.map((threadState, i) => {
