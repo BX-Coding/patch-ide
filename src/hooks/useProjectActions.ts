@@ -77,7 +77,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         if (userMetaSnapshot.exists()) {
             console.warn("User meta exists. Updating.");
             const userMeta = userMetaSnapshot.data();
-            userMeta.projects.push({ name: projectName, id: projectId });
+            userMeta.projects.push({ name: projectName || "Untitled", id: projectId });
             await updateDoc(userMetaReference, userMeta);
         } else {
             console.warn("User meta does not exist. Exiting.");

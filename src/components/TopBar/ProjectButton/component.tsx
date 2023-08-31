@@ -2,10 +2,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
 import React from "react";
 import { User } from "firebase/auth";
-import { Box, Button, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { useUser } from "../../../hooks/useUser";
 import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import { TextButton } from "../../PatchButton";
+import { toast } from "react-toastify";
 
 type ProjectGridProps = {
     onSelect: (projectId: string) => void
@@ -16,8 +17,11 @@ const ProjectGrid = ({ onSelect } : ProjectGridProps) => {
     const projectId = useReadLocalStorage("patchProjectId");
 
     let untitledIndex = 0;
-    if (userLoading) return <div>Loading...</div>;
-    if (userError) return <div>{userError.message}</div>;
+    if (userLoading) return <CircularProgress />;
+    if (userError) {
+        toast.error("Error loading projects");
+        return <></>;
+    }
 
     return <Grid container spacing={2}>
         {userMeta?.projects.map(project => <Grid item xs={3} key={project.id}>

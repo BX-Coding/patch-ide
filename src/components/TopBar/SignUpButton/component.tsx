@@ -10,20 +10,21 @@ import { TextButton } from '../../PatchButton';
 import { Checkbox, FormControlLabel, Grid, Typography } from '@mui/material';
 import { usePasswordValidator } from './usePasswordValidator';
 import { toast } from 'react-toastify';
-import { auth } from '../../../lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../../../lib/firebase';
+import { User, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getAuthErrorMessage } from '../../../util/firebase-auth-errors';
+import { setDoc, doc } from 'firebase/firestore';
+import { useLocalStorage } from 'usehooks-ts';
 
-export function SignUpButton() {
+export const SignUpButton = () => {
   const { validatePassword } = usePasswordValidator();
+  const [projectId, setProjectId] = useLocalStorage("patchProjectId", "new");
 
   const [open, setOpen] = React.useState(false);
 
-  const [firstName, setFirstName] = React.useState<string>('');
-  const [lastName, setLastName] = React.useState<string>('');
+  const [username, setUsername] = React.useState<string>('');
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
-
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -33,9 +34,21 @@ export function SignUpButton() {
     setOpen(false);
   };
 
+  const onUserSignUp = (user: User) => {
+    const uid = user.uid;
+    const reference = doc(db, "users", uid);
+    const data = {
+      projects: [],
+      username: username,
+    };
+    const response = setDoc(reference, data, {merge: true, mergeFields: ["projects"]});
+    setProjectId("new");
+    console.warn(response);
+  }
+
   const handleSignUp = () => {
     // Throw Error if name is not valid
-    if (firstName.length < 1 || lastName.length < 1) {
+    if (username.length < 1) {
       toast.error("Please enter a valid first and last name");
       return;
     }
@@ -57,6 +70,7 @@ export function SignUpButton() {
         // Signed in 
         const user = userCredential.user;
         toast.success("Signed up successfully!");
+        onUserSignUp(user);
         setOpen(false);
       })
       .catch((error) => {
@@ -88,31 +102,17 @@ export function SignUpButton() {
                 borderTopStyle: "none",
             }}>
           <Grid container spacing={2} sx={{marginTop: 0.1}}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                type="text"
-                autoFocus
-                onChange={(event) => setFirstName(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
+                id="useranme"
+                label="Username"
+                name="useranme"
                 type="text"
                 autoComplete="lname"
-                onChange={(event) => setLastName(event.target.value)}
+                onChange={(event) => setUsername(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>

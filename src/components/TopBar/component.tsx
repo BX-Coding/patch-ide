@@ -49,7 +49,6 @@ export function TopBar({ mode, setMode }: TopBarProps) {
             {user && <SignOutButton />}
             {!user && <SignInButton />}
             {!user && <SignUpButton />}
-            <ThemeButton mode={mode} setMode={setMode} />
           </HorizontalButtons>
         </Grid>
       </Grid>
