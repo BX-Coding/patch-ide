@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
 import { Asset, Project, VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
-// @ts-ignore
-import defaultPatchProject from '../assets/defaultProject.ptch1';
+import defaultPatchProject from '../assets/default-project.json';
 import { useLocalStorage } from 'usehooks-ts';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -57,7 +56,8 @@ export const useProjectActions = (defaultProjectId?: string) => {
         if (!projectSnapshot.exists() || loadFailed) {
             console.warn("Project does not exist. Creating default project.");
             setNewProject(true);
-            await loadSerializedProject(defaultPatchProject, false);
+            const vmStateJson = defaultPatchProject as unknown;
+            await loadSerializedProject(vmStateJson as VmState, true);
         }
 
         setProjectLoading(false);

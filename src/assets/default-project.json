@@ -1,0 +1,71 @@
+{
+    "vmstate": {
+      "targets": [
+        {
+          "name": "Stage",
+          "tags": [],
+          "isStage": true,
+          "variables": {},
+          "costumes": [
+            {
+              "name": "Arctic",
+              "assetId": "67e0db3305b3c8bac3a363b1c428892e",
+              "bitmapResolution": 2,
+              "dataFormat": "png",
+              "md5ext": "67e0db3305b3c8bac3a363b1c428892e.png",
+              "rotationCenterX": 480,
+              "rotationCenterY": 360
+            }
+          ],
+          "sounds": [],
+          "blocks": {}
+        },
+        {
+          "isStage": false,
+          "name": "Patch the Penguin",
+          "variables": {},
+          "lists": {},
+          "broadcasts": {},
+          "blocks": {},
+          "comments": {},
+          "currentCostume": 0,
+          "costumes": [
+            {
+              "name": "patch-a",
+              "bitmapResolution": 1,
+              "dataFormat": "svg",
+              "assetId": "1043567ec098626025aa6d776ffd947c",
+              "md5ext": "1043567ec098626025aa6d776ffd947c.svg",
+              "rotationCenterX": 48,
+              "rotationCenterY": 50
+            }
+          ],
+          "sounds": [],
+          "volume": 100,
+          "layerOrder": 1,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "size": 100,
+          "direction": 90,
+          "draggable": false,
+          "rotationStyle": "all around",
+          "threads": [
+            {
+              "script": "while True:\n  changeGraphicEffectBy('color', 25)",
+              "triggerEventId": "event_whenflagclicked",
+              "triggerEventOption": ""
+            }
+          ]
+        }
+      ],
+      "extensions": [],
+      "globalVariables": [],
+      "meta": {
+        "semver": "3.0.0",
+        "vm": "1.1.8",
+        "agent": ""
+      }
+    },
+    "globalVariables": []
+  }
