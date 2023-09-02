@@ -83,3 +83,5 @@ Patch is built on top of the following amazing open-source projects:
 - [Scratch VM](https://github.com/scratchfoundation/scratch-vm)
 - [CodeMirror](https://codemirror.net/)
 - [Material UI](https://mui.com/)
+
+While our implementations are different, there is another amazing open-source project named Pytch tackling the same problem! Go check them out [here](https://www.pytch.org/app/)
