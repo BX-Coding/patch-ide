@@ -195,7 +195,7 @@ const ProjectControls = () => {
 
   return (
     <HorizontalButtons>
-      <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://bx-coding.github.io/pyatch-react-ide/'}} variant="contained" />
+      <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://github.com/BX-Coding/patch-ide'}} variant="contained" />
       <DropdownMenu 
         type="text"
         text="File"
