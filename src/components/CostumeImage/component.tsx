@@ -7,6 +7,13 @@ type CostumeImageProps = {
     className: string,
 }
 
-export const CostumeImage = ({ costume, className }: CostumeImageProps) => {
-    return <img src={getCostumeUrl(costume.asset)} className={className} />
+export const CostumeImage = ({ costume }: CostumeImageProps) => {
+    return <div style={{
+        backgroundImage: `url(${getCostumeUrl(costume.asset)})`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        width: "100%",
+        height: "100%",
+    }} className={"imageContainer"} />
 }

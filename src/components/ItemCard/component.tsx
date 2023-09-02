@@ -15,14 +15,23 @@ type ItemCardProps = {
 export function ItemCard({ title, selected, onClick, actionButtons, width, height, children }: ItemCardProps) {
     return (
     <Box onClick={() => { onClick(title) }} sx={boxStyle(selected, height, width)}>
-        {children}
-        <Grid container direction="row">
-            <Typography sx={typographyStyle}>{title}</Typography>
-            {actionButtons ? (actionButtons.map((button, i) => {
-                return (
-                    <Grid item>{button}</Grid>
-                );
-            })) : null}
+        <Grid container justifyContent="space-between" direction="column" sx={{height}}>
+            <Grid item xs={8}>
+                <div style={{
+                    width: "100%",
+                    height: "100%",
+                }}>
+                {children}
+                </div>
+            </Grid>
+            <Grid container item xs={1} direction="row">
+                <Typography sx={typographyStyle}>{title}</Typography>
+                {actionButtons ? (actionButtons.map((button, i) => {
+                    return (
+                        <Grid item>{button}</Grid>
+                    );
+                })) : null}
+            </Grid>
         </Grid>
     </Box>
     );
