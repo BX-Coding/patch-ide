@@ -12,6 +12,7 @@ export enum EditorTab {
 
 export enum ModalSelectorType {
     SPRITE = "sprite",
+    BACKDROP = "backdrop",
     COSTUME = "costume",
     SOUND = "sound",
 }

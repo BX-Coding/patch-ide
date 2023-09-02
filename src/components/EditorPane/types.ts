@@ -107,6 +107,7 @@ export interface Target extends EventEmitter {
 
     getThread: (id: string) => Thread,
     addThread: (id: string, trigger: string, script: string) => Promise<string>,
+    isSprite: () => boolean,
     
     getCurrentCostume: () => Costume,
     getCostumeIndexByName: (name: string) => number,
