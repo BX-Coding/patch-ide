@@ -4,9 +4,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { DarkMode } from '@mui/icons-material';
+import BiotechIcon from '@mui/icons-material/Biotech';
+
 
 import { HorizontalButtons, TextButton, IconButton } from '../PatchButton';
-import { DarkMode } from '@mui/icons-material';
 import usePatchStore from '../../store';
 import { usePatchSerialization } from '../../hooks/usePatchSerialization';
 import { DropdownMenu } from '../DropdownMenu';
@@ -18,43 +20,10 @@ import { SignOutButton } from './SignOutButton';
 import { useProjectActions } from '../../hooks/useProjectActions';
 import { useLocalStorage } from 'usehooks-ts';
 import { ProjectButton } from './ProjectButton';
-
-type TopBarProps = {
-  mode: string,
-  setMode: (mode: string) => void,
-}
-
-export function TopBar({ mode, setMode }: TopBarProps) {
-  const [user, loading, error] = useAuthState(auth);
-
-  return (
-    <Grid container item direction="row" sx={{
-      width: "100vw",
-      padding: "8px",
-      maxHeight: "56px",
-      backgroundColor: 'primary.dark',
-    }}>
-      <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
-        <Grid item>
-          <ProjectControls />
-        </Grid>
-        <Grid item xs={6}>
-          <FileName />
-        </Grid>
-      </Grid>
-      <Grid container item xs={4} justifyContent="flex-end">
-        <Grid item>
-          <HorizontalButtons>
-            {user && <ProjectButton />}
-            {user && <SignOutButton />}
-            {!user && <SignInButton />}
-            {!user && <SignUpButton />}
-          </HorizontalButtons>
-        </Grid>
-      </Grid>
-    </Grid>
-  );
-}
+import { useUser } from '../../hooks/useUser';
+import { UserRole } from '../../types/userMeta';
+import { Avatar, Button, Tooltip } from '@mui/material';
+import { FeatureWrapper } from '../FeatureWrapper';
 
 type ThemeButtonProps = {
   mode: string,
@@ -120,26 +89,28 @@ const SaveButton = () => {
   );
 }
 
-const ProjectControls = () => {
+type ProjectControlsProps = {
+  cloudEnabled: boolean,
+}
+
+const ProjectControls = ({ cloudEnabled }: ProjectControlsProps) => {
   const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const isNewProject = usePatchStore((state) => state.isNewProject);
   const projectName = usePatchStore((state) => state.projectName);
 
   const { downloadProject, loadSerializedProject } = usePatchSerialization();
   const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
-  const [user] = useAuthState(auth);
   const { saveProject } = useProjectActions();
 
   const handleSaveNow = async () => {
     await saveAllThreads();
-    if (user) {
+    if (cloudEnabled) {
       saveProject(projectName);
     }
   };
 
   const handleSaveCopy = async () => {
     await saveAllThreads();
-    if (user) {
+    if (cloudEnabled) {
       saveProject(projectName);
     }
   }
@@ -200,9 +171,85 @@ const ProjectControls = () => {
         type="text"
         text="File"
         sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
-        options={user ? authenticatedOptions : unathenticatedOptions}
+        options={cloudEnabled ? authenticatedOptions : unathenticatedOptions}
       />
       <SaveButton/>
     </HorizontalButtons>
+  );
+}
+
+type BetaInfoIconProps = {
+  isBetaUser: boolean,
+}
+
+function BetaInfoIcon({ isBetaUser }: BetaInfoIconProps) {
+  const PATCH_DISCORD_LINK = process.env.REACT_APP_PATCH_DISCORD_LINK || "";
+  return (
+    <Button sx={{
+      backgroundColor: isBetaUser ? "success.main" : "error.main",
+      borderRadius: "100px",  
+      height: "40px",
+      width: "40px",
+      ":hover": {
+        backgroundColor: isBetaUser ? "success.dark" : "error.dark",
+      },
+    }}
+    onClick={() => {
+      if (!isBetaUser) {
+        window.open(PATCH_DISCORD_LINK, "_blank");
+      }
+    }}>
+        <BiotechIcon sx={{
+            color: "white",
+          }}/>
+    </Button>
+  );
+}
+
+type TopBarProps = {
+  mode: string,
+  setMode: (mode: string) => void,
+}
+
+export function TopBar({ mode, setMode }: TopBarProps) {
+  const {user, userMeta, loading, error} = useUser();
+
+  const nonBetaTesterTip = "You are not currently a beta tester.";
+  const fullBetaExplainer = nonBetaTesterTip + " Click here to join the Patch Discord and become a beta tester."
+
+  const loggedIn = !!user;
+  const isBetaUser = loggedIn && (userMeta?.role === UserRole.BETA_TESTER || userMeta?.role === UserRole.ADMIN);
+
+  return (
+    <Grid container item direction="row" sx={{
+      width: "100vw",
+      padding: "8px",
+      maxHeight: "56px",
+      backgroundColor: 'primary.dark',
+    }}>
+      <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
+        <Grid item>
+          <ProjectControls cloudEnabled={isBetaUser} />
+        </Grid>
+        <Grid item xs={6}>
+          <FileName />
+        </Grid>
+      </Grid>
+      <Grid container item xs={4} justifyContent="flex-end">
+        <Grid item>
+          <HorizontalButtons>
+            { loggedIn && <FeatureWrapper show={!isBetaUser} message={fullBetaExplainer}>
+              <BetaInfoIcon isBetaUser={isBetaUser}/>
+            </FeatureWrapper>}
+            { loggedIn && <FeatureWrapper show={!isBetaUser} message={nonBetaTesterTip}>
+              <ProjectButton disabled={!isBetaUser} />
+            </FeatureWrapper>}
+            {loggedIn && <SignOutButton />}
+            {!loggedIn && <SignInButton />}
+            {!loggedIn && <SignUpButton />}
+          </HorizontalButtons>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }
