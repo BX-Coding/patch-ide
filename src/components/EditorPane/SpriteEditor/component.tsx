@@ -26,9 +26,15 @@ export function SpriteEditor() {
 function AddCostumeButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
     const { handleUploadCostume } = useCostumeHandlers();
+    const [ editingTarget ]  = useEditingTarget();
 
     const handleBuiltIn = () => {
-        showModalSelector(ModalSelectorType.COSTUME);
+        if (!editingTarget) return;
+        if (editingTarget.isSprite()) {
+            showModalSelector(ModalSelectorType.COSTUME);
+        } else {
+            showModalSelector(ModalSelectorType.BACKDROP);
+        }
     }
 
     const handleFromUpload = () => {

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { sprites } from '../../assets/sprites';
 import { sounds }  from '../../assets/sounds';
+import { backdrops } from '../../assets/backdrops';
 import { Typography, Box, Grid } from '@mui/material';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore, { ModalSelectorType } from '../../store';
@@ -27,7 +28,7 @@ export const ModalSelector = () => {
         if (modalSelectorType === ModalSelectorType.SPRITE) {
             const sprite = asset as SpriteJson;
             onAddSprite(sprite);
-        } else if (modalSelectorType === ModalSelectorType.COSTUME) {
+        } else if (modalSelectorType === ModalSelectorType.COSTUME || modalSelectorType === ModalSelectorType.BACKDROP) {
             const sprite = asset as SpriteJson;
             handleAddCostumesToEditingTarget(sprite.costumes, true);
         } else if (modalSelectorType === ModalSelectorType.SOUND) {
@@ -37,7 +38,14 @@ export const ModalSelector = () => {
         hideModalSelector();
     }
 
-    const internalAssets = modalSelectorType === ModalSelectorType.SOUND ? sounds : sprites;
+    let internalAssets: SpriteJson[] | SoundJson[] = sprites;
+    if (modalSelectorType === ModalSelectorType.COSTUME) {
+        internalAssets = sprites.filter((sprite) => sprite.costumes.length > 1);
+    } else if (modalSelectorType === ModalSelectorType.BACKDROP) {
+        internalAssets = backdrops;
+    } else if (modalSelectorType === ModalSelectorType.SOUND) {
+        internalAssets = sounds;
+    }
 
     return (
         <Box className="costumeSelectorHolder" sx={{ display: modalSelectorOpen ? "block" : "none", backgroundColor: 'panel.dark' }}>
