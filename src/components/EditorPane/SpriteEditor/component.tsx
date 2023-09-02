@@ -11,18 +11,6 @@ import { DropdownMenu } from '../../DropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
 import { useCostumeHandlers } from '../../../hooks/useCostumeUploadHandlers';
 
-
-export function SpriteEditor() {
-    return (
-        <Grid container>
-            <Grid item xs={12}>
-                <SpriteInspector />
-            </Grid>
-        </Grid>
-    );
-}
-
-
 function AddCostumeButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
     const { handleUploadCostume } = useCostumeHandlers();
@@ -70,7 +58,7 @@ function SpriteDetails({ costumeIndex, costumes, width, height }: SpriteDetailsP
     );
 }
 
-function SpriteInspector() {
+export const SpriteEditor = () => {
     const setSelectedCostumeIndex = usePatchStore((state) => state.setSelectedCostumeIndex);
     const selectedCostumeIndex = usePatchStore((state) => state.selectedCostumeIndex);
     const setCostumes = usePatchStore((state) => state.setCostumes);
@@ -96,52 +84,56 @@ function SpriteInspector() {
     }
 
     return (
-        <Grid container direction="column" className="assetHolder" sx={{
-            backgroundColor: 'panel.main',
-            minHeight: "calc(100% + 40px)",
-            marginBottom: "0px"
-        }}>
-            <Grid item xs>
-                <HorizontalButtons sx={{
-                    marginLeft: "4px",
-                    marginTop: "4px"
+        <Grid container>
+            <Grid item xs={12}>
+                <Grid container direction="column" className="assetHolder" sx={{
+                    backgroundColor: 'panel.main',
+                    minHeight: "calc(100% + 40px)",
+                    marginBottom: "0px"
                 }}>
-                    <Grid item><AddCostumeButton /></Grid>
-                    <Grid item><DeleteButton disabled={costumes.length === 1} red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} /></Grid>
-                </HorizontalButtons>
-            </Grid>
-            <Grid item xs>
-                <SpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={selectedCostumeIndex} costumes={costumes} />
-            </Grid>
-            <Grid item xs sx={{
-                borderTopWidth: "1px",
-                borderTopStyle: "solid",
-                borderTopColor: 'divider',
-            }}>
-                <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
-                    <Grid container direction="row" spacing={1} sx={{
-                        margin: "0px",
-                        backgroundColor: 'panel.main',
-                        padding: "4px",
-                        width: "100%",
-                        minHeight: "100%"
-                    }}>
-                        {costumes.map((costume, i) =>
-                            <Grid item key={i}>
-                                <ItemCard
-                                    title={costume.name}
-                                    selected={i === selectedCostumeIndex}
-                                    onClick={handleClick}
-                                    key={costume.name}
-                                    width={120}
-                                    height={120}
-                                >
-                                    <CostumeImage costume={costume} className="costumeCardImage"/>
-                                </ItemCard>
-                            </Grid>
-                        )}
+                    <Grid item xs>
+                        <HorizontalButtons sx={{
+                            marginLeft: "4px",
+                            marginTop: "4px"
+                        }}>
+                            <Grid item><AddCostumeButton /></Grid>
+                            <Grid item><DeleteButton disabled={costumes.length === 1} red={true} variant={"contained"} onClick={handleDeleteCurrentClick} onClickArgs={[]} /></Grid>
+                        </HorizontalButtons>
                     </Grid>
-                </Box>
+                    <Grid item xs>
+                        <SpriteDetails width={"100%"} height={"calc(100vh - 460px)"} costumeIndex={selectedCostumeIndex} costumes={costumes} />
+                    </Grid>
+                    <Grid item xs sx={{
+                        borderTopWidth: "1px",
+                        borderTopStyle: "solid",
+                        borderTopColor: 'divider',
+                    }}>
+                        <Box sx={{ overflowY: "auto", height: "280px", position: 'relative', bottom: 0 }}>
+                            <Grid container direction="row" spacing={1} sx={{
+                                margin: "0px",
+                                backgroundColor: 'panel.main',
+                                padding: "4px",
+                                width: "100%",
+                                minHeight: "100%"
+                            }}>
+                                {costumes.map((costume, i) =>
+                                    <Grid item key={i}>
+                                        <ItemCard
+                                            title={costume.name}
+                                            selected={i === selectedCostumeIndex}
+                                            onClick={handleClick}
+                                            key={costume.name}
+                                            width={120}
+                                            height={120}
+                                        >
+                                            <CostumeImage costume={costume} className="costumeCardImage"/>
+                                        </ItemCard>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     );
