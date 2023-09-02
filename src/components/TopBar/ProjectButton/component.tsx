@@ -2,7 +2,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
 import React from "react";
 import { User } from "firebase/auth";
-import { Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Grid } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, Tooltip } from "@mui/material";
 import { useUser } from "../../../hooks/useUser";
 import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import { TextButton } from "../../PatchButton";
@@ -30,7 +30,11 @@ const ProjectGrid = ({ onSelect } : ProjectGridProps) => {
     </Grid>
 }
 
-export const ProjectButton = () => {
+type ProjectButtonProps = {
+    disabled?: boolean
+}
+
+export const ProjectButton = ({ disabled }: ProjectButtonProps) => {
     const [open, setOpen] = React.useState(false);
     const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
 
@@ -49,7 +53,8 @@ export const ProjectButton = () => {
     }
 
     return (<>
-        <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" />
+    
+        <TextButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} variant="contained" onClick={handleClick} text="Projects" disabled={disabled} />
         <Dialog 
             open={open} 
             onClose={handleClose}

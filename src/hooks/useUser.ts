@@ -14,10 +14,8 @@ type UseUserReturn = {
 
 export const useUser = (): UseUserReturn => {
     const [user, userLoading, userError] = useAuthState(auth);
-    if (!user) {
-        return {user: null, userMeta: null, loading: userLoading, error: userError};
-    }
-    const userReference = doc(db, 'users', user.uid);
+    const userReference = user ? doc(db, 'users', user.uid) : null;
     const [data, loading, error] = useDocumentDataOnce(userReference);
-    return { user, userMeta: data as UserMeta, loading, error };
+    
+    return { user: user ?? null, userMeta: data as UserMeta, loading, error };
 }
