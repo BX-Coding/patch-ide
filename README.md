@@ -17,6 +17,7 @@ Steps to Joining the Beta:
 1. Create an account in [Patch](https://codepatch.org/)
 2. Join our [Discord server](https://discord.gg/c9WS6vuKUM)
 3. Fill out the [Beta Test Registration Form](https://forms.gle/dhfJ7WaBM4udncc58)
+4. We will update your Patch & Discord roles!
 
 # Contextualization
 
