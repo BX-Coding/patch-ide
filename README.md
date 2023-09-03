@@ -6,6 +6,18 @@
 
 [Patch](https://codepatch.org/) is a free and open-source online coding environment built to help Scratchers transition their skills to Python.
 
+# Want to join?
+
+[Join our Discord server!](https://discord.gg/c9WS6vuKUM) We welcome all collaborators!
+
+## Become a Beta Tester!
+We are looking for Beta testers to help test, improve, and suggest features for Patch. Beta testers are also able to save their projects to the cloud.
+
+Steps to Joining the Beta:
+1. Join [Patch](https://codepatch.org/)
+2. Join our [Discord server](https://discord.gg/c9WS6vuKUM)
+3. Fill out the [Beta Test Registration Form](https://forms.gle/dhfJ7WaBM4udncc58)
+
 # Contextualization
 
 ## The Problem
@@ -71,10 +83,6 @@ Development is currently being managed by [BX Coding](https://bxcoding.org). The
 - [Duncan Johnson](https://github.com/DuncanAJohnson)
 - [Benjamin Montgomery](https://github.com/benmontycomputer)
 - [Ava Wandersleben](https://github.com/Snoopy219)
-
-# Want to join?
-
-[Join our Discord server!](https://discord.gg/c9WS6vuKUM) We welcome all collaborators!
 
 # Acknowledgments
 
