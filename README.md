@@ -14,7 +14,7 @@
 We are looking for Beta testers to help test, improve, and suggest features for Patch. Beta testers are also able to save their projects to the cloud.
 
 Steps to Joining the Beta:
-1. Join [Patch](https://codepatch.org/)
+1. Create an account in [Patch](https://codepatch.org/)
 2. Join our [Discord server](https://discord.gg/c9WS6vuKUM)
 3. Fill out the [Beta Test Registration Form](https://forms.gle/dhfJ7WaBM4udncc58)
 
