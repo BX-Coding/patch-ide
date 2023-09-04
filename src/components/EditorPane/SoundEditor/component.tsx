@@ -58,7 +58,7 @@ function SoundDetails({ width, height }: SoundDetailsProps) {
                 maxWidth: width,
                 maxHeight: height
             }}>
-                <img src={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"} width={"100%"} height={"100%"} />
+                <img src={"https://cdn-icons-png.flaticon.com/512/3601/3601680.png"} width={"auto"} height={"100%"} />
             </Grid>
         </Grid>
     );
@@ -109,8 +109,8 @@ function SoundInspector() {
                     marginTop: "4px"
                 }}>
                     <AddSoundButton />
-                    <DeleteButton red={true} variant={"contained"} onClick={handleDeleteClick} onClickArgs={[]} />
-                    <IconButton icon={<PlayArrowIcon />} disabled={sounds[selectedSoundIndex].rate === 22050} onClick={handlePlayClick} />
+                    <DeleteButton red={true} variant={"contained"} onClick={handleDeleteClick} onClickArgs={[]} disabled={sounds.length < 1} />
+                    <IconButton icon={<PlayArrowIcon />} disabled={sounds.length < 1 || sounds[selectedSoundIndex]?.rate === 22050} onClick={handlePlayClick} />
                 </HorizontalButtons>
             </Grid>
             <Grid item xs>
