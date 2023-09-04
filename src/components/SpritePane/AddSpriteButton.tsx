@@ -10,7 +10,7 @@ import { useAssetFileSelector } from '../../hooks/useAssetFileSelector';
 export function AddSpriteButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
     const uploadSprite = useUploadSprite();
-    const openAssetFileSelector = useAssetFileSelector();
+    const openAssetFileSelector = useAssetFileSelector(['.png', '.svg', '.jpg', '.jpeg', '.bmp', '.gif']);
 
 
     const handleUpload = async () => {

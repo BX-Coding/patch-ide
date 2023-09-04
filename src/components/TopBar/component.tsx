@@ -24,6 +24,7 @@ import { useUser } from '../../hooks/useUser';
 import { UserRole } from '../../types/userMeta';
 import { Avatar, Button, Tooltip } from '@mui/material';
 import { FeatureWrapper } from '../FeatureWrapper';
+import { FileDropDown } from './FileDropDown';
 
 type ThemeButtonProps = {
   mode: string,
@@ -89,95 +90,6 @@ const SaveButton = () => {
   );
 }
 
-type ProjectControlsProps = {
-  cloudEnabled: boolean,
-}
-
-const ProjectControls = ({ cloudEnabled }: ProjectControlsProps) => {
-  const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
-  const projectName = usePatchStore((state) => state.projectName);
-
-  const { downloadProject, loadSerializedProject } = usePatchSerialization();
-  const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
-  const { saveProject } = useProjectActions();
-
-  const handleSaveNow = async () => {
-    await saveAllThreads();
-    if (cloudEnabled) {
-      saveProject(projectName);
-    }
-  };
-
-  const handleSaveCopy = async () => {
-    await saveAllThreads();
-    if (cloudEnabled) {
-      saveProject(projectName);
-    }
-  }
-
-  const handleNew = () => {
-    setProjectId("new");
-    location.reload();
-  }
-  const handleDownload = async () => {
-    await downloadProject();
-  };
-
-  const handleUpload = () => {
-    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-    var input = document.createElement('input');
-    input.type = 'file';
-
-    input.onchange = (e: Event) => {
-      // getting a hold of the file reference
-      const target = e.target as HTMLInputElement;
-      if (!target?.files) return;
-      var file = target?.files[0];
-
-      // setting up the reader
-      var reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-
-      // here we tell the reader what to do when it's done reading...
-      reader.onloadend = (readerEvent: ProgressEvent<FileReader>) => {
-        var content = readerEvent?.target?.result; // this is the content!
-        if (!content) return;
-        loadSerializedProject(content, false);
-      }
-    }
-
-    input.click();
-  }
-
-  const authenticatedOptions = [
-    { label: "New", onClick: handleNew},
-    { label: "Save Now", onClick: handleSaveNow},
-    { label: "Save As A Copy", onClick: handleSaveCopy},
-    { label: "Load From Your Computer", onClick: handleUpload},
-    { label: "Save To Your Computer", onClick: handleDownload},
-  ]
-
-  const unathenticatedOptions = [
-    { label: "New", onClick: handleNew},
-    { label: "Load From Your Computer", onClick: handleUpload},
-    { label: "Save To Your Computer", onClick: handleDownload},
-  ]
-
-
-  return (
-    <HorizontalButtons>
-      <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://github.com/BX-Coding/patch-ide'}} variant="contained" />
-      <DropdownMenu 
-        type="text"
-        text="File"
-        sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }}
-        options={cloudEnabled ? authenticatedOptions : unathenticatedOptions}
-      />
-      <SaveButton/>
-    </HorizontalButtons>
-  );
-}
-
 type BetaInfoIconProps = {
   isBetaUser: boolean,
 }
@@ -229,7 +141,11 @@ export function TopBar({ mode, setMode }: TopBarProps) {
     }}>
       <Grid container item direction="row" xs={8} spacing={2} className="patchTopBar">
         <Grid item>
-          <ProjectControls cloudEnabled={isBetaUser} />
+          <HorizontalButtons>
+              <IconButton sx={{ height: "40px", borderStyle: "solid", borderWidth: "1px", borderColor: "primary.light" }} icon={<GitHubIcon />} onClick={() => {window.location.href = 'https://github.com/BX-Coding/patch-ide'}} variant="contained" />
+              <FileDropDown cloudEnabled={isBetaUser}/>
+              <SaveButton/>
+          </HorizontalButtons>
         </Grid>
         <Grid item xs={6}>
           <FileName />

@@ -107,6 +107,11 @@ export const usePatchSerialization = () => {
           return false;
         }
     }
+
+    const convertScratch3ToPatch = async (scratch3Project: ArrayBuffer): Promise<ArrayBuffer> => {
+      const projectJson: ArrayBuffer = await patchVM.scratchToPatch(scratch3Project);
+      return projectJson;
+    }
     
-    return { downloadProject, loadSerializedProject, saveToLocalStorage, hasLocalStorageProject, loadFromLocalStorage };
+    return { downloadProject, loadSerializedProject, saveToLocalStorage, hasLocalStorageProject, loadFromLocalStorage, convertScratch3ToPatch };
 }

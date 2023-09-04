@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { useFilePicker } from "use-file-picker";
 
-export const useAssetFileSelector = () => {
+export const useAssetFileSelector = (extensions: string[]) => {
     const selectorResolveRef = useRef<(value: File | PromiseLike<File>) => void>();
     const selectorRejectRef = useRef<(reason?: any) => void>();
     const [openFileSelector] = useFilePicker({
-        accept: '.png, .svg, .jpg, .jpeg, .bmp, .gif',
+        accept: extensions.join(", "),
         multiple: false,
         readFilesContent: false,
         onFilesSelected: ({ plainFiles }) => {
