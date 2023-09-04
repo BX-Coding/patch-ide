@@ -63,6 +63,12 @@ export const useProjectActions = (defaultProjectId?: string) => {
         setProjectLoading(false);
     }
 
+    const loadLocalProject = async (projectBuffer: ArrayBuffer) => {
+        setProjectLoading(true);
+        await loadSerializedProject(projectBuffer, false);
+        setProjectLoading(false);
+    }
+
     const addProjectMeta = (uid: string, name: string, vmState: VmState) => {
         const projectObject = vmState as Project;
         projectObject.lastEdited = new Date();
@@ -149,5 +155,5 @@ export const useProjectActions = (defaultProjectId?: string) => {
     const saveProject = saveCloudProject;
     const loadProject = loadCloudProject;
 
-    return {loadProject, projectLoading: projectLoading ?? false, saveProject, projectSaving}
+    return {loadProject, projectLoading: projectLoading ?? false, saveProject, projectSaving, loadLocalProject}
 }
