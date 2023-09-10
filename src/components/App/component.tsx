@@ -1,6 +1,6 @@
 import React from 'react';
 import SpritePane from '../SpritePane';
-import { Grid } from '@mui/material';
+import { Button, Grid, Tooltip } from '@mui/material';
 import './style.css'
 import { TopBar } from '../TopBar';
 import { EditorPane, EditorTabButton } from '../EditorPane';
@@ -30,6 +30,7 @@ import { useProjectActions } from '../../hooks/useProjectActions';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { LegalDialogueButton } from './LegalDialogueButton';
 
 
 const App = () => {
@@ -80,6 +81,10 @@ const App = () => {
                 padding: "8px",
                 borderRightWidth: "1px",
                 borderColor: 'divider',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}>
                 <VerticalButtons>
                   <EditorTabButton tab={EditorTab.CODE} icon={<DataObjectIcon/>}/>
@@ -87,6 +92,7 @@ const App = () => {
                   <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon/>}/>
                   <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon/>}/>
                 </VerticalButtons>
+                <LegalDialogueButton/>
               </Grid>
               <Grid item xs>
                 <EditorPane />
