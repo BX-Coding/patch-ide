@@ -38,7 +38,7 @@ export const LegalDialogueButton = () => {
 
   return (
     <div>
-        <Tooltip title="Legal Disclaimers">
+        <Tooltip title="Legal">
             <Button onClick={handleClickOpen}><QuestionMarkIcon/></Button>
         </Tooltip>
         <Dialog open={open} onClose={handleClose}>
@@ -72,7 +72,7 @@ export const LegalDialogueButton = () => {
                         <Typography variant="h5" fontWeight="bold">CREATIVE COMMONS ATTRIBUTION</Typography>
                         <Typography fontWeight="bold">ShareAlike 2.0 Generic (CC BY-SA 2.0)</Typography>
                     </span>
-                    <Typography fontSize={14}>Patch is an adaptation of Scratch. Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See <a href='http://scratch.mit.edu'>http://scratch.mit.edu</a>.</Typography>
+                    <Typography fontSize={14}>Sounds and sprites, excluding Patch the Penguin, are licensed from Scratch under the CC BY-SA 2.0 license. Patch is an adaptation of Scratch. Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See <a href='http://scratch.mit.edu'>http://scratch.mit.edu</a>.</Typography>
                     <br/>
                     <br/>
                     <span ref={privacyRef}>
