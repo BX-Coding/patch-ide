@@ -2048,52 +2048,6 @@ export const sprites: SpriteJson[] = [
         "blocks": {}
     },
     {
-        "name": "Cat",
-        "tags": [
-            "animals",
-            "cat",
-            "kitten",
-            "kitty",
-            "mammal",
-            "orange",
-            "scratch cat"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "bcf454acf82e4504149f7ffe07081dbc",
-                "name": "cat-a",
-                "bitmapResolution": 1,
-                "md5ext": "bcf454acf82e4504149f7ffe07081dbc.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 48,
-                "rotationCenterY": 50
-            },
-            {
-                "assetId": "0fb9be3e8397c983338cb71dc84d0b25",
-                "name": "cat-b",
-                "bitmapResolution": 1,
-                "md5ext": "0fb9be3e8397c983338cb71dc84d0b25.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 46,
-                "rotationCenterY": 53
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83c36d806dc92327b9e7049a565c6bff",
-                "name": "Meow",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 37376,
-                "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
         "name": "Cat 2",
         "tags": [
             "cat",
@@ -5723,65 +5677,6 @@ export const sprites: SpriteJson[] = [
         "blocks": {}
     },
     {
-        "name": "Giga",
-        "tags": [
-            "fantasy",
-            "drawing"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "92161a11e851ecda94cbbb985018fed6",
-                "name": "giga-a",
-                "bitmapResolution": 1,
-                "md5ext": "92161a11e851ecda94cbbb985018fed6.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 72,
-                "rotationCenterY": 96
-            },
-            {
-                "assetId": "bc706a7648342aaacac9050378b40c43",
-                "name": "giga-b",
-                "bitmapResolution": 1,
-                "md5ext": "bc706a7648342aaacac9050378b40c43.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 72,
-                "rotationCenterY": 96
-            },
-            {
-                "assetId": "337b338b2b10176221e638ac537854e6",
-                "name": "giga-c",
-                "bitmapResolution": 1,
-                "md5ext": "337b338b2b10176221e638ac537854e6.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 73,
-                "rotationCenterY": 96
-            },
-            {
-                "assetId": "db15886cfdcb5e2f4459e9074e3990a1",
-                "name": "giga-d",
-                "bitmapResolution": 1,
-                "md5ext": "db15886cfdcb5e2f4459e9074e3990a1.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 73,
-                "rotationCenterY": 96
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
-                "name": "pop",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 1032,
-                "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
         "name": "Giga Walking",
         "tags": [
             "fantasy",
@@ -6110,58 +6005,6 @@ export const sprites: SpriteJson[] = [
                 "rate": 44100,
                 "sampleCount": 22494,
                 "md5ext": "b92de59d992a655c1b542223a784cda6.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
-        "name": "Gobo",
-        "tags": [
-            "fantasy",
-            "drawing",
-            "jenkins",
-            "ganglia"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "f505a4e9eab5e40e2669a4462dba4c90",
-                "name": "gobo-a",
-                "bitmapResolution": 1,
-                "md5ext": "f505a4e9eab5e40e2669a4462dba4c90.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 47,
-                "rotationCenterY": 55
-            },
-            {
-                "assetId": "5c0896569305ab177d87caa31aad2a72",
-                "name": "gobo-b",
-                "bitmapResolution": 1,
-                "md5ext": "5c0896569305ab177d87caa31aad2a72.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 47,
-                "rotationCenterY": 55
-            },
-            {
-                "assetId": "9d8021c216fb92cc708e1e96f3ed2b52",
-                "name": "gobo-c",
-                "bitmapResolution": 1,
-                "md5ext": "9d8021c216fb92cc708e1e96f3ed2b52.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 47,
-                "rotationCenterY": 55
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
-                "name": "pop",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 1032,
-                "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
             }
         ],
         "blocks": {}
@@ -9315,65 +9158,6 @@ export const sprites: SpriteJson[] = [
         "blocks": {}
     },
     {
-        "name": "Nano",
-        "tags": [
-            "fantasy",
-            "drawing"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "a62e560863c0e49b12e5d57e13d084f1",
-                "name": "nano-a",
-                "bitmapResolution": 1,
-                "md5ext": "a62e560863c0e49b12e5d57e13d084f1.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 61,
-                "rotationCenterY": 60
-            },
-            {
-                "assetId": "d12aead3e3c2917e7eba8b2b90a7afd2",
-                "name": "nano-b",
-                "bitmapResolution": 1,
-                "md5ext": "d12aead3e3c2917e7eba8b2b90a7afd2.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 61,
-                "rotationCenterY": 60
-            },
-            {
-                "assetId": "8f2f4a70e87262ef478ce60567b6208a",
-                "name": "nano-c",
-                "bitmapResolution": 1,
-                "md5ext": "8f2f4a70e87262ef478ce60567b6208a.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 61,
-                "rotationCenterY": 60
-            },
-            {
-                "assetId": "a4e2034751fa650fd5fd69432c110104",
-                "name": "nano-d",
-                "bitmapResolution": 1,
-                "md5ext": "a4e2034751fa650fd5fd69432c110104.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 61,
-                "rotationCenterY": 60
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
-                "name": "pop",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 1032,
-                "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
         "name": "Neigh Pony",
         "tags": [
             "animals",
@@ -10103,65 +9887,6 @@ export const sprites: SpriteJson[] = [
                 "rate": 22050,
                 "sampleCount": 6097,
                 "md5ext": "3b8236bbb288019d93ae38362e865972.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
-        "name": "Pico",
-        "tags": [
-            "fantasy",
-            "drawing"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "e7ce31db37f7abd2901499db2e9ad83a",
-                "name": "pico-a",
-                "bitmapResolution": 1,
-                "md5ext": "e7ce31db37f7abd2901499db2e9ad83a.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 55,
-                "rotationCenterY": 66
-            },
-            {
-                "assetId": "a7597b1f0c13455d335a3d4fe77da528",
-                "name": "pico-b",
-                "bitmapResolution": 1,
-                "md5ext": "a7597b1f0c13455d335a3d4fe77da528.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 55,
-                "rotationCenterY": 66
-            },
-            {
-                "assetId": "bcc0e8a5dda3a813608902b887c87bb4",
-                "name": "pico-c",
-                "bitmapResolution": 1,
-                "md5ext": "bcc0e8a5dda3a813608902b887c87bb4.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 55,
-                "rotationCenterY": 66
-            },
-            {
-                "assetId": "d6dfa2efe58939af4c85755feb3c0375",
-                "name": "pico-d",
-                "bitmapResolution": 1,
-                "md5ext": "d6dfa2efe58939af4c85755feb3c0375.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 55,
-                "rotationCenterY": 66
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
-                "name": "pop",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 1032,
-                "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
             }
         ],
         "blocks": {}
@@ -12904,65 +12629,6 @@ export const sprites: SpriteJson[] = [
                 "dataFormat": "png",
                 "rotationCenterX": 30,
                 "rotationCenterY": 30
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
-                "name": "pop",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 1032,
-                "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
-        "name": "Tera",
-        "tags": [
-            "fantasy",
-            "drawing"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "18f9a11ecdbd3ad8719beb176c484d41",
-                "name": "tera-a",
-                "bitmapResolution": 1,
-                "md5ext": "18f9a11ecdbd3ad8719beb176c484d41.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 49,
-                "rotationCenterY": 63
-            },
-            {
-                "assetId": "365d4de6c99d71f1370f7c5e636728af",
-                "name": "tera-b",
-                "bitmapResolution": 1,
-                "md5ext": "365d4de6c99d71f1370f7c5e636728af.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 49,
-                "rotationCenterY": 64
-            },
-            {
-                "assetId": "2daca5f43efc2d29fb089879448142e9",
-                "name": "tera-c",
-                "bitmapResolution": 1,
-                "md5ext": "2daca5f43efc2d29fb089879448142e9.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 49,
-                "rotationCenterY": 63
-            },
-            {
-                "assetId": "5456a723f3b35eaa946b974a59888793",
-                "name": "tera-d",
-                "bitmapResolution": 1,
-                "md5ext": "5456a723f3b35eaa946b974a59888793.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 49,
-                "rotationCenterY": 63
             }
         ],
         "sounds": [
