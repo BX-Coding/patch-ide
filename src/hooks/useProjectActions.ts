@@ -56,6 +56,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         if (!projectSnapshot.exists() || loadFailed) {
             console.warn("Project does not exist. Creating default project.");
             setNewProject(true);
+            // TODO: debug this when new project is loaded.
             const vmStateJson = defaultPatchProject as unknown;
             await loadSerializedProject(vmStateJson as VmState, true);
         }
