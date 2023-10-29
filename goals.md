@@ -1,4 +1,4 @@
-# Patch Project Problem Statement and Goals
+# Patch Project Goals
 Goal: Be the easiest way an educator can teach Python
 ## Problem Statements
 What problems does Patch solve?
