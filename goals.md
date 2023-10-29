@@ -1,22 +1,27 @@
 # Patch Project Goals
 Goal: Be the easiest way an educator can teach Python
 ## Problem Statements
-What problems does Patch solve?
+What problems currently exist in teaching text-based programming?
 ### Teaching text-based coding requires too high of technical skills from educators  
-**_For most teachers CS is not their first priority_**  
+**_For most teachers, CS is not their first priority_**  
 
-Suppose an educator wants--or more likely is told to--to start facilitating a Computer Science curriculum for a text-based programming language in their classroom. In that case, there are many hurdles they have to overcome even to start. To list a couple, they must find a way for all students to code on a technology-agnostic platform, they must educate themselves to the point of competency in text-based programming, they must create or find a curriculum aligned with their state standards, and they must manage a classroom where students receive enough support to reduce the challenge of starting text-based programming. It is an incredibly tall order for teachers who are likely already teaching multiple subjects.
+Suppose an educator wants--or more likely is told to--to start facilitating a Computer Science curriculum for a text-based programming language in their classroom. In that case, there are many hurdles they have to overcome even to start. 
+- The educator must find a way for all students to code on a technology-agnostic platform.
+- The educator must educate themselves to the point of competency in text-based programming
+- The educator must create or find a curriculum aligned with their state standards
+- The educator must manage a classroom where students receive enough support to reduce the challenge of starting text-based programming.
+
+It is an incredibly tall order for teachers who are likely already teaching multiple subjects.
 
 ### Text-based programming is not engaging enough for young learners
 **_Text-based programming is where creativity goes to die_**  
 
-Text-based programming as it stands right now, is not a creative medium for young novice programmers. There is an incredibly high knowledge barrier to creating interesting* graphical output with a text-based programming language. For example, in Scratch to create a teleporting rainbow cat, users need only to follow a couple of steps. First, they must recognize the function of four blocks. Then, they must drag these blocks out into the programming area and connect them in the correct order. Finally, they have to press the green flag button and they get a relatively engaging graphical output. In Python, an equivalent program made with Pygames would require typing around 60 lines of code and a strong grasp of the PyGames game engine. The amount of code that this requires can be intimidating and risks taking a learner's focus away from learning the component skills of programming.
-*more than just a standard turtle
+Text-based programming, as it stands right now, is not a creative medium for young novice programmers. There is an incredibly high knowledge barrier to creating interesting (non-turtle) graphical output with a text-based programming language. In Scratch, users only have to recognize the function of four blocks, drag these blocks and connect them in the correct order, and press the green flag button to see a relatively engaging graphical output. In Python, an equivalent program made with Pygames would require typing around 60 lines of code and a strong grasp of the PyGames game engine. The rigidity and vocabulary of Python, especially when creating graphical output, means that it's difficult to creatively explore in Python. 
 
 ### Programming environments do not have enough scaffolding for the complex tasks that programming require
 **_Text-based programming is hard!_**   
 
-Text-based programming is a complex task made up of numerous component skills. Conceptually, some of these skills are covered in computing education frameworks such as computational thinking. However, there are other extremely important component skills not directly related to computational thinking that come with text-based programming environments. Some examples of these are typing, error message parsing, or even knowing the vocabulary of a library. All of these present significant challenges to learners that, if not properly scaffolded.
+Text-based programming is a complex task that requires numerous component skills. There are conceptual skills such as problem decomposition and algorithmic design. There are practical skills such as typing, error message parsing, and even knowing the vocabulary of a library. All of these present significant challenges to learners that, if not properly scaffolded, can lead to frustration for students and educators.
 
 ## Strategies
 _**What strategies do Patch employ to address these issues?**_
@@ -35,15 +40,14 @@ _**What strategies do Patch employ to address these issues?**_
 - Learner agency focused
 - Multiple types of input
 - Cultivate learner ownership over work
-- Easy transition between block-based to text-based programming
+- Intuitive transition between block-based to text-based programming
 
 ### Text-based programming environments do not provide scaffolding for the complex tasks that programming require
-- Decrease the amount of typing required
+- Tinkerable -- facilitates trial and error
+- Opinionated autocomplete mitigates frustrating typing/spelling challenges
 - Intuitive error messages
 - Program execution feedback
 - AI to help scaffold component skills
-- Opinionated autocomplete
-- Tinkerable
 
 
 
