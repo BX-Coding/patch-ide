@@ -9,7 +9,7 @@ type ThreadState = {
 }
 
 export interface CodeEditorState {
-    threads: { [key: string]: ThreadState};
+    threads: { [key: string]: ThreadState };
     codeThreadId: string;
     nextThreadNumber: number;
 
@@ -50,11 +50,12 @@ export const createCodeEditorSlice: StateCreator<
             newState.codeThreadId = id;
             return newState;
         }
-    )},
+        )
+    },
     updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
     loadTargetThreads: (target: Target) => set((state) => {
-        const newThreads: { [key: string]: ThreadState} = {};
-        
+        const newThreads: { [key: string]: ThreadState } = {};
+
         let nextThreadNumber = state.nextThreadNumber;
 
         const keys = Object.keys(target.threads);
@@ -84,12 +85,12 @@ export const createCodeEditorSlice: StateCreator<
     }),
     saveTargetThreads: (target: Target) => {
         const editingThreadIds = Object.keys(target.threads);
-    
+
         editingThreadIds.forEach(threadId => {
-          get().saveThread(threadId);
+            get().saveThread(threadId);
         });
     },
-    saveAllThreads: async () => { 
+    saveAllThreads: async () => {
         const threads = get().threads;
         const savePromise = Object.keys(threads).map((id) => {
             return threads[id].thread.updateThreadScript(threads[id].text);
@@ -102,7 +103,8 @@ export const createCodeEditorSlice: StateCreator<
             });
             return { ...state, threads: newThreads };
         }
-        )},
+        )
+    },
     deleteThread: (id: string) => set((state) => {
         const newThreads = { ...state.threads };
         delete newThreads[id];
@@ -121,5 +123,5 @@ export const createCodeEditorSlice: StateCreator<
     setCodeThreadId: (id: string) => set((state) => {
         return { ...state, codeThreadId: id };
     }),
-    
+
 })
