@@ -10,6 +10,7 @@ import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import completions from '../../../../util/patch-autocompletions';
 import { Thread } from '../../types';
 import usePatchStore from '../../../../store';
+import warningLinter from '../../../../util/error-styling-listener';
 
 type PatchCodeMirrorProps = {
     thread: Thread,
@@ -26,11 +27,12 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
         setProjectChanged(true);
     }
 
+
     return (
         <CodeMirror
             value={getThread(thread.id).text}
             theme="dark"
-            extensions={[python(), autocompletion({override: [completions(patchVM)]}), pythonLinter(console.log, patchVM, thread.id), lintGutter(), indentationMarkers()]}
+            extensions={[python(), autocompletion({override: [completions(patchVM)]}), pythonLinter(console.log, patchVM, thread.id), lintGutter(), indentationMarkers(), warningLinter(patchVM, thread.id)]}
             onChange={handleCodeChange}
             height="calc(100vh - 209px)"
         />

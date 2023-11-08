@@ -1,5 +1,6 @@
 import { syntaxTree } from "@codemirror/language"
 import { Diagnostic, linter } from "@codemirror/lint"
+import { EditorView, ViewUpdate } from "@codemirror/view"
 
 let isSyntaxErrorFree = true;
 
@@ -31,13 +32,16 @@ const pythonLinter = (syntaxThreadCallback: (...props: any) => any, patchVM: any
         message: error.message,
       }
     });
-    
+
+
     // set diagnostics to runtime errors if there are remaining syntax errors
     if (runtimeErrorDiagnostics.length > 0 && !isSyntaxErrorFree) {
       diagnostics = runtimeErrorDiagnostics
+    } else {
+      diagnostics = diagnostics.concat(runtimeErrorDiagnostics)
     }
 
-    syntaxThreadCallback(isSyntaxErrorFree); 
+    syntaxThreadCallback(isSyntaxErrorFree);
 
     return diagnostics
   })
