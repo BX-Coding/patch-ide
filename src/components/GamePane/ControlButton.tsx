@@ -7,9 +7,11 @@ import usePatchStore from '../../store';
 export function StartButton() {
     const patchVM = usePatchStore((state) => state.patchVM);
     const saveAllThreads = usePatchStore((state) => state.saveAllThreads);
+    const clearRuntimeDiagnostics = usePatchStore((state) => state.clearRuntimeDiagnostics);
     const [ runButtonDisabled, setRunButtonDisabled ] = useState(false);
 
     const onFlagPressed = async () => {
+        clearRuntimeDiagnostics();
         await saveAllThreads();
         setRunButtonDisabled(true);
         await patchVM.greenFlag();
