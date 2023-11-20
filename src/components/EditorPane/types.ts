@@ -59,7 +59,7 @@ export interface Thread {
     running: boolean,
     displayName: string,
 
-    updateThreadScript: (script: string) => void,
+    updateThreadScript: (script: string) => Promise<void>,
     updateThreadTriggerEvent: (trigger: string) => void,
     updateThreadTriggerEventOption: (option: string) => void,
 }
@@ -140,3 +140,13 @@ export type Project = VmState & {
     lastEdited: Date,
     owner: string,
 }
+
+export type VmError = { 
+    threadId: string, 
+    message: string, 
+    lineNumber: number, 
+    type: VmErrorType,
+    fresh: boolean,
+}
+
+export type VmErrorType = "CompileTimeError" | "RuntimeError"

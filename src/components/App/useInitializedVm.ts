@@ -10,6 +10,7 @@ import ScratchSVGRenderer from 'scratch-svg-renderer';
 import usePatchStore from '../../store';
 import patchStorage from '../../lib/storage';
 import { storage } from '../../lib/firebase';
+import { VmError, VmErrorType } from '../EditorPane/types';
 
 
 const useInitializedVm = (onVmInitialized: () => void) => {
@@ -19,6 +20,17 @@ const useInitializedVm = (onVmInitialized: () => void) => {
     const setPatchVM = usePatchStore(state => state.setPatchVM);
     const setQuestionAsked = usePatchStore(state => state.setQuestionAsked);
     const setVmLoaded = usePatchStore(state => state.setVmLoaded);
+    const addDiagnostic = usePatchStore(state => state.addDiagnostic);
+
+    const handleRuntimeError = ({ threadId, message, lineNumber, type }:VmError) => {
+      addDiagnostic({
+        threadId,
+        message,
+        lineNumber,
+        type,
+        fresh: true,
+      })
+    }
 
     useEffect(() => {
         const asyncEffect = async () => {
@@ -40,6 +52,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
           });
           
           patchVM.runtime.on("QUESTION", onQuestionAsked);
+          patchVM.on("RUNTIME ERROR", handleRuntimeError)
           
           setPatchVM(patchVM);
         }
