@@ -79,30 +79,42 @@ export const ModalSelector = () => {
         <Box sx={{ height: "4px" }} />
         <Grid container justifyContent="center" spacing={0.5}>
           {internalAssets.map((asset, i) => (
-            <Grid item key={i}>
-              <ItemCard
-                title={""}
-                selected={false}
-                onClick={() => onClick(asset)}
-                width={84}
-                height={84}
-              >
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                  }}
+            <Grid
+              item
+              key={i}
+              sx={{
+                display:
+                  modalSelectorType === ModalSelectorType.SOUND &&
+                  (asset as SoundJson).dataFormat == "adpcm"
+                    ? "none"
+                    : "block",
+              }}
+            >
+              {
+                <ItemCard
+                  title={""}
+                  selected={false}
+                  onClick={() => onClick(asset)}
+                  width={84}
+                  height={84}
                 >
-                  {modalSelectorType === ModalSelectorType.SOUND ? (
-                    <VolumeUpIcon />
-                  ) : (
-                    <AssetImage sprite={asset as SpriteJson} />
-                  )}
-                  <Typography sx={{ fontSize: "12pt" }}>
-                    {asset.name}
-                  </Typography>
-                </div>
-              </ItemCard>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    {modalSelectorType === ModalSelectorType.SOUND ? (
+                      <VolumeUpIcon />
+                    ) : (
+                      <AssetImage sprite={asset as SpriteJson} />
+                    )}
+                    <Typography sx={{ fontSize: "12pt" }}>
+                      {asset.name}
+                    </Typography>
+                  </div>
+                </ItemCard>
+              }
             </Grid>
           ))}
         </Grid>
