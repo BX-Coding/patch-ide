@@ -37,17 +37,18 @@ export function SpriteName() {
         setName(editingTarget.sprite.name);
     }, [editingTarget]);
 
-    return(<Grid display="flex">
-        <HorizontalButtons sx={{marginBottom: '12px'}}>
-            <TextField 
+
+    return (<Grid display="flex">
+        <HorizontalButtons sx={{ marginBottom: '12px' }}>
+            <TextField
                 value={name}
                 onChange={onChange}
                 fullWidth
                 size="small"
                 disabled={targetIds[0] == editingTarget?.id}
-                sx={{minWidth: '532px'}}
+                sx={{ minWidth: '532px' }}
             />
-            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !patchVM.editingTarget.isSprite()} sx={{height: '40px'}} />
+            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !patchVM.editingTarget.isSprite()} sx={{ height: '40px' }} />
         </HorizontalButtons>
     </Grid>);
 }
