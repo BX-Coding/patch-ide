@@ -76,6 +76,7 @@ const SaveButton = () => {
   const { saveProject } = useProjectActions();
 
   const handleSaveNow = async () => {
+    console.log("Pressed save")
     await saveAllThreads();
     if (user) {
       saveProject(projectName);
