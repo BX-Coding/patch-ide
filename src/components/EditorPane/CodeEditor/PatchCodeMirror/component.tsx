@@ -19,14 +19,10 @@ type PatchCodeMirrorProps = {
 
 const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const lsRef = useRef<any>(null);
-
-  const [ls2, setLs] = useState<any>();
+  const [lspConnectionState, setLspConnectionState] = useState<any>();
 
   useEffect(() => {
-    const serverUri =
-      "ws://ec2-3-135-217-9.us-east-2.compute.amazonaws.com:8000";
-
+    const serverUri = `ws://${process.env.LSP_SERVER_URL}:${process.env.LSP_SERVER_PORT}` as `ws://${string}` | `wss://${string}`;
     wsRef.current = new WebSocket(serverUri);
 
     const ls = languageServer({
@@ -37,10 +33,10 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
       workspaceFolders: null,
     });
 
-    setLs(ls);
+    setLspConnectionState(ls);
   }, []);
 
-  const patchVM = usePatchStore((state) => state.patchVM);
+  // const patchVM = usePatchStore((state) => state.patchVM);
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
@@ -61,7 +57,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
         theme="dark"
         extensions={[
           python(),
-          ls2,
+          lspConnectionState,
           // autocompletion({ override: [completions(patchVM)],}),
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
