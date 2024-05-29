@@ -18,8 +18,17 @@ type PatchCodeMirrorProps = {
 };
 
 const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
+  // New LSP server state and refs
   const wsRef = useRef<WebSocket | null>(null);
   const [lspConnectionState, setLspConnectionState] = useState<any>();
+
+  // const patchVM = usePatchStore((state) => state.patchVM);
+  const getThread = usePatchStore((state) => state.getThread);
+  const updateThread = usePatchStore((state) => state.updateThread);
+  const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+  const { getDiagnostics, invalidateDiagnostics } = useRuntimeDiagnostics(
+    thread.id
+  );
 
   useEffect(() => {
     const serverUri = `ws://${process.env.LSP_SERVER_URL}:${process.env.LSP_SERVER_PORT}` as `ws://${string}` | `wss://${string}`;
@@ -35,14 +44,6 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
 
     setLspConnectionState(ls);
   }, []);
-
-  // const patchVM = usePatchStore((state) => state.patchVM);
-  const getThread = usePatchStore((state) => state.getThread);
-  const updateThread = usePatchStore((state) => state.updateThread);
-  const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
-  const { getDiagnostics, invalidateDiagnostics } = useRuntimeDiagnostics(
-    thread.id
-  );
 
   const handleCodeChange = (newScript: string) => {
     updateThread(thread.id, newScript);
