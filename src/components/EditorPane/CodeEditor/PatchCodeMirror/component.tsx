@@ -31,7 +31,10 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   );
 
   useEffect(() => {
-    const serverUri = `ws://${process.env.LSP_SERVER_URL}:${process.env.LSP_SERVER_PORT}` as `ws://${string}` | `wss://${string}`;
+    const serverUri = `${process.env.LSP_SERVER_URL}` as
+      | `ws://${string}`
+      | `wss://${string}`;
+
     wsRef.current = new WebSocket(serverUri);
 
     const ls = languageServer({
