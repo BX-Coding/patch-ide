@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import SpritePane from '../SpritePane';
 import { Button, Grid, Tooltip } from '@mui/material';
 import './style.css'
@@ -16,6 +17,8 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PublicIcon from '@mui/icons-material/Public';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import Typography from '@mui/material/Typography';
 
 import SplashScreen from '../SplashScreen/component';
 import usePatchStore from '../../store';
@@ -32,6 +35,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { LegalDialogueButton } from './LegalDialogueButton';
 
+import Popover from '@mui/material/Popover';
+
 
 const App = () => {
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged)
@@ -39,6 +44,9 @@ const App = () => {
   const patchVM = usePatchStore((state) => state.patchVM)
   const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads)
   const editorTab = usePatchStore((state) => state.editorTab)
+
+  // Popover state
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   const [mode, setMode] = React.useState(localStorage.getItem("theme") || "dark");
   const [projectId] = useLocalStorage("patchProjectId", "new");
@@ -51,6 +59,19 @@ const App = () => {
   useThreadAutoSave(patchVM, saveTargetThreads, editorTab);
   useMonitorProjectChange(setProjectChanged, [targetIds])
   
+  const variant = "outlined";
+
+  // Popover functions
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
@@ -91,6 +112,19 @@ const App = () => {
                   <EditorTabButton tab={EditorTab.COSTUMES} icon={<TheaterComedyIcon/>}/>
                   <EditorTabButton tab={EditorTab.SOUNDS} icon={<MusicNoteIcon/>}/>
                   <EditorTabButton tab={EditorTab.VARIABLES} icon={<PublicIcon/>}/>
+                  <Button aria-describedby={id} variant={variant} onClick={handleClick}><ArticleOutlinedIcon/></Button>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <Typography sx={{ p: 2 }}>Popover content</Typography>
+                  </Popover>
                 </VerticalButtons>
                 <LegalDialogueButton/>
               </Grid>
