@@ -19,6 +19,8 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PublicIcon from "@mui/icons-material/Public";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import SplashScreen from "../SplashScreen/component";
 import usePatchStore from "../../store";
@@ -37,13 +39,12 @@ import { LegalDialogueButton } from "./LegalDialogueButton";
 import Popover from "@mui/material/Popover";
 
 interface Parameter {
-  name: string;
-  type: string;
+  [key: string]: string;
 }
 
 interface PatchFunction {
   name: string;
-  parameters: Parameter[];
+  parameters: Parameter;
   description: string;
   exampleUsage: string;
   returnType: string;
@@ -181,11 +182,53 @@ const App = () => {
                     horizontal: "left",
                   }}
                 >
-                  <Typography sx={{ p: 2 }}>
-                    {apiData.map((value, key) => (
-                      <div key={key}>{value.name}</div>
-                    ))}
-                  </Typography>
+                  {apiData.map((value) => {
+                    const parameterNames = Object.keys(value.parameters).join(
+                      ", "
+                    );
+                    const functionNameWithParams = `${value.name}(${parameterNames})`;
+                    return (
+                      <>
+                        <Typography key={value.name} sx={{ px: 2, py: 1 }}>
+                          <Typography variant="h6" sx={{ color: "white" }}>
+                            {functionNameWithParams}
+                          </Typography>
+                          {Object.entries(value.parameters).map(
+                            ([paramName, paramType]) => (
+                              <div
+                                key={paramName}
+                                style={{ color: "lightgrey" }}
+                              >{`${paramName}: ${paramType}`}</div>
+                            )
+                          )}
+                          <small>
+                            <code style={{ color: "lightgreen" }}>
+                              {value.exampleUsage}
+                            </code>
+                          </small>
+                          <br />
+                          <small>{value.description}</small>
+                          <br></br>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              backgroundColor: "lightblue",
+                              color: "#636363",
+                              mt: 1,
+                              fontWeight: "bold",
+                            }}
+                            onClick={() => {
+                              console.log("Need to implement");
+                              handleClose();
+                            }}
+                          >
+                            Try in Editor <ArrowForwardIcon />
+                          </Button>
+                        </Typography>
+                        <hr></hr>
+                      </>
+                    );
+                  })}
                 </Popover>
               </VerticalButtons>
               <LegalDialogueButton />
