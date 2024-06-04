@@ -156,7 +156,7 @@
         "parameters": {},
         "description": "Gets the current direction the object is facing.",
         "exampleUsage": "getDirection()",
-        "CHECK" :"CHECK"
+        "returnType" : "Integer"
       },
       {
         "name": "say",
@@ -327,14 +327,14 @@
         "parameters": {},
         "description": "Gets the current costume of the object.",
         "exampleUsage": "getCostume()",
-        "returnType" : "String CHECK"
+        "returnType" : "String"
       },
       {
         "name": "getBackdrop",
         "parameters": {},
         "description": "Gets the current backdrop of the stage.",
         "exampleUsage": "getBackdrop()",
-        "returnType" : "String CHECK"
+        "returnType" : "String"
       },
       {
         "name": "playSound",
@@ -411,7 +411,7 @@
         "parameters": {},
         "description": "Gets the current volume level.",
         "exampleUsage": "getVolume()",
-        "returnType" : "Integer CHECK"
+        "returnType" : "Integer"
       },
       {
         "name": "broadcast",
@@ -489,8 +489,7 @@
           "property": "string"
         },
         "description": "Gets a specified attribute of an object.",
-        "exampleUsage": "getAttributeOf('sprite1', 'x position')",
-        "returnType" : "String CHECK"
+        "exampleUsage": "getAttributeOf('sprite1', 'x position')"
       },
       {
         "name": "getMouseX",
@@ -528,15 +527,13 @@
           "timeIncrement": "string"
         },
         "description": "Gets the current value of a specified time increment (e.g., year, month, date, etc.).",
-        "exampleUsage": "current('year')",
-        "returnType" : "Date Time CHECK"
+        "exampleUsage": "current('year')"
       },
       {
         "name": "daysSince2000",
         "parameters": {},
         "description": "Gets the number of days since January 1, 2000.",
-        "exampleUsage": "daysSince2000()",
-        "returnType" : "Date Time CHECK"
+        "exampleUsage": "daysSince2000()"
       },
       {
         "name": "getLoudness",
