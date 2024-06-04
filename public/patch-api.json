@@ -1,0 +1,682 @@
+{
+    "patch-functions": [
+      {
+        "name": "move",
+        "parameters": {
+          "steps": "number"
+        },
+        "description": "Moves the object a specified number of steps.",
+        "exampleUsage": "move(10)",
+        "returnType" : "void"
+      },
+      {
+        "name": "goToXY",
+        "parameters": {
+          "x": "number",
+          "y": "number"
+        },
+        "description": "Moves the object to the specified X and Y coordinates.",
+        "exampleUsage": "goToXY(0, 0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "goTo",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Moves the object to a specified target.",
+        "exampleUsage": "goTo('_mouse_')",
+        "returnType" : "void"
+      },
+      {
+        "name": "turnRight",
+        "parameters": {
+          "degrees": "number"
+        },
+        "description": "Turns the object to the right by a specified number of degrees.",
+        "exampleUsage": "turnRight(90)",
+        "returnType" : "void"
+      },
+      {
+        "name": "turnLeft",
+        "parameters": {
+          "degrees": "number"
+        },
+        "description": "Turns the object to the left by a specified number of degrees.",
+        "exampleUsage": "turnLeft(90)",
+        "returnType" : "void"
+      },
+      {
+        "name": "pointInDirection",
+        "parameters": {
+          "degrees": "number"
+        },
+        "description": "Points the object in a specified direction.",
+        "exampleUsage": "pointInDirection(90)",
+        "returnType" : "void"
+      },
+      {
+        "name": "pointTowards",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Points the object towards a specified target.",
+        "exampleUsage": "pointTowards('_random_')",
+        "returnType" : "void"
+      },
+      {
+        "name": "glide",
+        "parameters": {
+          "seconds": "number",
+          "x": "number",
+          "y": "number"
+        },
+        "description": "Glides the object to the specified X and Y coordinates over a certain number of seconds.",
+        "exampleUsage": "glide(1, 0, 0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "glideTo",
+        "parameters": {
+          "seconds": "number",
+          "name": "string"
+        },
+        "description": "Glides the object to a specified target over a certain number of seconds.",
+        "exampleUsage": "glideTo(1, '_stage_')",
+        "returnType" : "void"
+      },
+      {
+        "name": "ifOnEdgeBounce",
+        "parameters": {},
+        "description": "Makes the object bounce if it hits the edge of the screen.",
+        "exampleUsage": "ifOnEdgeBounce()",
+        "returnType" : "void"
+      },
+      {
+        "name": "setRotationStyle",
+        "parameters": {
+          "style": "string"
+        },
+        "description": "Sets the object's rotation style.",
+        "exampleUsage": "setRotationStyle('left-right')",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeX",
+        "parameters": {
+          "x": "number"
+        },
+        "description": "Changes the X position of the object by a specified amount.",
+        "exampleUsage": "changeX(25)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setX",
+        "parameters": {
+          "x": "number"
+        },
+        "description": "Sets the X position of the object to a specified value.",
+        "exampleUsage": "setX(0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeY",
+        "parameters": {
+          "y": "number"
+        },
+        "description": "Changes the Y position of the object by a specified amount.",
+        "exampleUsage": "changeY(25)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setY",
+        "parameters": {
+          "y": "number"
+        },
+        "description": "Sets the Y position of the object to a specified value.",
+        "exampleUsage": "setY(0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "getX",
+        "parameters": {},
+        "description": "Gets the current X position of the object.",
+        "exampleUsage": "getX()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getY",
+        "parameters": {},
+        "description": "Gets the current Y position of the object.",
+        "exampleUsage": "getY()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getDirection",
+        "parameters": {},
+        "description": "Gets the current direction the object is facing.",
+        "exampleUsage": "getDirection()",
+        "CHECK" :"CHECK"
+      },
+      {
+        "name": "say",
+        "parameters": {
+          "message": "string"
+        },
+        "description": "Displays a message in a speech bubble.",
+        "exampleUsage": "say('Hello!')",
+        "returnType" : "void"
+      },
+      {
+        "name": "sayFor",
+        "parameters": {
+          "message": "string",
+          "secs": "number"
+        },
+        "description": "Displays a message in a speech bubble for a specified number of seconds.",
+        "exampleUsage": "sayFor('Hello!', 2)",
+        "returnType" : "void"
+      },
+      {
+        "name": "think",
+        "parameters": {
+          "message": "string"
+        },
+        "description": "Displays a message in a thought bubble.",
+        "exampleUsage": "think('How are you?')",
+        "returnType" : "void"
+      },
+      {
+        "name": "thinkFor",
+        "parameters": {
+          "message": "string",
+          "secs": "number"
+        },
+        "description": "Displays a message in a thought bubble for a specified number of seconds.",
+        "exampleUsage": "thinkFor('How are you?', 2)",
+        "returnType" : "void"
+      },
+      {
+        "name": "show",
+        "parameters": {},
+        "description": "Makes the object visible.",
+        "exampleUsage": "show()",
+        "returnType" : "void"
+      },
+      {
+        "name": "hide",
+        "parameters": {},
+        "description": "Makes the object invisible.",
+        "exampleUsage": "hide()",
+        "returnType" : "void"
+      },
+      {
+        "name": "setCostumeTo",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Changes the object's costume to a specified costume.",
+        "exampleUsage": "setCostumeTo('costume1')",
+        "returnType" : "void"
+      },
+      {
+        "name": "setBackdropTo",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Changes the stage backdrop to a specified backdrop.",
+        "exampleUsage": "setBackdropTo('backdrop1')",
+        "returnType" : "void"
+      },
+      {
+        "name": "setBackdropToAndWait",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Changes the stage backdrop to a specified backdrop and waits until the change is complete.",
+        "exampleUsage": "setBackdropToAndWait('backdrop1')",
+        "returnType" : "void"
+      },
+      {
+        "name": "nextCostume",
+        "parameters": {},
+        "description": "Changes the object to its next costume.",
+        "exampleUsage": "nextCostume()",
+        "returnType" : "void"
+      },
+      {
+        "name": "nextBackdrop",
+        "parameters": {},
+        "description": "Changes the stage to its next backdrop.",
+        "exampleUsage": "nextBackdrop()",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeGraphicEffectBy",
+        "parameters": {
+          "effect": "string",
+          "change": "number"
+        },
+        "description": "Changes a graphic effect on the object by a specified amount.",
+        "exampleUsage": "changeGraphicEffectBy('color', 25)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setGraphicEffectTo",
+        "parameters": {
+          "effect": "string",
+          "value": "number"
+        },
+        "description": "Sets a graphic effect on the object to a specified value.",
+        "exampleUsage": "setGraphicEffectTo('color', 0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "clearGraphicEffects",
+        "parameters": {},
+        "description": "Clears all graphic effects on the object.",
+        "exampleUsage": "clearGraphicEffects()",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeSizeBy",
+        "parameters": {
+          "change": "number"
+        },
+        "description": "Changes the size of the object by a specified amount.",
+        "exampleUsage": "changeSizeBy(10)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setSizeTo",
+        "parameters": {
+          "size": "number"
+        },
+        "description": "Sets the size of the object to a specified value.",
+        "exampleUsage": "setSizeTo(100)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setLayerTo",
+        "parameters": {
+          "layer": "string"
+        },
+        "description": "Moves the object to the front or back layer.",
+        "exampleUsage": "setLayerTo('front')",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeLayerBy",
+        "parameters": {
+          "direction": "string",
+          "change": "number"
+        },
+        "description": "Changes the object's layer by a specified number of layers.",
+        "exampleUsage": "changeLayerBy('forward', 1)",
+        "returnType" : "void"
+      },
+      {
+        "name": "getSize",
+        "parameters": {},
+        "description": "Gets the current size of the object.",
+        "exampleUsage": "getSize()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getCostume",
+        "parameters": {},
+        "description": "Gets the current costume of the object.",
+        "exampleUsage": "getCostume()",
+        "returnType" : "String CHECK"
+      },
+      {
+        "name": "getBackdrop",
+        "parameters": {},
+        "description": "Gets the current backdrop of the stage.",
+        "exampleUsage": "getBackdrop()",
+        "returnType" : "String CHECK"
+      },
+      {
+        "name": "playSound",
+        "parameters": {
+          "soundName": "string"
+        },
+        "description": "Plays a specified sound.",
+        "exampleUsage": "playSound('meow')",
+        "returnType" : "void"
+      },
+      {
+        "name": "playSoundUntilDone",
+        "parameters": {
+          "soundName": "string"
+        },
+        "description": "Plays a specified sound and waits until the sound is finished.",
+        "exampleUsage": "playSoundUntilDone('meow')",
+        "returnType" : "void"
+      },
+      {
+        "name": "stopAllSounds",
+        "parameters": {},
+        "description": "Stops all sounds.",
+        "exampleUsage": "stopAllSounds()",
+        "returnType" : "void"
+      },
+      {
+        "name": "setSoundEffectTo",
+        "parameters": {
+          "effect": "string",
+          "value": "number"
+        },
+        "description": "Sets a sound effect to a specified value.",
+        "exampleUsage": "setSoundEffectTo('echo', 100)",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeSoundEffectBy",
+        "parameters": {
+          "effect": "string",
+          "change": "number"
+        },
+        "description": "Changes a sound effect by a specified amount.",
+        "exampleUsage": "changeSoundEffectBy('echo', 25)",
+        "returnType" : "void"
+      },
+      {
+        "name": "clearSoundEffects",
+        "parameters": {},
+        "description": "Clears all sound effects.",
+        "exampleUsage": "clearSoundEffects()",
+        "returnType" : "void"
+      },
+      {
+        "name": "setVolumeTo",
+        "parameters": {
+          "volume": "number"
+        },
+        "description": "Sets the volume to a specified level.",
+        "exampleUsage": "setVolumeTo(100)",
+        "returnType" : "void"
+      },
+      {
+        "name": "changeVolumeBy",
+        "parameters": {
+          "change": "number"
+        },
+        "description": "Changes the volume by a specified amount.",
+        "exampleUsage": "changeVolumeBy(10)",
+        "returnType" : "void"
+      },
+      {
+        "name": "getVolume",
+        "parameters": {},
+        "description": "Gets the current volume level.",
+        "exampleUsage": "getVolume()",
+        "returnType" : "Integer CHECK"
+      },
+      {
+        "name": "broadcast",
+        "parameters": {
+          "message": "string"
+        },
+        "description": "Sends a broadcast message.",
+        "exampleUsage": "broadcast('message1')",
+        "returnType" : "void"
+      },
+      {
+        "name": "broadcastAndWait",
+        "parameters": {
+          "message": "string"
+        },
+        "description": "Sends a broadcast message and waits until all scripts triggered by the broadcast have completed.",
+        "exampleUsage": "broadcastAndWait('message1')",
+        "returnType" : "void"
+      },
+      {
+        "name": "isTouching",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Checks if the object is touching a specified target.",
+        "exampleUsage": "isTouching('_edge_')",
+        "returnType" : "void"
+      },
+      {
+        "name": "isTouchingColor",
+        "parameters": {
+          "color": "string"
+        },
+        "description": "Checks if the object is touching a specified color.",
+        "exampleUsage": "isTouchingColor('#ff0000')",
+        "returnType" : "Boolean"
+      },
+      {
+        "name": "isColorTouchingColor",
+        "parameters": {
+          "color1": "string",
+          "color2": "string"
+        },
+        "description": "Checks if one color is touching another color.",
+        "exampleUsage": "isColorTouchingColor('#ff0000', '#00ff00')",
+        "returnType" : "Boolean"
+      },
+      {
+        "name": "distanceTo",
+        "parameters": {
+          "name": "string"
+        },
+        "description": "Gets the distance to a specified target.",
+        "exampleUsage": "distanceTo('_mouse_')",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getTimer",
+        "parameters": {},
+        "description": "Gets the value of the timer.",
+        "exampleUsage": "getTimer()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "resetTimer",
+        "parameters": {},
+        "description": "Resets the timer to zero.",
+        "exampleUsage": "resetTimer()",
+        "returnType" : "void"
+      },
+      {
+        "name": "getAttributeOf",
+        "parameters": {
+          "object": "string",
+          "property": "string"
+        },
+        "description": "Gets a specified attribute of an object.",
+        "exampleUsage": "getAttributeOf('sprite1', 'x position')",
+        "returnType" : "String CHECK"
+      },
+      {
+        "name": "getMouseX",
+        "parameters": {},
+        "description": "Gets the X position of the mouse.",
+        "exampleUsage": "getMouseX()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getMouseY",
+        "parameters": {},
+        "description": "Gets the Y position of the mouse.",
+        "exampleUsage": "getMouseY()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "isMouseDown",
+        "parameters": {},
+        "description": "Checks if the mouse button is pressed.",
+        "exampleUsage": "isMouseDown()",
+        "returnType" : "Boolean"
+      },
+      {
+        "name": "isKeyPressed",
+        "parameters": {
+          "key": "string"
+        },
+        "description": "Checks if a specified key is pressed.",
+        "exampleUsage": "isKeyPressed('space')",
+        "returnType" : "Boolean"
+      },
+      {
+        "name": "current",
+        "parameters": {
+          "timeIncrement": "string"
+        },
+        "description": "Gets the current value of a specified time increment (e.g., year, month, date, etc.).",
+        "exampleUsage": "current('year')",
+        "returnType" : "Date Time CHECK"
+      },
+      {
+        "name": "daysSince2000",
+        "parameters": {},
+        "description": "Gets the number of days since January 1, 2000.",
+        "exampleUsage": "daysSince2000()",
+        "returnType" : "Date Time CHECK"
+      },
+      {
+        "name": "getLoudness",
+        "parameters": {},
+        "description": "Gets the current loudness level.",
+        "exampleUsage": "getLoudness()",
+        "returnType" : "Integer"
+      },
+      {
+        "name": "getUsername",
+        "parameters": {},
+        "description": "Gets the username of the current user.",
+        "exampleUsage": "getUsername()",
+        "returnType" : "String"
+      },
+      {
+        "name": "ask",
+        "parameters": {
+          "question": "string"
+        },
+        "description": "Asks a question and waits for an answer.",
+        "exampleUsage": "ask('How are you?')",
+        "returnType" : "void"
+      },
+      {
+        "name": "wait",
+        "parameters": {
+          "seconds": "number"
+        },
+        "description": "Pauses the script for a specified number of seconds.",
+        "exampleUsage": "wait(1)",
+        "returnType" : "void"
+      },
+      {
+        "name": "stop",
+        "parameters": {
+          "option": "string"
+        },
+        "description": "Stops the script or all scripts.",
+        "exampleUsage": "stop('all')",
+        "returnType" : "void"
+      },
+      {
+        "name": "createClone",
+        "parameters": {
+          "option": "string"
+        },
+        "description": "Creates a clone of the specified target.",
+        "exampleUsage": "createClone('_myself_')",
+        "returnType" : "void"
+      },
+      {
+        "name": "deleteClone",
+        "parameters": {},
+        "description": "Deletes the current clone.",
+        "exampleUsage": "deleteClone()",
+        "returnType" : "void"
+      },
+      {
+        "name": "erasePen",
+        "parameters": {},
+        "description": "Erases all pen drawings.",
+        "exampleUsage": "erasePen()",
+        "returnType" : "void"
+      },
+      {
+        "name": "stampPen",
+        "parameters": {},
+        "description": "Stamps the object's image on the stage.",
+        "exampleUsage": "stampPen()",
+        "returnType" : "void"
+      },
+      {
+        "name": "penDown",
+        "parameters": {},
+        "description": "Puts the pen down to start drawing.",
+        "exampleUsage": "penDown()",
+        "returnType" : "void"
+      },
+      {
+        "name": "penUp",
+        "parameters": {},
+        "description": "Lifts the pen up to stop drawing.",
+        "exampleUsage": "penUp()",
+        "returnType" : "void"
+      },
+      {
+        "name": "setPenColor",
+        "parameters": {
+          "color": "string"
+        },
+        "description": "Sets the pen color to a specified value.",
+        "exampleUsage": "setPenColor('#ff0000')",
+        "returnType" : "void"
+      },
+      {
+        "name": "changePenEffect",
+        "parameters": {
+          "effect": "string",
+          "change": "number"
+        },
+        "description": "Changes a pen effect by a specified amount.",
+        "exampleUsage": "changePenEffect('color', 10)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setPenEffect",
+        "parameters": {
+          "effect": "string",
+          "value": "number"
+        },
+        "description": "Sets a pen effect to a specified value.",
+        "exampleUsage": "setPenEffect('color', 0)",
+        "returnType" : "void"
+      },
+      {
+        "name": "changePenSize",
+        "parameters": {
+          "change": "number"
+        },
+        "description": "Changes the pen size by a specified amount.",
+        "exampleUsage": "changePenSize(1)",
+        "returnType" : "void"
+      },
+      {
+        "name": "setPenSize",
+        "parameters": {
+          "size": "number"
+        },
+        "description": "Sets the pen size to a specified value.",
+        "exampleUsage": "setPenSize(5)",
+        "returnType" : "void"
+      },
+      {
+        "name": "endThread",
+        "parameters": {},
+        "description": "Ends the current thread of execution.",
+        "exampleUsage": "endThread()",
+        "returnType" : "void"
+      }
+    ]
+  }
+  
