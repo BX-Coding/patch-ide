@@ -1,7 +1,7 @@
-// codeEditorStore.ts (Zustand store)
 import create, { StateCreator } from "zustand";
 import { EditorState } from "./index";
 import { Target, Thread, VmError } from "../components/EditorPane/types";
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 
 type ThreadState = {
   thread: Thread;
@@ -15,6 +15,7 @@ export interface CodeEditorState {
   nextThreadNumber: number;
   diagnostics: VmError[];
   diagnosticInvalidated: boolean;
+  codemirrorRef: React.RefObject<ReactCodeMirrorRef> | null;
 
   // Actions
   addThread: (target: Target) => void;
@@ -28,6 +29,7 @@ export interface CodeEditorState {
   getThread: (id: string) => ThreadState;
   getCodeThreadId: () => string;
   setCodeThreadId: (id: string) => void;
+  setCodemirrorRef: (ref: React.RefObject<ReactCodeMirrorRef>) => void;
 
   addDiagnostic: (error: VmError) => void;
   pollDiagnostics: () => void;
@@ -48,6 +50,7 @@ export const createCodeEditorSlice: StateCreator<
   nextThreadNumber: 0,
   diagnostics: [],
   diagnosticInvalidated: false,
+  codemirrorRef: null,
 
   // Actions
   addThread: async (target: Target) => {
@@ -77,12 +80,33 @@ export const createCodeEditorSlice: StateCreator<
     })),
   appendFunction: (id: string, newFunction: string) =>
     set((state) => {
+      const codemirrorRef = state.codemirrorRef;
+      if (!codemirrorRef || !codemirrorRef.current) return state;
+
+      const view = codemirrorRef.current.view;
+      if (!view) return state;
+
+      const selection = view.state.selection.main;
+      const pos = selection.from;
+
       const thread = state.threads[id];
-      if (thread) {
-        thread.text += `\n${newFunction}`;
-        thread.saved = false;
-      }
-      return { threads: { ...state.threads, [id]: thread } };
+      if (!thread) return state;
+
+      const newText = 
+        thread.text.slice(0, pos) + 
+        `${newFunction}` + 
+        thread.text.slice(pos);
+
+      return {
+        threads: {
+          ...state.threads,
+          [id]: {
+            ...state.threads[id],
+            text: newText,
+            saved: false,
+          },
+        },
+      };
     }),
   loadTargetThreads: (target: Target) =>
     set((state) => {
@@ -170,6 +194,8 @@ export const createCodeEditorSlice: StateCreator<
   getThread: (id: string) => get().threads[id],
   getCodeThreadId: () => get().codeThreadId,
   setCodeThreadId: (id: string) => set((state) => ({ codeThreadId: id })),
+  setCodemirrorRef: (ref: React.RefObject<ReactCodeMirrorRef>) =>
+    set(() => ({ codemirrorRef: ref })),
 
   addDiagnostic: (error: VmError) =>
     set((state) => {
