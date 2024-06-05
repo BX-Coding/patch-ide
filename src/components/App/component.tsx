@@ -52,11 +52,7 @@ interface PatchFunction {
   returnType: string;
 }
 
-type PatchCodeMirrorProps = {
-  thread: Thread;
-};
-
-const App = ({ thread }: any) => {
+const App = () => {
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
   const targetIds = usePatchStore((state) => state.targetIds);
   const patchVM = usePatchStore((state) => state.patchVM);
