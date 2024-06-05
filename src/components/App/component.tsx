@@ -201,7 +201,7 @@ const App = ({ thread }: any) => {
                     const functionNameWithParams = `${value.name}(${parameterNames})`;
                     return (
                       <>
-                        <Typography key={value.name} sx={{ px: 2, py: 1 }}>
+                        <Typography key={value.name} sx={{ px: 4, py: 2 }}>
                           <Typography variant="h6" sx={{ color: "white" }}>
                             {functionNameWithParams}
                           </Typography>
