@@ -12,6 +12,8 @@ import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
 import { languageServer } from "codemirror-languageserver";
+import {hoverTooltip} from "@codemirror/view";
+import patchAPI from "../../../../../public/patch-api.json"
 
 type PatchCodeMirrorProps = {
   thread: Thread;
@@ -29,6 +31,38 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   const { getDiagnostics, invalidateDiagnostics } = useRuntimeDiagnostics(
     thread.id
   );
+
+  const wordHover = hoverTooltip((view, pos, side) => {
+    let {from, to, text} = view.state.doc.lineAt(pos)
+    let start = pos, end = pos
+    while (start > from && /\w/.test(text[start - from - 1])) start--
+    while (end < to && /\w/.test(text[end - from])) end++
+    if (start == pos && side < 0 || end == pos && side > 0)
+      return null
+    return {
+      pos: start,
+      end,
+      above: true,
+      create(view) {
+        let dom = document.createElement("div")
+        //determine position
+        let txt = "";
+        patchAPI["patch-functions"].forEach(function(x){
+            if (x["name"] == text.slice(start - from, end - from)) {
+              txt = x["name"]
+              txt = "Name: " + x["name"] + "\nDescription: " + x["description"]
+              + "\nParameters:" + x["parameters"] + "\nExample:" + x["exampleUsage"]
+            }
+        });
+        if (txt == "") {
+          return {dom}
+        }
+
+        dom.textContent = txt;
+        return {dom}
+      }
+    }
+  })
 
   useEffect(() => {
     const serverUri = `${process.env.LSP_SERVER_URL}` as
@@ -66,6 +100,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
+          wordHover
         ]}
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
