@@ -24,6 +24,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import SplashScreen from "../SplashScreen/component";
 import usePatchStore from "../../store";
+import { appendFunction } from "../../util/append-function-util";
+import { Thread } from "../EditorPane/types";
 
 import useThreadAutoSave from "./useThreadAutoSave";
 import useMonitorProjectChange from "./useMonitorProjectChange";
@@ -50,7 +52,11 @@ interface PatchFunction {
   returnType: string;
 }
 
-const App = () => {
+type PatchCodeMirrorProps = {
+  thread: Thread;
+};
+
+const App = ({ thread }: any) => {
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
   const targetIds = usePatchStore((state) => state.targetIds);
   const patchVM = usePatchStore((state) => state.patchVM);
@@ -62,6 +68,12 @@ const App = () => {
     null
   );
   const [apiData, setApiData] = useState<PatchFunction[]>([]);
+
+  const currentThreadId = useGetCodeThreadId();
+
+  const appendFunc = (func: string) => {
+    appendFunction(currentThreadId, func);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,9 +232,10 @@ const App = () => {
                             onClick={() => {
                               console.log("Need to implement");
                               handleClose();
+                              appendFunc(`\n${value.exampleUsage}`);
                             }}
                           >
-                            Try in Editor <ArrowForwardIcon />
+                            Add to Editor <ArrowForwardIcon />
                           </Button>
                         </Typography>
                         <hr></hr>
@@ -246,5 +259,7 @@ const App = () => {
     </ThemeProvider>
   );
 };
+const useGetCodeThreadId = () =>
+  usePatchStore((state) => state.getCodeThreadId());
 
 export default App;
