@@ -8,7 +8,6 @@ export enum EditorTab {
     COSTUMES = "costumes",
     SOUNDS = "sounds",
     VARIABLES = "variables",
-    DOCUMENTATION = "documentation"
 }
 
 export enum ModalSelectorType {
