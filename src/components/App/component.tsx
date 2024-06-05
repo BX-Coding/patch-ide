@@ -24,7 +24,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import SplashScreen from "../SplashScreen/component";
 import usePatchStore from "../../store";
-import { appendFunction } from "../../util/append-function-util";
+import { appendFunction } from "../../hooks/useAppendFunction";
 import { Thread } from "../EditorPane/types";
 
 import useThreadAutoSave from "./useThreadAutoSave";
