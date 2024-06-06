@@ -45,30 +45,44 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
       above: true,
       create(view) {
         let dom = document.createElement("div")
-        //determine position
+
         let txt = "";
+        let titleTxt = "";
+        let funName = "";
+        let title = dom.appendChild(document.createElement("h4"));
+        let descript = dom.appendChild(document.createElement("p"));
+        let image = dom.appendChild(document.createElement("img"));
         patchAPI["patch-functions"].forEach(function(x){
             if (x["name"] == text.slice(start - from, end - from)) {
-              txt = x["name"]
-              txt = "Name: " + x["name"] + "\nDescription: " + x["description"]
-              + "\nParameters:" + x["parameters"] + "\nExample:" + x["exampleUsage"]
+              funName = x["name"];
+              titleTxt = x["name"] + getParamText(x["parameters"]);
+              txt = x["description"]
+              + "\n\nExample: " + x["exampleUsage"]
             }
         });
-        if (txt == "") {
-          return {dom}
+        title.innerText = titleTxt;
+        descript.innerText = txt;
+        title.style.marginTop = '0px';
+        title.style.marginBottom = '5px';
+        descript.style.marginTop = '0px';
+        image.style.width = '300px';
+        image.style.display = 'block';
+        image.style.marginLeft = 'auto';
+        image.style.marginRight = 'auto';
+        if (funName != ""){
+          image.src = "gifs/" + funName + ".gif"
         }
-
-        dom.textContent = txt;
         return {dom}
       }
     }
   })
 
   useEffect(() => {
-    const serverUri = `${process.env.LSP_SERVER_URL}` as
-      | `ws://${string}`
-      | `wss://${string}`;
+    // const serverUri = `${process.env.LSP_SERVER_URL}` as
+    //   | `ws://${string}`
+    //   | `wss://${string}`;
 
+    const serverUri = "ws://localhost:8080";
     wsRef.current = new WebSocket(serverUri);
 
     const ls = languageServer({
@@ -100,7 +114,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
-          wordHover
+          // wordHover
         ]}
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
@@ -109,4 +123,15 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   );
 };
 
+function getParamText(object: any) {
+  let text = "("
+  for (var key in object) {
+    text += key + ": " + object[key] + ", "
+  }
+  if (text.length > 1) {
+    text = text.substring(0, text.length - 2);
+  }
+  text += ")"
+  return text;
+}
 export default PatchCodeMirror;
