@@ -31,7 +31,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   );
 
   useEffect(() => {
-    setCodemirrorRef(codemirrorRef);
+    setCodemirrorRef(thread.id,codemirrorRef);
 
     const serverUri = `${process.env.LSP_SERVER_URL}` as
       | `ws://${string}`
