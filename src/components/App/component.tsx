@@ -228,7 +228,7 @@ const App = () => {
                             onClick={() => {
                               console.log("Need to implement");
                               handleClose();
-                              appendFunc(`\n${value.exampleUsage}`);
+                              appendFunc(`${value.exampleUsage}`);
                             }}
                           >
                             Add to Editor <ArrowForwardIcon />
