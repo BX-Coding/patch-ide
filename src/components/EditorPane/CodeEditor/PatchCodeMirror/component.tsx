@@ -20,7 +20,6 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
-  const wsRef = useRef<WebSocket | null>(null);
   const [lspConnectionState, setLspConnectionState] = useState<any>();
 
   const getThread = usePatchStore((state) => state.getThread);
@@ -36,8 +35,6 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
     const serverUri = `${process.env.LSP_SERVER_URL}` as
       | `ws://${string}`
       | `wss://${string}`;
-
-    wsRef.current = new WebSocket(serverUri);
 
     const ls = languageServer({
       serverUri,
