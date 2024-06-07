@@ -14,13 +14,12 @@ import { languageServer } from "codemirror-languageserver";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
+  lspConnectionState: any;
 };
 
-const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
+const PatchCodeMirror = ({ thread, lspConnectionState }: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
-
-  const [lspConnectionState, setLspConnectionState] = useState<any>();
 
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
@@ -31,20 +30,6 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
 
   useEffect(() => {
     setCodemirrorRef(thread.id,codemirrorRef);
-
-    const serverUri = `${process.env.LSP_SERVER_URL}` as
-      | `ws://${string}`
-      | `wss://${string}`;
-
-    const ls = languageServer({
-      serverUri,
-      rootUri: "file:///",
-      documentUri: "file:///index.js",
-      languageId: "python",
-      workspaceFolders: null,
-    });
-
-    setLspConnectionState(ls);
   }, [codemirrorRef, setCodemirrorRef]);
 
   const handleCodeChange = (newScript: string) => {

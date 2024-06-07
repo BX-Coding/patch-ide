@@ -1,12 +1,32 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import SplitPane, { Pane } from 'react-split-pane-next';
 import usePatchStore from '../../../store';
 import { ThreadBar } from './ThreadBar';
 import PatchCodeMirror from './PatchCodeMirror/component';
 import { HorizontalButtons, TextButton } from '../../PatchButton';
+import { languageServer } from "codemirror-languageserver";
 
 export const CodeEditor = () => {
+
+    const [lspConnectionState, setLspConnectionState] = useState<any>();
+
+    useEffect(()=>{
+        const serverUri = `${process.env.LSP_SERVER_URL}` as
+        | `ws://${string}`
+        | `wss://${string}`;
+  
+      const ls = languageServer({
+        serverUri,
+        rootUri: "file:///",
+        documentUri: "file:///index.js",
+        languageId: "python",
+        workspaceFolders: null,
+      });
+  
+      setLspConnectionState(ls);
+    },[])
+
     const threads = useThreads();
     const currentThreadId = useGetCodeThreadId();
 
@@ -28,7 +48,7 @@ export const CodeEditor = () => {
             {threads.map((threadState, i) => {
                 return (<Box flexDirection={"column"} display={threadState.thread.id === currentThreadId ? "flex" : "none"}>
                     <ThreadBar thread={threadState.thread} deletable={threads.length > 1} />
-                    <PatchCodeMirror thread={threadState.thread} />
+                    <PatchCodeMirror thread={threadState.thread} lspConnectionState={lspConnectionState}/>
                 </Box>
                 )
             })
