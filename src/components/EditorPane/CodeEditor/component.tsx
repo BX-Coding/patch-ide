@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import SplitPane, { Pane } from 'react-split-pane-next';
 import usePatchStore from '../../../store';
@@ -9,23 +9,28 @@ import { languageServer } from "codemirror-languageserver";
 
 export const CodeEditor = () => {
 
-    const [lspConnectionState, setLspConnectionState] = useState<any>();
+    const [lspConnectionState, setLspConnectionState] = useState<any>(null);
+    const setWebSocketRef = usePatchStore(state => state.setWebSocketRef);
+    
+    useEffect(() => {
+        
+        const serverUri = `${process.env.LSP_SERVER_URL}` as `ws://${string}` | `wss://${string}`;
+        // const serverUri = `ws://localhost:8081` as `ws://${string}` | `wss://${string}`;
+        
+        const socket = new WebSocket(serverUri)
+        setWebSocketRef(socket)
+        
+        const ls = languageServer({
+            serverUri,
+            rootUri: "file:///",
+            documentUri: "file:///index.js",
+            languageId: "python",
+            workspaceFolders: null,
+        });
 
-    useEffect(()=>{
-        const serverUri = `${process.env.LSP_SERVER_URL}` as
-        | `ws://${string}`
-        | `wss://${string}`;
-  
-      const ls = languageServer({
-        serverUri,
-        rootUri: "file:///",
-        documentUri: "file:///index.js",
-        languageId: "python",
-        workspaceFolders: null,
-      });
-  
-      setLspConnectionState(ls);
-    },[])
+        setLspConnectionState(ls);
+        
+    }, []);
 
     const threads = useThreads();
     const currentThreadId = useGetCodeThreadId();

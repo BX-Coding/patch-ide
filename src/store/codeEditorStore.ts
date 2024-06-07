@@ -17,8 +17,12 @@ export interface CodeEditorState {
     nextThreadNumber: number;
     diagnostics: VmError[];
     diagnosticInvalidated: boolean;
+    webSocketRef: WebSocket | null;
 
     // Actions
+    sendLspState: (data: any) => void;
+    setWebSocketRef: (ref: WebSocket) => void;
+    getWebSocketRef: () => WebSocket | null;
     addThread: (target: Target) => void,
     updateThread: (id: string, text: string) => void,
     loadTargetThreads: (target: Target) => void,
@@ -51,8 +55,20 @@ export const createCodeEditorSlice: StateCreator<
     nextThreadNumber: 0,
     diagnostics: [],
     diagnosticInvalidated: false,
+    webSocketRef: null,
 
     // Actions
+    sendLspState: (data: any) => {
+      const webSocket = get().webSocketRef;
+      if (webSocket) {
+          const jsonData = JSON.stringify(data);
+          webSocket.send(jsonData);
+      } else {
+          console.error("WebSocket is not initialized.");
+      }
+    },
+    setWebSocketRef: (ref) => set({ webSocketRef: ref }),
+    getWebSocketRef: () => get().webSocketRef,
     setCodemirrorRef: (id : string, ref: React.RefObject<ReactCodeMirrorRef>) =>
       set((state) => {
         state.threads[id].codeMirrorRef = ref

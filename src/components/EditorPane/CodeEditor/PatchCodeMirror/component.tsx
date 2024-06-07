@@ -10,14 +10,13 @@ import completions from "../../../../util/patch-autocompletions";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
-import { languageServer } from "codemirror-languageserver";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
   lspConnectionState: any;
 };
 
-const PatchCodeMirror = ({ thread, lspConnectionState }: PatchCodeMirrorProps) => {
+const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
