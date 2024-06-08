@@ -13,10 +13,10 @@ export const CodeEditor = () => {
     const setWebSocketRef = usePatchStore(state => state.setWebSocketRef);
     
     useEffect(() => {
-        
-        const serverUri = `${process.env.LSP_SERVER_URL}` as `ws://${string}` | `wss://${string}`;
+
         // const serverUri = `ws://localhost:8081` as `ws://${string}` | `wss://${string}`;
-        
+        const serverUri = `${process.env.LSP_SERVER_URL}` as `ws://${string}` | `wss://${string}`;
+    
         const socket = new WebSocket(serverUri)
         setWebSocketRef(socket)
         

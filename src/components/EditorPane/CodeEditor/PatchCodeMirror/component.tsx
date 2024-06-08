@@ -20,6 +20,8 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
+  // const sendState = usePatchStore((state)=>state.sendLspState)
+
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
@@ -35,6 +37,17 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
     updateThread(thread.id, newScript);
     setProjectChanged(true);
     invalidateDiagnostics(thread.id);
+    // const didChangeConfigurationParams = {
+    //   jsonrpc: '2.0',
+    //   method: 'workspace/didChangeConfiguration',
+    //   params: {
+    //       settings: {
+    //           exampleSetting: 'exampleValue'
+    //       }
+    //   },
+    //   id: 1
+    // };
+    // sendState(didChangeConfigurationParams)
   };
 
   return (
