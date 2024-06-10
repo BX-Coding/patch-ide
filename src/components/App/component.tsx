@@ -37,6 +37,7 @@ import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LegalDialogueButton } from "./LegalDialogueButton";
+import PatchFunctionJson from "../../assets/patch-api.json";
 
 import Popover from "@mui/material/Popover";
 
@@ -63,30 +64,13 @@ const App = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-  const [apiData, setApiData] = useState<PatchFunction[]>([]);
+  const apiData = PatchFunctionJson["patch-functions"];
 
   const currentThreadId = useGetCodeThreadId();
 
   const appendFunc = (func: string) => {
     appendFunction(currentThreadId, func);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`/patch-api.json`, { method: "GET" });
-        if (res.ok) {
-          const data = await res.json();
-          setApiData(data["patch-functions"]);
-        }
-      } catch (e: any) {
-        console.log(e);
-      } finally {
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const [mode, setMode] = React.useState(
     localStorage.getItem("theme") || "dark"
