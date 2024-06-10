@@ -38,14 +38,14 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
     setProjectChanged(true);
     invalidateDiagnostics(thread.id);
     // const didChangeConfigurationParams = {
-    //   jsonrpc: '2.0',
-    //   method: 'workspace/didChangeConfiguration',
+    //   jsonrpc: "2.0" as const,
+    //   id: 1,
+    //   method: "workspace/didChangeConfiguration",
     //   params: {
-    //       settings: {
-    //           exampleSetting: 'exampleValue'
-    //       }
+    //     settings: {
+    //       exampleSetting: "exampleValue",
+    //     },
     //   },
-    //   id: 1
     // };
     // sendState(didChangeConfigurationParams)
   };
