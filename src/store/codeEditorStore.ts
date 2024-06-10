@@ -1,11 +1,14 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
 import { Target, Thread, VmError } from '../components/EditorPane/types';
+import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import React from 'react';
 
 type ThreadState = {
     thread: Thread,
     text: string,
     saved: boolean,
+    codeMirrorRef : React.RefObject<ReactCodeMirrorRef> | null
 }
 
 export interface CodeEditorState {
@@ -26,6 +29,8 @@ export interface CodeEditorState {
     getThread: (id: string) => ThreadState,
     getCodeThreadId: () => string,
     setCodeThreadId: (id: string) => void,
+    setCodemirrorRef: (id:string,ref: React.RefObject<ReactCodeMirrorRef>) => void;
+    appendFunction: (id: string, newFunction: string) => void;
 
     addDiagnostic: (error: VmError) => void,
     pollDiagnostics: () => void,
@@ -48,6 +53,37 @@ export const createCodeEditorSlice: StateCreator<
     diagnosticInvalidated: false,
 
     // Actions
+    setCodemirrorRef: (id : string, ref: React.RefObject<ReactCodeMirrorRef>) =>
+      set((state) => {
+        state.threads[id].codeMirrorRef = ref
+        return state
+      }),
+    appendFunction: (id: string, newFunction: string) =>
+      set((state) => {
+        console.log(state.threads[id])
+        const codemirrorRef = state.threads[id].codeMirrorRef;
+        if (!codemirrorRef || !codemirrorRef.current) return state;
+    
+        const view = codemirrorRef.current.view;
+        if (!view) return state;
+    
+        const selection = view.state.selection.main;
+        const pos = selection.from;
+    
+        const thread = state.threads[id];
+        if (!thread) return state;
+    
+        view.dispatch({
+          changes: {
+            from: pos,
+            to: pos,
+            insert: newFunction,
+          },
+          selection: { anchor: pos + newFunction.length },
+        });
+    
+        return state
+      }),
     addThread: async (target: Target) => {
         const id = await target.addThread("", "event_whenflagclicked", "");
         const thread = target.getThread(id);
@@ -55,7 +91,7 @@ export const createCodeEditorSlice: StateCreator<
         set((state) => {
             state.nextThreadNumber++;
             const newThreads = { ...state.threads };
-            newThreads[id] = { thread, text: "", saved: true };
+            newThreads[id] = { thread, text: "", saved: true, codeMirrorRef: React.createRef<ReactCodeMirrorRef>() };
 
             const newState = { ...state, threads: newThreads };
             newState.codeThreadId = id;
@@ -63,7 +99,7 @@ export const createCodeEditorSlice: StateCreator<
         }
         )
     },
-    updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { text: text, saved: false, thread: state.threads[id].thread } } })),
+    updateThread: (id: string, text: string) => set((state) => ({ threads: { ...state.threads, [id]: { ...state.threads[id], text: text, saved: false, thread: state.threads[id].thread } } })),
     loadTargetThreads: (target: Target) => set((state) => {
         const newThreads: { [key: string]: ThreadState } = {};
 
@@ -71,7 +107,7 @@ export const createCodeEditorSlice: StateCreator<
 
         const keys = Object.keys(target.threads);
         keys.forEach((id) => {
-            newThreads[id] = { thread: target.getThread(id), text: target.getThread(id).script, saved: true };
+            newThreads[id] = {...state.threads[id], thread: target.getThread(id), text: target.getThread(id).script, saved: true };
             if (!newThreads[id].thread.displayName) {
                 newThreads[id].thread.displayName = "Thread " + nextThreadNumber;
                 nextThreadNumber++;

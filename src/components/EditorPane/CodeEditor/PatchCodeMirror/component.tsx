@@ -1,7 +1,6 @@
 // Keeping this file in jsx for now in order to use the CodeMirror component see error triage BXC-210
-import React, { useState, useEffect, useRef } from "react";
-
-import CodeMirror from "@uiw/react-codemirror";
+import React, { useEffect, useState, useRef } from "react";
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
@@ -18,11 +17,12 @@ type PatchCodeMirrorProps = {
 };
 
 const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
-  // New LSP server state and refs
+  const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
+  const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
+
   const wsRef = useRef<WebSocket | null>(null);
   const [lspConnectionState, setLspConnectionState] = useState<any>();
 
-  // const patchVM = usePatchStore((state) => state.patchVM);
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
@@ -31,6 +31,8 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   );
 
   useEffect(() => {
+    setCodemirrorRef(thread.id,codemirrorRef);
+
     const serverUri = `${process.env.LSP_SERVER_URL}` as
       | `ws://${string}`
       | `wss://${string}`;
@@ -46,7 +48,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
     });
 
     setLspConnectionState(ls);
-  }, []);
+  }, [codemirrorRef, setCodemirrorRef]);
 
   const handleCodeChange = (newScript: string) => {
     updateThread(thread.id, newScript);
@@ -57,12 +59,13 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   return (
     <>
       <CodeMirror
+        ref={codemirrorRef}
         value={getThread(thread.id).text}
         theme="dark"
         extensions={[
           python(),
           lspConnectionState,
-          // autocompletion({ override: [completions(patchVM)],}),
+          // autocompletion({ override: [completions(patchVM)] }),
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
