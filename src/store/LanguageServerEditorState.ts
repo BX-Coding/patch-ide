@@ -1,90 +1,92 @@
-import { StateCreator } from 'zustand'
-import { EditorState } from './index'
-import { Target, Costume,Sound } from '../components/EditorPane/types';
+import { StateCreator } from "zustand";
+import { EditorState } from "./index";
+import { Target, Costume, Sound } from "../components/EditorPane/types";
 
-export interface ServerState {
-    targets: Target[];
-    backdrops: [];
-    costumes: Costume[];
-    sounds: Sound[];
-    messages: [];
+export interface LanguageServerState {
+  targets: Target[];
+  backdrops: [];
+  costumes: Costume[];
+  sounds: Sound[];
+  messages: [];
+  apiData: [];
 }
 
 export interface ServerEditorState {
-    serverState: ServerState,
+  languageServerState: LanguageServerState;
 
-    // Actions
-    updateTargets(targets: []): void;
-    updateBackdrops(backdrops: []): void;
-    updateCostumes(costumes: []): void;
-    updateSounds(sounds: []): void;
-    updateMessages(messages: []): void;
-    updateServerState(): void
+  // Actions
+  updateTargets(targets: []): void;
+  updateBackdrops(backdrops: []): void;
+  updateCostumes(costumes: []): void;
+  updateSounds(sounds: []): void;
+  updateMessages(messages: []): void;
+  updateLanguageServerState(): void;
 }
 
 export const createServerStateSlice: StateCreator<
-    EditorState,
-    [],
-    [],
-    ServerEditorState
+  EditorState,
+  [],
+  [],
+  ServerEditorState
 > = (set, get) => ({
-    serverState: {
-        targets: [],
-        backdrops: [],
-        costumes: [],
-        sounds: [],
-        messages: []
-    },
+  languageServerState: {
+    targets: [],
+    backdrops: [],
+    costumes: [],
+    sounds: [],
+    messages: [],
+    apiData: [],
+  },
 
-    // Actions
-    updateServerState: () => {
-        const state = get();
-        const serverState = state.serverState;
-        state.sendLspState(serverState);
-    },
-    updateTargets: (targets: Target[]) => {
-        set((state) => ({
-            serverState: {
-                ...state.serverState,
-                targets
-            }
-        }));
-        get().updateServerState();
-    },
-    updateBackdrops: (backdrops: []) => {
-        set((state) => ({
-            serverState: {
-                ...state.serverState,
-                backdrops
-            }
-        }));
-        get().updateServerState();
-    },
-    updateCostumes: (costumes: Costume[]) => {
-        set((state) => ({
-            serverState: {
-                ...state.serverState,
-                costumes
-            }
-        }));
-        get().updateServerState();
-    },
-    updateSounds: (sounds: Sound[]) => {
-        set((state) => ({
-            serverState: {
-                ...state.serverState,
-                sounds
-            }
-        }));
-        get().updateServerState();
-    },
-    updateMessages: (messages: []) => {
-        set((state) => ({
-            serverState: {
-                ...state.serverState,
-                messages
-            }
-        }));
-        get().updateServerState();
-    },
-})
+  // Actions
+  updateLanguageServerState: () => {
+    const state = get();
+    const serverState = state.languageServerState;
+    state.sendLspState(serverState);
+  },
+  updateTargets: (targets: Target[]) => {
+    set((state) => ({
+      languageServerState: {
+        ...state.languageServerState,
+        targets,
+      },
+    }));
+    get().updateLanguageServerState();
+  },
+  updateBackdrops: (backdrops: []) => {
+    set((state) => ({
+      languageServerState: {
+        ...state.languageServerState,
+        backdrops,
+      },
+    }));
+    get().updateLanguageServerState();
+  },
+  updateCostumes: (costumes: Costume[]) => {
+    set((state) => ({
+      languageServerState: {
+        ...state.languageServerState,
+        costumes,
+      },
+    }));
+    get().updateLanguageServerState();
+  },
+  updateSounds: (sounds: Sound[]) => {
+    set((state) => ({
+      languageServerState: {
+        ...state.languageServerState,
+        sounds,
+      },
+    }));
+    get().updateLanguageServerState();
+  },
+  updateMessages: (messages: []) => {
+    set((state) => ({
+      languageServerState: {
+        ...state.languageServerState,
+        messages,
+      },
+    }));
+    get().updateLanguageServerState();
+  },
+});
