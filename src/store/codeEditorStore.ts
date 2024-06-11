@@ -6,6 +6,7 @@ import React from 'react';
 import { Transport } from "@open-rpc/client-js/build/transports/Transport";
 import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
+import { ServerState } from './serverStateStore';
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
     let result: ReturnType<T>;
@@ -53,13 +54,6 @@ class LazyWebsocketTransport extends Transport {
     }
 }
 
-interface IJSONRPCRequest {
-    jsonrpc: "2.0";
-    id: string | number;
-    method: string;
-    params: any[] | object;
-}
-
 type ThreadState = {
     thread: Thread,
     text: string,
@@ -76,7 +70,7 @@ export interface CodeEditorState {
     transportRef: LazyWebsocketTransport | null;
 
     // Actions
-    sendLspState: (request: IJSONRPCRequest) => void;
+    sendLspState: (request: ServerState) => void;
     setTransportRef: (ref:  LazyWebsocketTransport) => void;
     getTransportRef: () => LazyWebsocketTransport | null;
     addThread: (target: Target) => void,
@@ -114,14 +108,21 @@ export const createCodeEditorSlice: StateCreator<
     transportRef: null,
 
     // Actions
-    sendLspState: (request: IJSONRPCRequest) => {
+    sendLspState: (state: ServerState) => {
       const transport = get().transportRef;
       if (transport) {
-          const didChangeConfigurationParams = {
+          const data = {
                 internalID: 1,
-                request: request
+                request: {
+                    jsonrpc: "2.0" as const,
+                    id: 1,
+                    method: "workspace/didChangeConfiguration",
+                    params: {
+                      settings: state,
+                    },
+                }
             };
-          transport.sendData(didChangeConfigurationParams);
+          transport.sendData(data);
       } else {
         console.error("WebSocket is not initialized.");
       }

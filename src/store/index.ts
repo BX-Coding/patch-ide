@@ -5,6 +5,7 @@ import { SoundEditorState, createSoundEditorSlice } from './soundEditorStore'
 import { SpriteAreaState, createSpriteAreaSlice } from './spriteAreaStore'
 import { VariableEditorState, createVariableEditorSlice } from './variableEditorStore'
 import { EditorTab, ModalSelectorType, PatchEditorState, createPatchEditorSlice } from './patchEditorStore'
+import { ServerEditorState,createServerStateSlice } from './serverStateStore'
 
 export interface EditorState extends 
     CodeEditorState, 
@@ -12,7 +13,8 @@ export interface EditorState extends
     SoundEditorState, 
     SpriteAreaState, 
     VariableEditorState, 
-    PatchEditorState {}
+    PatchEditorState,
+    ServerEditorState {}
 
 const usePatchStore = create<EditorState>()((...params) => ({
     ...createCodeEditorSlice(...params),
@@ -21,6 +23,7 @@ const usePatchStore = create<EditorState>()((...params) => ({
     ...createSpriteAreaSlice(...params),
     ...createVariableEditorSlice(...params),
     ...createPatchEditorSlice(...params),
+    ...createServerStateSlice(...params)
 }))
 
 export { EditorTab, ModalSelectorType }; 
