@@ -32,6 +32,24 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       })
     }
 
+    // const handleServerStateUpdate = (pyatchVM:any)=>{
+    //   const dynamicOptions = {
+    //     TARGET_NAMES: pyatchVM.getAllRenderedTargets()
+    //         .filter((target:any) => !target.isStage)
+    //         .map((target:any) => target.getName()),
+    //     BACKDROP_NAMES: pyatchVM.runtime.getTargetForStage().sprite.costumes
+    //         .map((costume:any) => costume.name),
+    //     COSTUME_NAMES: pyatchVM.editingTarget.sprite.costumes
+    //         .map((costume:any) => costume.name),
+    //     SOUND_NAMES: pyatchVM.editingTarget.getSounds()
+    //         .map((sound:any) => sound.name),
+    //     MESSAGE_NAMES: pyatchVM.getAllBroadcastMessages()
+    //   };
+      
+    //   console.log(dynamicOptions)
+    //   return dynamicOptions
+    // }
+
     useEffect(() => {
         const asyncEffect = async () => {
           setPatchReady(false);
@@ -50,9 +68,11 @@ const useInitializedVm = (onVmInitialized: () => void) => {
           patchVM.on("VM READY", () => {
             setVmLoaded(true);
           });
+          // patchVM.on("PROJECT_CHANGED",() => handleServerStateUpdate(patchVM))
           
           patchVM.runtime.on("QUESTION", onQuestionAsked);
           patchVM.on("RUNTIME ERROR", handleRuntimeError)
+         
           
           setPatchVM(patchVM);
         }
@@ -61,6 +81,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       }, []);
 
       useEffect(() => {
+        
         if (!patchVM) {
           return;
         }
