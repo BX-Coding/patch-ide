@@ -6,7 +6,7 @@ import React from 'react';
 import { Transport } from "@open-rpc/client-js/build/transports/Transport";
 import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
-import { ServerState } from './serverStateStore';
+import { ServerState } from './LanguageServerEditorState';
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
     let result: ReturnType<T>;
