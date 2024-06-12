@@ -10,18 +10,17 @@ import completions from "../../../../util/patch-autocompletions";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
-import { languageServer } from "codemirror-languageserver";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
+  lspConnectionState: any;
 };
 
-const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
+const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
-  const wsRef = useRef<WebSocket | null>(null);
-  const [lspConnectionState, setLspConnectionState] = useState<any>();
+  // const sendState = usePatchStore((state)=>state.sendLspState)
 
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
@@ -32,28 +31,23 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
 
   useEffect(() => {
     setCodemirrorRef(thread.id,codemirrorRef);
-
-    const serverUri = `${process.env.LSP_SERVER_URL}` as
-      | `ws://${string}`
-      | `wss://${string}`;
-
-    wsRef.current = new WebSocket(serverUri);
-
-    const ls = languageServer({
-      serverUri,
-      rootUri: "file:///",
-      documentUri: "file:///index.js",
-      languageId: "python",
-      workspaceFolders: null,
-    });
-
-    setLspConnectionState(ls);
   }, [codemirrorRef, setCodemirrorRef]);
 
   const handleCodeChange = (newScript: string) => {
     updateThread(thread.id, newScript);
     setProjectChanged(true);
     invalidateDiagnostics(thread.id);
+    // const didChangeConfigurationParams = {
+    //   jsonrpc: "2.0" as const,
+    //   id: 1,
+    //   method: "workspace/didChangeConfiguration",
+    //   params: {
+    //     settings: {
+    //       exampleSetting: "exampleValue",
+    //     },
+    //   },
+    // };
+    // sendState(didChangeConfigurationParams)
   };
 
   return (
