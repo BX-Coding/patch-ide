@@ -76,9 +76,9 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       patchVM.on("VM READY", () => {
         setVmLoaded(true);
       });
-      patchVM.runtime.on("PROJECT_CHANGED", () =>
-        handleServerStateUpdate(patchVM)
-      );
+      // patchVM.runtime.on("PROJECT_CHANGED", () =>
+      //   handleServerStateUpdate(patchVM)
+      // );
 
       patchVM.runtime.on("QUESTION", onQuestionAsked);
       patchVM.on("RUNTIME ERROR", handleRuntimeError);
