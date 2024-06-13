@@ -7,6 +7,7 @@ import { Transport } from "@open-rpc/client-js/build/transports/Transport";
 import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
 import { LanguageServerState } from "./LanguageServerEditorState";
+import WS from "isomorphic-ws";
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
   let result: ReturnType<T>;
@@ -52,6 +53,23 @@ class LazyWebsocketTransport extends Transport {
   ) {
     return this.delegate?.sendData(data, timeout);
   }
+  getConnectionState() {
+    if (!this.delegate) {
+      return 'disconnected';
+    }
+    switch (this.delegate.connection.readyState) {
+      case WS.CONNECTING:
+        return 'connecting';
+      case WS.OPEN:
+        return 'open';
+      case WS.CLOSING:
+        return 'closing';
+      case WS.CLOSED:
+        return 'closed';
+      default:
+        return 'unknown';
+    }
+  }
 }
 
 type ThreadState = {
@@ -70,7 +88,7 @@ export interface CodeEditorState {
   transportRef: LazyWebsocketTransport | null;
 
   // Actions
-  sendLspState: (request: LanguageServerState) => void;
+  sendLspState: () => void;
   setTransportRef: (ref: LazyWebsocketTransport) => void;
   getTransportRef: () => LazyWebsocketTransport | null;
   addThread: (target: Target) => void;
@@ -111,7 +129,24 @@ export const createCodeEditorSlice: StateCreator<
   transportRef: null,
 
   // Actions
-  sendLspState: (state: LanguageServerState) => {
+  sendLspState: () => {
+    const patchVM = get().patchVM
+    const dynamicOptions: LanguageServerState = {
+      targets: patchVM
+        .getAllRenderedTargets()
+        .filter((target: any) => !target.isStage)
+        .map((target: any) => target.getName()),
+      backdrops: patchVM.runtime
+        .getTargetForStage()
+        .sprite.costumes.map((costume: any) => costume.name),
+      costumes: patchVM.editingTarget.sprite.costumes.map(
+        (costume: any) => costume.name
+      ),
+      sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
+      messages: patchVM.getAllBroadcastMessages(),
+      apiData: patchVM.getApiInfo(),
+    };
+
     const transport = get().transportRef;
     if (transport) {
       const data = {
@@ -121,7 +156,7 @@ export const createCodeEditorSlice: StateCreator<
           id: 1,
           method: "workspace/didChangeConfiguration",
           params: {
-            settings: state,
+            settings: dynamicOptions,
           },
         },
       };
@@ -130,7 +165,47 @@ export const createCodeEditorSlice: StateCreator<
       console.error("WebSocket is not initialized.");
     }
   },
-  setTransportRef: (ref) => set({ transportRef: ref }),
+  setTransportRef: (ref) => {
+    set({ transportRef: ref })
+
+    const patchVM = get().patchVM
+
+    setTimeout(()=>{
+      const dynamicOptions: LanguageServerState = {
+        targets: patchVM
+          .getAllRenderedTargets()
+          .filter((target: any) => !target.isStage)
+          .map((target: any) => target.getName()),
+        backdrops: patchVM.runtime
+          .getTargetForStage()
+          .sprite.costumes.map((costume: any) => costume.name),
+        costumes: patchVM.editingTarget.sprite.costumes.map(
+          (costume: any) => costume.name
+        ),
+        sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
+        messages: patchVM.getAllBroadcastMessages(),
+        apiData: patchVM.getApiInfo(),
+      };
+
+      const transport = ref;
+      if (transport) {
+        const data = {
+          internalID: 1,
+          request: {
+            jsonrpc: "2.0" as const,
+            id: 1,
+            method: "workspace/didChangeConfiguration",
+            params: {
+              settings: dynamicOptions,
+            },
+          },
+        };
+        transport.sendData(data);
+      } else {
+        console.error("WebSocket is not initialized.");
+      }
+    },3000)
+  },
   getTransportRef: () => get().transportRef,
   setCodemirrorRef: (id: string, ref: React.RefObject<ReactCodeMirrorRef>) =>
     set((state) => {
