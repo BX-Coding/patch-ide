@@ -42,7 +42,7 @@ export const createServerStateSlice: StateCreator<
   updateLanguageServerState: () => {
     const state = get();
     const serverState = state.languageServerState;
-    state.sendLspState(serverState);
+    // state.sendLspState(serverState);
   },
   updateTargets: (targets: Target[]) => {
     set((state) => ({

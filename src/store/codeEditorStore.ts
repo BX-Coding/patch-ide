@@ -23,37 +23,6 @@ export function once<T extends (...args: any[]) => any>(fn: T): T {
   } as T;
 }
 
-export const createWSTransport = once((serverUri: string) => {
-  return new LazyWebsocketTransport(serverUri);
-});
-
-class LazyWebsocketTransport extends Transport {
-  private delegate: WebSocketTransport | undefined;
-  private serverUri: string;
-
-  constructor(serverUri: string) {
-    super();
-    this.delegate = undefined;
-    this.serverUri = serverUri;
-  }
-
-  override async connect() {
-    this.delegate = new WebSocketTransport(this.serverUri);
-    return this.delegate.connect();
-  }
-
-  override close() {
-    this.delegate?.close();
-  }
-
-  override async sendData(
-    data: JSONRPCRequestData,
-    timeout?: number | null | undefined
-  ) {
-    return this.delegate?.sendData(data, timeout);
-  }
-}
-
 type ThreadState = {
   thread: Thread;
   text: string;
@@ -67,12 +36,12 @@ export interface CodeEditorState {
   nextThreadNumber: number;
   diagnostics: VmError[];
   diagnosticInvalidated: boolean;
-  transportRef: LazyWebsocketTransport | null;
+  transportRef: WebSocketTransport | null;
 
   // Actions
-  sendLspState: (request: LanguageServerState) => void;
-  setTransportRef: (ref: LazyWebsocketTransport) => void;
-  getTransportRef: () => LazyWebsocketTransport | null;
+  sendLspState: () => void;
+  setTransportRef: (ref: WebSocketTransport) => void;
+  getTransportRef: () => WebSocketTransport | null;
   addThread: (target: Target) => void;
   updateThread: (id: string, text: string) => void;
   loadTargetThreads: (target: Target) => void;
@@ -111,7 +80,24 @@ export const createCodeEditorSlice: StateCreator<
   transportRef: null,
 
   // Actions
-  sendLspState: (state: LanguageServerState) => {
+  sendLspState: () => {
+    const patchVM = get().patchVM
+    const dynamicOptions: LanguageServerState = {
+      targets: patchVM
+        .getAllRenderedTargets()
+        .filter((target: any) => !target.isStage)
+        .map((target: any) => target.getName()),
+      backdrops: patchVM.runtime
+        .getTargetForStage()
+        .sprite.costumes.map((costume: any) => costume.name),
+      costumes: patchVM.editingTarget.sprite.costumes.map(
+        (costume: any) => costume.name
+      ),
+      sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
+      messages: patchVM.getAllBroadcastMessages(),
+      apiData: patchVM.getApiInfo(),
+    };
+
     const transport = get().transportRef;
     if (transport) {
       const data = {
@@ -121,7 +107,7 @@ export const createCodeEditorSlice: StateCreator<
           id: 1,
           method: "workspace/didChangeConfiguration",
           params: {
-            settings: state,
+            settings: dynamicOptions,
           },
         },
       };
@@ -130,7 +116,47 @@ export const createCodeEditorSlice: StateCreator<
       console.error("WebSocket is not initialized.");
     }
   },
-  setTransportRef: (ref) => set({ transportRef: ref }),
+  setTransportRef: (ref) => {
+    set({ transportRef: ref })
+
+    const patchVM = get().patchVM
+
+    setTimeout(()=>{
+      const dynamicOptions: LanguageServerState = {
+        targets: patchVM
+          .getAllRenderedTargets()
+          .filter((target: any) => !target.isStage)
+          .map((target: any) => target.getName()),
+        backdrops: patchVM.runtime
+          .getTargetForStage()
+          .sprite.costumes.map((costume: any) => costume.name),
+        costumes: patchVM.editingTarget.sprite.costumes.map(
+          (costume: any) => costume.name
+        ),
+        sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
+        messages: patchVM.getAllBroadcastMessages(),
+        apiData: patchVM.getApiInfo(),
+      };
+
+      const transport = ref;
+      if (transport) {
+        const data = {
+          internalID: 1,
+          request: {
+            jsonrpc: "2.0" as const,
+            id: 1,
+            method: "workspace/didChangeConfiguration",
+            params: {
+              settings: dynamicOptions,
+            },
+          },
+        };
+        transport.sendData(data);
+      } else {
+        console.error("WebSocket is not initialized.");
+      }
+    },3000)
+  },
   getTransportRef: () => get().transportRef,
   setCodemirrorRef: (id: string, ref: React.RefObject<ReactCodeMirrorRef>) =>
     set((state) => {
