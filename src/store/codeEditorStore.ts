@@ -1,12 +1,64 @@
-// codeEditorStore.ts (Zustand store)
-import create, { StateCreator } from "zustand";
+import { StateCreator } from "zustand";
 import { EditorState } from "./index";
 import { Target, Thread, VmError } from "../components/EditorPane/types";
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror";
+import React from "react";
+import { Transport } from "@open-rpc/client-js/build/transports/Transport";
+import { WebSocketTransport } from "@open-rpc/client-js";
+import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
+import { LanguageServerState } from "./LanguageServerEditorState";
+
+export function once<T extends (...args: any[]) => any>(fn: T): T {
+  let result: ReturnType<T>;
+  let called = false;
+  return function (
+    this: ThisParameterType<T>,
+    ...args: Parameters<T>
+  ): ReturnType<T> {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, args) as ReturnType<T>;
+    }
+    return result;
+  } as T;
+}
+
+export const createWSTransport = once((serverUri: string) => {
+  return new LazyWebsocketTransport(serverUri);
+});
+
+class LazyWebsocketTransport extends Transport {
+  private delegate: WebSocketTransport | undefined;
+  private serverUri: string;
+
+  constructor(serverUri: string) {
+    super();
+    this.delegate = undefined;
+    this.serverUri = serverUri;
+  }
+
+  override async connect() {
+    this.delegate = new WebSocketTransport(this.serverUri);
+    return this.delegate.connect();
+  }
+
+  override close() {
+    this.delegate?.close();
+  }
+
+  override async sendData(
+    data: JSONRPCRequestData,
+    timeout?: number | null | undefined
+  ) {
+    return this.delegate?.sendData(data, timeout);
+  }
+}
 
 type ThreadState = {
   thread: Thread;
   text: string;
   saved: boolean;
+  codeMirrorRef: React.RefObject<ReactCodeMirrorRef> | null;
 };
 
 export interface CodeEditorState {
@@ -15,11 +67,14 @@ export interface CodeEditorState {
   nextThreadNumber: number;
   diagnostics: VmError[];
   diagnosticInvalidated: boolean;
+  transportRef: LazyWebsocketTransport | null;
 
   // Actions
+  sendLspState: (request: LanguageServerState) => void;
+  setTransportRef: (ref: LazyWebsocketTransport) => void;
+  getTransportRef: () => LazyWebsocketTransport | null;
   addThread: (target: Target) => void;
   updateThread: (id: string, text: string) => void;
-  appendFunction: (id: string, newFunction: string) => void;
   loadTargetThreads: (target: Target) => void;
   saveThread: (id: string | string[]) => void;
   saveTargetThreads: (target: Target) => void;
@@ -28,6 +83,11 @@ export interface CodeEditorState {
   getThread: (id: string) => ThreadState;
   getCodeThreadId: () => string;
   setCodeThreadId: (id: string) => void;
+  setCodemirrorRef: (
+    id: string,
+    ref: React.RefObject<ReactCodeMirrorRef>
+  ) => void;
+  appendFunction: (id: string, newFunction: string) => void;
 
   addDiagnostic: (error: VmError) => void;
   pollDiagnostics: () => void;
@@ -48,8 +108,61 @@ export const createCodeEditorSlice: StateCreator<
   nextThreadNumber: 0,
   diagnostics: [],
   diagnosticInvalidated: false,
+  transportRef: null,
 
   // Actions
+  sendLspState: (state: LanguageServerState) => {
+    const transport = get().transportRef;
+    if (transport) {
+      const data = {
+        internalID: 1,
+        request: {
+          jsonrpc: "2.0" as const,
+          id: 1,
+          method: "workspace/didChangeConfiguration",
+          params: {
+            settings: state,
+          },
+        },
+      };
+      transport.sendData(data);
+    } else {
+      console.error("WebSocket is not initialized.");
+    }
+  },
+  setTransportRef: (ref) => set({ transportRef: ref }),
+  getTransportRef: () => get().transportRef,
+  setCodemirrorRef: (id: string, ref: React.RefObject<ReactCodeMirrorRef>) =>
+    set((state) => {
+      state.threads[id].codeMirrorRef = ref;
+      return state;
+    }),
+  appendFunction: (id: string, newFunction: string) =>
+    set((state) => {
+      console.log(state.threads[id]);
+      const codemirrorRef = state.threads[id].codeMirrorRef;
+      if (!codemirrorRef || !codemirrorRef.current) return state;
+
+      const view = codemirrorRef.current.view;
+      if (!view) return state;
+
+      const selection = view.state.selection.main;
+      const pos = selection.from;
+
+      const thread = state.threads[id];
+      if (!thread) return state;
+
+      view.dispatch({
+        changes: {
+          from: pos,
+          to: pos,
+          insert: newFunction,
+        },
+        selection: { anchor: pos + newFunction.length },
+      });
+
+      return state;
+    }),
   addThread: async (target: Target) => {
     const id = await target.addThread("", "event_whenflagclicked", "");
     const thread = target.getThread(id);
@@ -57,7 +170,12 @@ export const createCodeEditorSlice: StateCreator<
     set((state) => {
       state.nextThreadNumber++;
       const newThreads = { ...state.threads };
-      newThreads[id] = { thread, text: "", saved: true };
+      newThreads[id] = {
+        thread,
+        text: "",
+        saved: true,
+        codeMirrorRef: React.createRef<ReactCodeMirrorRef>(),
+      };
 
       const newState = { ...state, threads: newThreads };
       newState.codeThreadId = id;
@@ -72,18 +190,10 @@ export const createCodeEditorSlice: StateCreator<
           ...state.threads[id],
           text: text,
           saved: false,
+          thread: state.threads[id].thread,
         },
       },
     })),
-  appendFunction: (id: string, newFunction: string) =>
-    set((state) => {
-      const thread = state.threads[id];
-      if (thread) {
-        thread.text += `\n${newFunction}`;
-        thread.saved = false;
-      }
-      return { threads: { ...state.threads, [id]: thread } };
-    }),
   loadTargetThreads: (target: Target) =>
     set((state) => {
       const newThreads: { [key: string]: ThreadState } = {};
@@ -93,6 +203,7 @@ export const createCodeEditorSlice: StateCreator<
       const keys = Object.keys(target.threads);
       keys.forEach((id) => {
         newThreads[id] = {
+          ...state.threads[id],
           thread: target.getThread(id),
           text: target.getThread(id).script,
           saved: true,
@@ -169,7 +280,10 @@ export const createCodeEditorSlice: StateCreator<
     }),
   getThread: (id: string) => get().threads[id],
   getCodeThreadId: () => get().codeThreadId,
-  setCodeThreadId: (id: string) => set((state) => ({ codeThreadId: id })),
+  setCodeThreadId: (id: string) =>
+    set((state) => {
+      return { ...state, codeThreadId: id };
+    }),
 
   addDiagnostic: (error: VmError) =>
     set((state) => {
@@ -184,20 +298,24 @@ export const createCodeEditorSlice: StateCreator<
       const compileTimeErrors = state.patchVM.getCompileTimeErrors();
       const vmErrors: VmError[] = runtimeErrors
         .concat(compileTimeErrors)
-        .map((error: VmError) => ({
-          ...error,
-          fresh: true,
-        }));
+        .map((error: VmError) => {
+          return { ...error, fresh: true };
+        });
       return { ...state, diagnostics: vmErrors, diagnosticInvalidated: false };
     }),
   clearDiagnostics: () =>
-    set((state) => ({ diagnostics: [], diagnosticInvalidated: false })),
+    set((state) => {
+      return { ...state, diagnostics: [], diagnosticInvalidated: false };
+    }),
   clearRuntimeDiagnostics: () =>
-    set((state) => ({
-      diagnostics: state.diagnostics.filter(
-        (error) => error.type !== "RuntimeError"
-      ),
-    })),
+    set((state) => {
+      return {
+        ...state,
+        diagnostics: state.diagnostics.filter(
+          (error) => error.type !== "RuntimeError"
+        ),
+      };
+    }),
   invalidateDiagnostics: (threadId: string) =>
     set((state) => {
       if (state.diagnosticInvalidated) {
@@ -205,15 +323,18 @@ export const createCodeEditorSlice: StateCreator<
       }
       return {
         ...state,
-        diagnostics: state.diagnostics.map((diagnostic) =>
-          diagnostic.threadId === threadId
-            ? { ...diagnostic, fresh: false }
-            : diagnostic
-        ),
+        diagnostics: state.diagnostics.map((diagnostic) => {
+          if (diagnostic.threadId == threadId) {
+            return { ...diagnostic, fresh: false };
+          } else {
+            return diagnostic;
+          }
+        }),
         diagnosticInvalidated: true,
       };
     }),
 
-  getThreadDiagnostics: (threadId: string) =>
-    get().diagnostics.filter((error) => error.threadId === threadId),
+  getThreadDiagnostics: (threadId: string) => {
+    return get().diagnostics.filter((error) => error.threadId === threadId);
+  },
 });
