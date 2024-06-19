@@ -65,10 +65,14 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
         title.style.marginTop = '0px';
         title.style.marginBottom = '5px';
         descript.style.marginTop = '0px';
-        image.style.width = '300px';
+        image.style.maxWidth = '300px';
         image.style.display = 'block';
         image.style.marginLeft = 'auto';
         image.style.marginRight = 'auto';
+        dom.style.maxWidth = '300px';
+        image.onerror = (e) => {
+          image.src = "no-image.png";
+        }
         if (funName != ""){
           image.src = "gifs/" + funName + ".gif"
         }
@@ -78,11 +82,10 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
   })
 
   useEffect(() => {
-    // const serverUri = `${process.env.LSP_SERVER_URL}` as
-    //   | `ws://${string}`
-    //   | `wss://${string}`;
+    const serverUri = `${process.env.LSP_SERVER_URL}` as
+      | `ws://${string}`
+      | `wss://${string}`;
 
-    const serverUri = "ws://localhost:8080";
     wsRef.current = new WebSocket(serverUri);
 
     const ls = languageServer({
@@ -114,7 +117,7 @@ const PatchCodeMirror = ({ thread }: PatchCodeMirrorProps) => {
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
-          // wordHover
+          wordHover
         ]}
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
