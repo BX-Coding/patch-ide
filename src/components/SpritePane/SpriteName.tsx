@@ -37,9 +37,6 @@ export function SpriteName() {
         setName(editingTarget.sprite.name);
     }, [editingTarget]);
 
-    useEffect(() => {
-        console.log("user is typing")
-    }, [name])
 
     return (<Grid display="flex">
         <HorizontalButtons sx={{ marginBottom: '12px' }}>

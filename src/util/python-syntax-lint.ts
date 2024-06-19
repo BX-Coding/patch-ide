@@ -1,40 +1,54 @@
-import {syntaxTree} from "@codemirror/language"
-import {Diagnostic, linter} from "@codemirror/lint"
+import { syntaxTree } from "@codemirror/language";
+import { Diagnostic, linter } from "@codemirror/lint";
+import { EditorView, ViewUpdate } from "@codemirror/view";
+import { VmError } from "../components/EditorPane/types";
 
 let isSyntaxErrorFree = true;
 
-const pythonLinter = (syntaxThreadCallback: (...props: any) => any, patchVM: any, threadId: string) => { return linter(view => {
-  const runtimeErrors = patchVM.getRuntimeErrors().filter((error: any) => error.threadId === threadId);
-  const compileTimeErrors = patchVM.getCompileTimeErrors().filter((error: any) => error.threadId === threadId);
-  const vmErrors = runtimeErrors.concat(compileTimeErrors);
-  let diagnostics: Diagnostic[] = []
-  isSyntaxErrorFree = true;
-  syntaxTree(view.state).cursor().iterate(node => {
-    if (node.type.isError) diagnostics.push({
-      from: node.from,
-      to: node.to,
-      severity: "error",
-      message: "Syntax Error",
-    })
-    if (diagnostics.length > 0) {
-        isSyntaxErrorFree = false
-    }
-  })
-  let doc = view.state.doc;
-  const runtimeErrorDiagnostics = vmErrors.map((error: any) => {
-    const shiftedLineNumber = Math.min(error.lineNumber, doc.lines);
-    return {
-      from: doc.line(shiftedLineNumber).from,
-      to: doc.line(shiftedLineNumber).to,
-      severity: "error",
-      message: error.message,
-      }
-  });
-  diagnostics = diagnostics.concat(runtimeErrorDiagnostics);
-  syntaxThreadCallback(isSyntaxErrorFree);
+const pythonLinter = (
+  syntaxThreadCallback: (...props: any) => any,
+  getDiagnostics: () => VmError[]
+) => {
+  return linter((view) => {
+    let doc = view.state.doc;
+    let diagnostics: Diagnostic[] = getDiagnostics().map((error: VmError) => {
+      const shiftedLineNumber = Math.min(error.lineNumber, doc.lines);
+      const lowerBoundedLineNumber = Math.max(shiftedLineNumber, 1);
 
-  return diagnostics
-})
-}
+      return {
+        from: doc.line(lowerBoundedLineNumber).from,
+        to: doc.line(lowerBoundedLineNumber).to,
+        severity: error.fresh ? "error" : "warning",
+        message: error.message,
+      };
+    });
+    isSyntaxErrorFree = true;
+    syntaxTree(view.state)
+      .cursor()
+      .iterate((node) => {
+        if (node.type.isError)
+          diagnostics.push({
+            from: node.from,
+            to: node.to,
+            severity: "error",
+            message: "Syntax Error",
+          });
+        if (diagnostics.length > 0) {
+          isSyntaxErrorFree = false;
+        }
+      });
+
+    // set diagnostics to runtime errors if there are remaining syntax errors
+    // if (runtimeErrorDiagnostics.length > 0 && !isSyntaxErrorFree) {
+    //   diagnostics = runtimeErrorDiagnostics
+    // } else {
+    //   diagnostics = diagnostics.concat(runtimeErrorDiagnostics)
+    // }
+
+    syntaxThreadCallback(isSyntaxErrorFree);
+
+    return diagnostics;
+  });
+};
 
 export default pythonLinter;
