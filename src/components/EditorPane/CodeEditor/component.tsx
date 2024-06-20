@@ -10,8 +10,8 @@ import {
   languageServer,
   languageServerWithTransport,
 } from "codemirror-languageserver";
-import { createWSTransport } from "../../../store/codeEditorStore";
 import { once } from "../../../store/codeEditorStore";
+import { WebSocketTransport } from "@open-rpc/client-js";
 
 
 export const CodeEditor = () => {
@@ -28,7 +28,7 @@ export const CodeEditor = () => {
       | `ws://${string}`
       | `wss://${string}`;
 
-    const transport = createWSTransport(serverUri);
+    const transport = new WebSocketTransport(serverUri);
     setTransport(transport)
 
     const getCopilotClient = once(() =>

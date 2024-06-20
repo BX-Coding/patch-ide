@@ -11,7 +11,7 @@ import usePatchStore from "../../store";
 import patchStorage from "../../lib/storage";
 import { storage } from "../../lib/firebase";
 import { VmError, VmErrorType } from "../EditorPane/types";
-import { LanguageServerState } from "../../store/LanguageServerEditorState";
+// import { LanguageServerState } from "../../store/LanguageServerEditorState";
 
 const useInitializedVm = (onVmInitialized: () => void) => {
   const setPatchReady = usePatchStore((state) => state.setPatchReady);
@@ -22,6 +22,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
   const setVmLoaded = usePatchStore((state) => state.setVmLoaded);
   const addDiagnostic = usePatchStore((state) => state.addDiagnostic);
   const sendLspState = usePatchStore((state) => state.sendLspState);
+  const transRef = usePatchStore((state)=>state.transportRef)
 
   const handleRuntimeError = ({
     threadId,
@@ -36,26 +37,6 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       type,
       fresh: true,
     });
-  };
-
-  const handleServerStateUpdate = (patchVM: any) => {
-    const dynamicOptions: LanguageServerState = {
-      targets: patchVM
-        .getAllRenderedTargets()
-        .filter((target: any) => !target.isStage)
-        .map((target: any) => target.getName()),
-      backdrops: patchVM.runtime
-        .getTargetForStage()
-        .sprite.costumes.map((costume: any) => costume.name),
-      costumes: patchVM.editingTarget.sprite.costumes.map(
-        (costume: any) => costume.name
-      ),
-      sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
-      messages: patchVM.getAllBroadcastMessages(),
-      apiData: patchVM.getApiInfo(),
-    };
-
-    sendLspState(dynamicOptions);
   };
 
   useEffect(() => {
@@ -76,9 +57,10 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       patchVM.on("VM READY", () => {
         setVmLoaded(true);
       });
-      // patchVM.runtime.on("PROJECT_CHANGED", () =>
-      //   handleServerStateUpdate(patchVM)
-      // );
+
+      patchVM.runtime.on("PROJECT_CHANGED", () =>
+        sendLspState()
+      );
 
       patchVM.runtime.on("QUESTION", onQuestionAsked);
       patchVM.on("RUNTIME ERROR", handleRuntimeError);
@@ -94,7 +76,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
     }
     onVmInitialized();
   }, [patchVM]);
-
+  
   const onQuestionAsked = (question: string | null) => {
     setQuestionAsked(question);
   };
