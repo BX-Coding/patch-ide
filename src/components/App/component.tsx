@@ -101,10 +101,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
-      {!patchVM ?
-        <SplashScreen renderCondition={false} />
-        :
-        <SplashScreen renderCondition={true}>
+        <SplashScreen renderCondition={usePatchStore((state) => state.patchReady)}>
           <ToastContainer
             theme="dark"
             position="top-center"
