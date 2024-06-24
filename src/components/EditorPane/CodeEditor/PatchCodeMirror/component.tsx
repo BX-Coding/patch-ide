@@ -2,17 +2,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
-import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
 import pythonLinter from "../../../../util/python-syntax-lint";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
-import completions from "../../../../util/patch-autocompletions";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
-import { languageServer } from "codemirror-languageserver";
 import {hoverTooltip} from "@codemirror/view";
 import patchAPI from "../../../../assets/patch-api.json"
+import { createRoot } from 'react-dom/client'
+import { HoverTooltip } from "../HoverTooltip";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
@@ -33,49 +32,42 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
   );
 
   const wordHover = hoverTooltip((view, pos, side) => {
-    let {from, to, text} = view.state.doc.lineAt(pos)
-    let start = pos, end = pos
-    while (start > from && /\w/.test(text[start - from - 1])) start--
-    while (end < to && /\w/.test(text[end - from])) end++
+    let {from, to, text} = view.state.doc.lineAt(pos);
+    let start = pos;
+    let end = pos;
+    while (start > from && /\w/.test(text[start - from - 1])) start--;
+    while (end < to && /\w/.test(text[end - from])) end++;
     if (start == pos && side < 0 || end == pos && side > 0)
-      return null
+      return null;
     return {
       pos: start,
       end,
       above: true,
       create(view) {
-        let dom = document.createElement("div")
-
-        let txt = "";
-        let titleTxt = "";
+        const dom = document.createElement("div")
+        const root = createRoot(dom);
         let funName = "";
-        let title = dom.appendChild(document.createElement("h4"));
-        let descript = dom.appendChild(document.createElement("p"));
-        let image = dom.appendChild(document.createElement("img"));
+        let functionDeclaration = "";
+        let description = "";
+        let exampleCode = "";
         patchAPI["patch-functions"].forEach(function(x){
-            if (x["name"] == text.slice(start - from, end - from)) {
-              funName = x["name"];
-              titleTxt = x["name"] + getParamText(x["parameters"]);
-              txt = x["description"]
-              + "\n\nExample: " + x["exampleUsage"]
-            }
-        });
-        title.innerText = titleTxt;
-        descript.innerText = txt;
-        title.style.marginTop = '0px';
-        title.style.marginBottom = '5px';
-        descript.style.marginTop = '0px';
-        image.style.maxWidth = '300px';
-        image.style.display = 'block';
-        image.style.marginLeft = 'auto';
-        image.style.marginRight = 'auto';
-        dom.style.maxWidth = '300px';
-        image.onerror = (e) => {
-          image.src = "no-image.png";
-        }
-        if (funName != ""){
-          image.src = "gifs/" + funName + ".gif"
-        }
+          if (x["name"] == text.slice(start - from, end - from)) {
+            funName = x["name"];
+            functionDeclaration = x["name"] + getParamText(x["parameters"]);
+            description = x["description"];
+            exampleCode = x["exampleUsage"];
+          }
+      });
+      let imgSrc = "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
+            funName +
+            ".gif?alt=media";
+      if(funName != "") {
+        root.render(<HoverTooltip
+        declare = {functionDeclaration}
+        descript = {description}
+        exampleCode = {exampleCode} 
+        imgSrc = {imgSrc}/>);
+      }
         return {dom}
       }
     }
