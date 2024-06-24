@@ -18,7 +18,10 @@ type PatchCodeMirrorProps = {
   lspConnectionState: any;
 };
 
-const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) => {
+const PatchCodeMirror = ({
+  thread,
+  lspConnectionState,
+}: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
@@ -32,13 +35,12 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
   );
 
   const wordHover = hoverTooltip((view, pos, side) => {
-    let {from, to, text} = view.state.doc.lineAt(pos);
-    let start = pos;
-    let end = pos;
+    let { from, to, text } = view.state.doc.lineAt(pos);
+    let start = pos,
+      end = pos;
     while (start > from && /\w/.test(text[start - from - 1])) start--;
     while (end < to && /\w/.test(text[end - from])) end++;
-    if (start == pos && side < 0 || end == pos && side > 0)
-      return null;
+    if ((start == pos && side < 0) || (end == pos && side > 0)) return null;
     return {
       pos: start,
       end,
@@ -74,7 +76,7 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
   })
 
   useEffect(() => {
-    setCodemirrorRef(thread.id,codemirrorRef);
+    setCodemirrorRef(thread.id, codemirrorRef);
   }, [codemirrorRef, setCodemirrorRef]);
 
   const handleCodeChange = (newScript: string) => {
@@ -107,7 +109,7 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
-          wordHover
+          wordHover,
         ]}
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
@@ -117,14 +119,14 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
 };
 
 function getParamText(object: any) {
-  let text = "("
+  let text = "(";
   for (var key in object) {
-    text += key + ": " + object[key] + ", "
+    text += key + ": " + object[key] + ", ";
   }
   if (text.length > 1) {
     text = text.substring(0, text.length - 2);
   }
-  text += ")"
+  text += ")";
   return text;
 }
 export default PatchCodeMirror;
