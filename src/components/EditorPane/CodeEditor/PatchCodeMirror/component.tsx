@@ -10,13 +10,19 @@ import completions from "../../../../util/patch-autocompletions";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
+import { languageServer } from "codemirror-languageserver";
+import { hoverTooltip } from "@codemirror/view";
+import patchAPI from "../../../../assets/patch-api.json";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
   lspConnectionState: any;
 };
 
-const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) => {
+const PatchCodeMirror = ({
+  thread,
+  lspConnectionState,
+}: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
 
@@ -29,8 +35,65 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
     thread.id
   );
 
+  const wordHover = hoverTooltip((view, pos, side) => {
+    let { from, to, text } = view.state.doc.lineAt(pos);
+    let start = pos,
+      end = pos;
+    while (start > from && /\w/.test(text[start - from - 1])) start--;
+    while (end < to && /\w/.test(text[end - from])) end++;
+    if ((start == pos && side < 0) || (end == pos && side > 0)) return null;
+    return {
+      pos: start,
+      end,
+      above: true,
+      create(view) {
+        let dom = document.createElement("div");
+        dom.style.padding = "10px";
+        dom.style.border = "1px solid rgba(204, 204, 204, 0.1)";
+        dom.style.boxShadow = "2px 2px 4px rgba(0, 0, 0, 0.2)";
+        dom.style.borderRadius = "5px";
+
+        let txt = "";
+        let titleTxt = "";
+        let funName = "";
+        let title = dom.appendChild(document.createElement("h4"));
+        let descript = dom.appendChild(document.createElement("p"));
+        let image = dom.appendChild(document.createElement("img"));
+        patchAPI["patch-functions"].forEach(function (x) {
+          if (x["name"] == text.slice(start - from, end - from)) {
+            funName = x["name"];
+            titleTxt = x["name"] + getParamText(x["parameters"]);
+            txt = x["description"] + "\n\nExample: " + x["exampleUsage"];
+          }
+        });
+        title.innerText = titleTxt;
+        descript.innerText = txt;
+        title.style.marginTop = "0px";
+        title.style.marginBottom = "5px";
+        descript.style.marginTop = "0px";
+        image.style.maxWidth = "300px";
+        image.style.display = "block";
+        image.style.marginLeft = "auto";
+        image.style.height = "200px";
+        image.style.marginRight = "auto";
+        dom.style.maxWidth = "300px";
+        image.onerror = (e) => {
+          image.src =
+            "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2Fshow.gif?alt=media";
+        };
+        if (funName != "") {
+          image.src =
+            "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
+            funName +
+            ".gif?alt=media";
+        }
+        return { dom };
+      },
+    };
+  });
+
   useEffect(() => {
-    setCodemirrorRef(thread.id,codemirrorRef);
+    setCodemirrorRef(thread.id, codemirrorRef);
   }, [codemirrorRef, setCodemirrorRef]);
 
   const handleCodeChange = (newScript: string) => {
@@ -63,6 +126,7 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
           pythonLinter((_) => {}, getDiagnostics),
           lintGutter(),
           indentationMarkers(),
+          wordHover,
         ]}
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
@@ -71,4 +135,15 @@ const PatchCodeMirror = ({ thread, lspConnectionState}: PatchCodeMirrorProps) =>
   );
 };
 
+function getParamText(object: any) {
+  let text = "(";
+  for (var key in object) {
+    text += key + ": " + object[key] + ", ";
+  }
+  if (text.length > 1) {
+    text = text.substring(0, text.length - 2);
+  }
+  text += ")";
+  return text;
+}
 export default PatchCodeMirror;
