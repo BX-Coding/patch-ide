@@ -64,15 +64,16 @@ const PatchCodeMirror = ({
           "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
           funName +
           ".gif?alt=media";
-        imgSrc = funName == "" ? "" : imgSrc;
-        root.render(
-          <HoverTooltip
-            declare={functionDeclaration}
-            descript={description}
-            exampleCode={exampleCode}
-            imgSrc={imgSrc}
-          />
-        );
+        if (funName != "") {
+          root.render(
+            <HoverTooltip
+              declare={functionDeclaration}
+              descript={description}
+              exampleCode={exampleCode}
+              imgSrc={imgSrc}
+            />
+          );
+        }
         return { dom };
       },
     };

@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 
 type HoverTooltipProps = {
   declare: string;
@@ -7,7 +7,11 @@ type HoverTooltipProps = {
   exampleCode: string;
   imgSrc: string;
 };
+
 export const HoverTooltip = (props: HoverTooltipProps) => {
+  // Step 2: Initialize showImage state
+  const [showImage, setShowImage] = useState(true);
+
   return (
     <div
       style={{
@@ -18,14 +22,21 @@ export const HoverTooltip = (props: HoverTooltipProps) => {
       }}
     >
       <Typography variant="body1">{props.declare}</Typography>
-      <Typography variant="body2">{props.descript} </Typography>
+      <Typography variant="body2">{props.descript}</Typography>
       <Typography variant="body2">Example: {props.exampleCode}</Typography>
-      {props.imgSrc !== "" ? (
-        <img src={props.imgSrc} alt="" width={300} height={200} />
+      {/* Step 4: Conditionally render the img tag */}
+      {props.imgSrc !== "" && showImage ? (
+        <img
+          src={props.imgSrc}
+          alt="Patch Function"
+          width={300}
+          height={200}
+          // Step 3: onError event handler
+          onError={() => setShowImage(false)}
+        />
       ) : (
         <></>
       )}
     </div>
   );
 };
-export default HoverTooltip;
