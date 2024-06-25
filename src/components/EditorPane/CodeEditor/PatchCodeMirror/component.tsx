@@ -27,7 +27,6 @@ const PatchCodeMirror = ({
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
   const transport = usePatchStore((state) => state.transportRef);
   const handleFormat = () => {
-    console.log(lspConnectionState)
       const formatRequest = {
         internalID: 1,
         request: {
