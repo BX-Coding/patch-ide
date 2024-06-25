@@ -12,7 +12,6 @@ import {
 } from "codemirror-languageserver";
 import { once } from "../../../store/codeEditorStore";
 import { WebSocketTransport } from "@open-rpc/client-js";
-import { useRuntimeDiagnostics } from "../../../hooks/useRuntimeDiagnostics";
 
 
 export const CodeEditor = () => {
