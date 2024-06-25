@@ -2,17 +2,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
-import { autocompletion } from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
 import pythonLinter from "../../../../util/python-syntax-lint";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
-import completions from "../../../../util/patch-autocompletions";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
-import { languageServer } from "codemirror-languageserver";
-import { hoverTooltip } from "@codemirror/view";
-import patchAPI from "../../../../assets/patch-api.json";
+import {hoverTooltip} from "@codemirror/view";
+import patchAPI from "../../../../assets/patch-api.json"
+import { createRoot } from 'react-dom/client'
+import { HoverTooltip } from "../HoverTooltip";
+import { Button } from "@mui/material";
+
 
 type PatchCodeMirrorProps = {
   thread: Thread;
@@ -25,8 +26,37 @@ const PatchCodeMirror = ({
 }: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
+  const transport = usePatchStore((state) => state.transportRef);
+  const handleFormat = () => {
+    console.log(lspConnectionState)
+      const formatRequest = {
+        internalID: 1,
+        request: {
+          jsonrpc: "2.0" as const,
+          id: 1,
+          method: "textDocument/formatting",
+          params: {
+            textDocument: {
+              uri: "file:///index.js",
+            },
+            options: {
+              tabSize: 4,
+              insertSpaces: true,
+            },
+          },
+        }
+      };
+    if (transport) {
+      transport.sendData(formatRequest)
+      .then((event) => {
+        if (event != null) {
+          const response = JSON.parse(JSON.stringify(event[0]));
+          handleCodeChange(response.newText);
+        }
+      });
+    }
+  }
 
-  // const sendState = usePatchStore((state)=>state.sendLspState)
 
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
@@ -47,50 +77,34 @@ const PatchCodeMirror = ({
       end,
       above: true,
       create(view) {
-        let dom = document.createElement("div");
-        dom.style.padding = "10px";
-        dom.style.border = "1px solid rgba(204, 204, 204, 0.1)";
-        dom.style.boxShadow = "2px 2px 4px rgba(0, 0, 0, 0.2)";
-        dom.style.borderRadius = "5px";
-
-        let txt = "";
-        let titleTxt = "";
+        const dom = document.createElement("div")
+        const root = createRoot(dom);
         let funName = "";
-        let title = dom.appendChild(document.createElement("h4"));
-        let descript = dom.appendChild(document.createElement("p"));
-        let image = dom.appendChild(document.createElement("img"));
-        patchAPI["patch-functions"].forEach(function (x) {
+        let functionDeclaration = "";
+        let description = "";
+        let exampleCode = "";
+        patchAPI["patch-functions"].forEach(function(x){
           if (x["name"] == text.slice(start - from, end - from)) {
             funName = x["name"];
-            titleTxt = x["name"] + getParamText(x["parameters"]);
-            txt = x["description"] + "\n\nExample: " + x["exampleUsage"];
+            functionDeclaration = x["name"] + getParamText(x["parameters"]);
+            description = x["description"];
+            exampleCode = x["exampleUsage"];
           }
-        });
-        title.innerText = titleTxt;
-        descript.innerText = txt;
-        title.style.marginTop = "0px";
-        title.style.marginBottom = "5px";
-        descript.style.marginTop = "0px";
-        image.style.maxWidth = "300px";
-        image.style.display = "block";
-        image.style.marginLeft = "auto";
-        image.style.height = "200px";
-        image.style.marginRight = "auto";
-        dom.style.maxWidth = "300px";
-        image.onerror = (e) => {
-          image.src =
-            "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2Fshow.gif?alt=media";
-        };
-        if (funName != "") {
-          image.src =
-            "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
+      });
+      let imgSrc = "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
             funName +
             ".gif?alt=media";
-        }
-        return { dom };
-      },
-    };
-  });
+      if(funName != "") {
+        root.render(<HoverTooltip
+        declare = {functionDeclaration}
+        descript = {description}
+        exampleCode = {exampleCode} 
+        imgSrc = {imgSrc}/>);
+      }
+        return {dom}
+      }
+    }
+  })
 
   useEffect(() => {
     setCodemirrorRef(thread.id, codemirrorRef);
@@ -131,6 +145,7 @@ const PatchCodeMirror = ({
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
       />
+      <Button onClick={handleFormat} >Align</Button>
     </>
   );
 };
