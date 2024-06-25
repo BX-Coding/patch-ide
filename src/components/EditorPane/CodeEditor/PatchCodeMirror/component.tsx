@@ -8,12 +8,8 @@ import { indentationMarkers } from "@replit/codemirror-indentation-markers";
 import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
-import {hoverTooltip} from "@codemirror/view";
-import patchAPI from "../../../../assets/patch-api.json"
-import { createRoot } from 'react-dom/client'
-import { HoverTooltip } from "../HoverTooltip";
-import { Button } from "@mui/material";
-
+import { hoverTooltip } from "@codemirror/view";
+import patchAPI from "../../../../assets/patch-api.json";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
@@ -77,34 +73,38 @@ const PatchCodeMirror = ({
       end,
       above: true,
       create(view) {
-        const dom = document.createElement("div")
+        const dom = document.createElement("div");
         const root = createRoot(dom);
         let funName = "";
         let functionDeclaration = "";
         let description = "";
         let exampleCode = "";
-        patchAPI["patch-functions"].forEach(function(x){
+        patchAPI["patch-functions"].forEach(function (x) {
           if (x["name"] == text.slice(start - from, end - from)) {
             funName = x["name"];
             functionDeclaration = x["name"] + getParamText(x["parameters"]);
             description = x["description"];
             exampleCode = x["exampleUsage"];
           }
-      });
-      let imgSrc = "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
-            funName +
-            ".gif?alt=media";
-      if(funName != "") {
-        root.render(<HoverTooltip
-        declare = {functionDeclaration}
-        descript = {description}
-        exampleCode = {exampleCode} 
-        imgSrc = {imgSrc}/>);
-      }
-        return {dom}
-      }
-    }
-  })
+        });
+        let imgSrc =
+          "https://firebasestorage.googleapis.com/v0/b/patch-271d1.appspot.com/o/gifs%2F" +
+          funName +
+          ".gif?alt=media";
+        if (funName != "") {
+          root.render(
+            <HoverTooltip
+              declare={functionDeclaration}
+              descript={description}
+              exampleCode={exampleCode}
+              imgSrc={imgSrc}
+            />
+          );
+        }
+        return { dom };
+      },
+    };
+  });
 
   useEffect(() => {
     setCodemirrorRef(thread.id, codemirrorRef);
