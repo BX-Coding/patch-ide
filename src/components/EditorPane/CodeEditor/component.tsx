@@ -21,12 +21,12 @@ export const CodeEditor = () => {
   const setCurrentThreadId = usePatchStore((state) => state.setCodeThreadId);
   const setTransport = usePatchStore((state)=>state.setTransportRef);
   useEffect(() => {
-    const serverUri = `ws://localhost:8080` as
-      | `ws://${string}`
-      | `wss://${string}`;
-    // const serverUri = `${process.env.LSP_SERVER_URL}` as
+    // const serverUri = `ws://localhost:8080` as
     //   | `ws://${string}`
     //   | `wss://${string}`;
+    const serverUri = `${process.env.LSP_SERVER_URL}` as
+      | `ws://${string}`
+      | `wss://${string}`;
 
     const transport = new WebSocketTransport(serverUri);
     setTransport(transport)
