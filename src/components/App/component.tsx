@@ -101,14 +101,12 @@ const App = () => {
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
-      <SplashScreen renderCondition={true}>
-        <ToastContainer theme="dark" position="top-center" />
-        <Grid
-          container
-          item
-          direction="row"
-          width={"100%"}
-          sx={{
+        <SplashScreen renderCondition={usePatchStore((state) => state.patchReady)}>
+          <ToastContainer
+            theme="dark"
+            position="top-center"
+          />
+          <Grid container item direction="row" width={'100%'} sx={{
             position: "absolute",
             width: "100%",
             top: 0,
@@ -120,17 +118,13 @@ const App = () => {
             paddingBottom: "0px",
             zIndex: -1,
             overflowY: "auto",
-            backgroundColor: "background.default",
+            backgroundColor: 'background.default',
             color: "text.primary",
-          }}
-        >
-          <ModalSelector />
-          <TopBar mode={mode} setMode={setMode} />
-          <Grid item container direction="row" className="leftContainer">
-            <Grid
-              item
-              className="assetHolder"
-              sx={{
+          }}>
+            <ModalSelector />
+            <TopBar mode={mode} setMode={setMode} />
+            <Grid item container direction="row" className="leftContainer">
+              <Grid item className="assetHolder" sx={{
                 padding: "8px",
                 borderRightWidth: "1px",
                 borderColor: "divider",
@@ -237,6 +231,7 @@ const App = () => {
         </Grid>
       </SplashScreen>
     </ThemeProvider>
+
   );
 };
 const useGetCodeThreadId = () =>
