@@ -10,6 +10,9 @@ import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
 import { hoverTooltip } from "@codemirror/view";
 import patchAPI from "../../../../assets/patch-api.json";
+import { createRoot } from "react-dom/client";
+import { HoverTooltip } from "../HoverTooltip";
+import { Button } from "@mui/material";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
