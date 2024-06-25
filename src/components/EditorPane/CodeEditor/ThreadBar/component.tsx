@@ -3,11 +3,13 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
+import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
 import { Target, Thread } from '../../types';
 import usePatchStore from '../../../../store';
 import { HorizontalButtons, DeleteButton, IconButton } from '../../../PatchButton';
 import { useEditingTarget } from '../../../../hooks/useEditingTarget';
 import { TriggerEventSelector } from './TriggerEventSelector';
+import { useRuntimeDiagnostics } from '../../../../hooks/useRuntimeDiagnostics';
 
 
 type ThreadEditorProps = {
@@ -15,13 +17,16 @@ type ThreadEditorProps = {
     deletable: boolean,
 }
 
+
 export const ThreadBar = ({ thread, deletable }: ThreadEditorProps) => {
+  
 
     return (
         <Grid container direction="row" spacing={"1px"} mb={"4px"}>
             <TriggerEventSelector thread={thread} />
-            <Grid item sx={{ width: deletable ? 198 : 134, padding: 0 }}>
+            <Grid item sx={{ width: deletable ? 266 : 200, padding: 0 }}>
                 <HorizontalButtons spacing={"2px"} sx={{maxHeight: 40}}>
+                    <FormatButton thread={thread}/>
                     <SaveThreadButton thread={thread}/>
                     {deletable && <DeleteThreadButton thread={thread} />}
                     <AddThreadButton />
@@ -29,6 +34,52 @@ export const ThreadBar = ({ thread, deletable }: ThreadEditorProps) => {
             </Grid>
         </Grid>
     );
+}
+
+const FormatButton = ({ thread }: { thread: Thread }) => {
+    const updateThread = usePatchStore((state) => state.updateThread);
+    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+    const { invalidateDiagnostics } = useRuntimeDiagnostics(
+        thread.id
+      );
+    
+      const transport = usePatchStore((state) => state.transportRef);
+      const handleFormat = () => {
+          const formatRequest = {
+            internalID: 1,
+            request: {
+              jsonrpc: "2.0" as const,
+              id: 1,
+              method: "textDocument/formatting",
+              params: {
+                textDocument: {
+                  uri: "file:///index.js",
+                },
+                options: {
+                  tabSize: 4,
+                  insertSpaces: true,
+                },
+              },
+            }
+          };
+        if (transport) {
+          transport.sendData(formatRequest)
+          .then((event) => {
+            if (event != null) {
+              const response = JSON.parse(JSON.stringify(event[0]));
+              handleCodeChange(response.newText);
+            }
+          });
+        }
+      }
+    
+      const handleCodeChange = (newScript: string) => {
+        updateThread(thread.id, newScript);
+        setProjectChanged(true);
+        invalidateDiagnostics(thread.id);
+      };
+    
+    return <IconButton onClick={handleFormat} icon={<FormatIndentIncreaseIcon />} sx={{ height: 40 }} />
 }
 
 const AddThreadButton = () => {

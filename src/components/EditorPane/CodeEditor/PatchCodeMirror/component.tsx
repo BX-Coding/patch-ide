@@ -25,37 +25,6 @@ const PatchCodeMirror = ({
 }: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
-  const transport = usePatchStore((state) => state.transportRef);
-  const handleFormat = () => {
-      const formatRequest = {
-        internalID: 1,
-        request: {
-          jsonrpc: "2.0" as const,
-          id: 1,
-          method: "textDocument/formatting",
-          params: {
-            textDocument: {
-              uri: "file:///index.js",
-            },
-            options: {
-              tabSize: 4,
-              insertSpaces: true,
-            },
-          },
-        }
-      };
-    if (transport) {
-      transport.sendData(formatRequest)
-      .then((event) => {
-        if (event != null) {
-          const response = JSON.parse(JSON.stringify(event[0]));
-          handleCodeChange(response.newText);
-        }
-      });
-    }
-  }
-
-
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
@@ -147,7 +116,6 @@ const PatchCodeMirror = ({
         onChange={handleCodeChange}
         height="calc(100vh - 209px)"
       />
-      <Button onClick={handleFormat} >Align</Button>
     </>
   );
 };
