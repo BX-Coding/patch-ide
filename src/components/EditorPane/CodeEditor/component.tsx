@@ -18,10 +18,9 @@ export const CodeEditor = () => {
   const [lspConnectionState, setLspConnectionState] = useState<any>(null);
 
   const setCurrentThreadId = usePatchStore((state) => state.setCodeThreadId);
-  const setTransport = usePatchStore((state)=>state.setTransportRef)
-
+  const setTransport = usePatchStore((state)=>state.setTransportRef);
   useEffect(() => {
-    // const serverUri = `ws://localhost:8081` as
+    // const serverUri = `ws://localhost:8080` as
     //   | `ws://${string}`
     //   | `wss://${string}`;
     const serverUri = `${process.env.LSP_SERVER_URL}` as

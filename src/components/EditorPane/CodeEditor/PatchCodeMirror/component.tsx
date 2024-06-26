@@ -12,6 +12,7 @@ import { hoverTooltip } from "@codemirror/view";
 import patchAPI from "../../../../assets/patch-api.json";
 import { createRoot } from "react-dom/client";
 import { HoverTooltip } from "../HoverTooltip";
+import { Button } from "@mui/material";
 
 type PatchCodeMirrorProps = {
   thread: Thread;
@@ -24,9 +25,6 @@ const PatchCodeMirror = ({
 }: PatchCodeMirrorProps) => {
   const codemirrorRef = useRef<ReactCodeMirrorRef>(null);
   const setCodemirrorRef = usePatchStore((state) => state.setCodemirrorRef);
-
-  // const sendState = usePatchStore((state)=>state.sendLspState)
-
   const getThread = usePatchStore((state) => state.getThread);
   const updateThread = usePatchStore((state) => state.updateThread);
   const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
