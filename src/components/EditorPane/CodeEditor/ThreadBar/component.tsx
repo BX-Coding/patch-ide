@@ -37,47 +37,10 @@ export const ThreadBar = ({ thread, deletable }: ThreadEditorProps) => {
 }
 
 const FormatButton = ({ thread }: { thread: Thread }) => {
-    const updateThread = usePatchStore((state) => state.updateThread);
-    const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
-    const { invalidateDiagnostics } = useRuntimeDiagnostics(
-        thread.id
-      );
-    
-      const transport = usePatchStore((state) => state.transportRef);
-      const handleFormat = () => {
-          const formatRequest = {
-            internalID: 1,
-            request: {
-              jsonrpc: "2.0" as const,
-              id: 1,
-              method: "textDocument/formatting",
-              params: {
-                textDocument: {
-                  uri: "file:///index.js",
-                },
-                options: {
-                  tabSize: 4,
-                  insertSpaces: true,
-                },
-              },
-            }
-          };
-        if (transport) {
-          transport.sendData(formatRequest)
-          .then((event) => {
-            if (event != null) {
-              const response = JSON.parse(JSON.stringify(event[0]));
-              handleCodeChange(response.newText);
-            }
-          });
-        }
-      }
-    
-      const handleCodeChange = (newScript: string) => {
-        updateThread(thread.id, newScript);
-        setProjectChanged(true);
-        invalidateDiagnostics(thread.id);
-      };
+    const formatCode = usePatchStore((state) => state.formatCode);
+    const handleFormat = () => {
+        formatCode(thread.id);
+    }
     
     return <IconButton onClick={handleFormat} icon={<FormatIndentIncreaseIcon />} sx={{ height: 40 }} />
 }

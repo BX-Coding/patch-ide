@@ -64,6 +64,7 @@ export interface CodeEditorState {
   clearRuntimeDiagnostics: () => void;
   invalidateDiagnostics: (threadId: string) => void;
   getThreadDiagnostics: (threadId: string) => VmError[];
+  formatCode: (threadId: string) => void;
 }
 
 export const createCodeEditorSlice: StateCreator<
@@ -363,4 +364,36 @@ export const createCodeEditorSlice: StateCreator<
   getThreadDiagnostics: (threadId: string) => {
     return get().diagnostics.filter((error) => error.threadId === threadId);
   },
+
+  formatCode: (threadId: string) => {   
+    const transport = get().transportRef;
+    const formatRequest = {
+      internalID: 1,
+      request: {
+        jsonrpc: "2.0" as const,
+        id: 1,
+        method: "textDocument/formatting",
+        params: {
+          textDocument: {
+            uri: "file:///index.js",
+          },
+          options: {
+            tabSize: 4,
+            insertSpaces: true,
+          },
+        },
+      }
+    };
+    if (transport) {
+      transport.sendData(formatRequest)
+      .then((event: any[] | null) => {
+        if (event != null) {
+          const response = JSON.parse(JSON.stringify(event[0]));
+          get().updateThread(threadId, response.newText);
+          get().setProjectChanged(true);
+          get().invalidateDiagnostics(threadId);
+        }
+      });
+    }
+  }
 });
