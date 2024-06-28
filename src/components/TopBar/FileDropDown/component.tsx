@@ -52,7 +52,7 @@ export const FileDropDown = ({ cloudEnabled }: FielDropDownProps) => {
     }
 
     const authenticatedOptions = [
-        { label: "New", onClick: handleNew},
+        { label: "New Blank Project", onClick: handleNew},
         { label: "Save Now", onClick: handleSaveNow},
         { label: "Save As A Copy", onClick: handleSaveCopy},
         { label: "Load From Your Computer", onClick: handleUpload},
