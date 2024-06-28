@@ -14,6 +14,8 @@ export const useProjectActions = (defaultProjectId?: string) => {
     const setProjectReference = usePatchStore(state => state.setProjectReference);
     const isNewProject = usePatchStore(state => state.isNewProject);
     const setNewProject = usePatchStore(state => state.setNewProject);
+    const setProjectName = usePatchStore((state) => state.setProjectName);
+    const projectName = usePatchStore((state) => state.projectName);
     const [user, loading, error] = useAuthState(auth);
     const [projectLoading, setProjectLoading] = useState(false);
     const [projectSaving, setProjectSaving] = useState(false);
@@ -47,6 +49,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
             console.warn("Project exists. Loading.");
             setNewProject(false);
             try {
+                setProjectName(projectSnapshot.data().name);
                 await loadSerializedProject(projectSnapshot.data() as VmState, true);
             } catch (error) {
                 console.error("Failed to load project: ", error);
@@ -84,7 +87,16 @@ export const useProjectActions = (defaultProjectId?: string) => {
         if (userMetaSnapshot.exists()) {
             console.warn("User meta exists. Updating.");
             const userMeta = userMetaSnapshot.data();
-            userMeta.projects.push({ name: projectName || "Untitled", id: projectId });
+            if (isNewProject && projectId != "new") {
+                userMeta.projects.push({ name: projectName || "Untitled", id: projectId });
+            } else {
+                userMeta.projects.forEach(function(project: { id: string; name: string; }) {
+                    if (project.id == projectId) {
+                        project.name = projectName;
+                    }
+                });
+            }
+            console.log(userMeta.projects)
             await updateDoc(userMetaReference, userMeta);
         } else {
             console.warn("User meta does not exist. Exiting.");
@@ -151,6 +163,8 @@ export const useProjectActions = (defaultProjectId?: string) => {
         saveProjectAssets();
         setNewProject(false);
         setProjectSaving(false);
+        let id: string= projectReference?.id ?? "";
+        updateUserMeta(user.uid, id, projectName)
     }
 
     const saveProject = saveCloudProject;
