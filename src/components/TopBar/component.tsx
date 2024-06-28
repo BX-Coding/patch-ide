@@ -45,6 +45,9 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
 export function FileName() {
   const setProjectName = usePatchStore((state) => state.setProjectName);
   const projectName = usePatchStore((state) => state.projectName);
+  if (projectName == "") {
+    setProjectName("Untitled");
+  }
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProjectName(event.target.value);
@@ -56,7 +59,7 @@ export function FileName() {
         hiddenLabel
         onChange={handleTextChange}
         id="fileName"
-        value= {projectName == "" ? "Untitled" : projectName}
+        value= {projectName}
         size="small"
         fullWidth
         sx={{ marginLeft: "-16px" }}
