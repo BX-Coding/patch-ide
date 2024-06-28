@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -44,6 +44,7 @@ export function ThemeButton({ mode, setMode }: ThemeButtonProps) {
 
 export function FileName() {
   const setProjectName = usePatchStore((state) => state.setProjectName);
+  const projectName = usePatchStore((state) => state.projectName);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProjectName(event.target.value);
@@ -55,7 +56,7 @@ export function FileName() {
         hiddenLabel
         onChange={handleTextChange}
         id="fileName"
-        defaultValue="Untitled"
+        value= {projectName == "" ? "Untitled" : projectName}
         size="small"
         fullWidth
         sx={{ marginLeft: "-16px" }}
