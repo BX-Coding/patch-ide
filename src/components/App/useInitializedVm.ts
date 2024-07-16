@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // @ts-ignore
-import VirtualMachine from "pyatch-vm";
+import VirtualMachine from "../../engine/virtual-machine";
 // @ts-ignore
 import Renderer from "scratch-render";
 // @ts-ignore

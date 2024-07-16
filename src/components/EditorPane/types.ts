@@ -22,7 +22,7 @@ export type Asset = {
     clean?: boolean,
 }
 
-export type Costume = {
+/*export type Costume = {
     assetId: string,
     name: string,
     md5?: string,
@@ -33,7 +33,7 @@ export type Costume = {
     dataFormat: string,
     rotationCenterX: number,
     rotationCenterY: number,
-}
+}*/
 
 export type Sound = {
     assetId: string,
@@ -92,7 +92,7 @@ export interface SoundJson {
     rate: number,
 }
 
-export interface Target extends EventEmitter {
+/*export interface Target extends EventEmitter {
     direction: number
     size: number
     y: number
@@ -117,7 +117,7 @@ export interface Target extends EventEmitter {
 
     deleteSound: (soundIndex: number) => void,
     getSounds: () => Sound[],
-}
+}*/
 
 type GlobalVariable = {
     name: string,

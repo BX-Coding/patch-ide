@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { Target, VmState } from "../components/EditorPane/types";
 import usePatchStore from "../store"
 import { useEditingTarget } from "./useEditingTarget";
+import { GlobalVariable } from "../store/variableEditorStore";
 
 const b64dataurltoBlob = (b64Data: string, contentType = '', sliceSize = 512) => {
     // the split removes the encoding info from the data url and just returns the raw data
@@ -46,7 +47,7 @@ export const usePatchSerialization = () => {
 
         patchVM.runtime._globalVariables = {};
 
-        const result: { json: VmState } = await patchVM.loadProject(vmState, isJson);
+        const result: { globalVariables: GlobalVariable[] } = await patchVM.loadProject(vmState, isJson);
 
         if (!result) {
             console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
@@ -57,10 +58,8 @@ export const usePatchSerialization = () => {
 
             return;
         }
-
-        console.warn(result.json.globalVariables);
         
-        setGlobalVariables(result.json.globalVariables);
+        setGlobalVariables(result.globalVariables);
         setTargetIds(patchVM.getAllRenderedTargets().map((target: Target) => target.id));
         const editingTargetId = patchVM?.editingTarget?.id ?? patchVM.runtime.targets[0].id;
         setEditingTarget(editingTargetId);
