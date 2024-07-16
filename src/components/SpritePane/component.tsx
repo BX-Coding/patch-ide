@@ -9,15 +9,16 @@ import Grid from '@mui/material/Grid';
 
 import { HorizontalButtons } from '../PatchButton';
 import usePatchStore from '../../store';
-import { Target } from '../EditorPane/types';
+//import { Target } from '../EditorPane/types';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { useStageTarget } from './useStageTarget';
 import { Box } from '@mui/material';
+import { Sprite, Stage } from 'leopard';
 
 export default function SpritePane(){
     const patchVM = usePatchStore((state) => state.patchVM);
     const targetIds = usePatchStore((state) => state.targetIds);
-    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Sprite | Stage, (target: Sprite | Stage) => void];
     
     return(
         <Box className="assetHolder" sx={{
@@ -57,7 +58,7 @@ export default function SpritePane(){
                 {targetIds.map((targetId) => {
                     const target = patchVM.runtime.getTargetById(targetId);
                     return (
-                        target ? ((target.isSprite() && !target.sprite.isStage) && <Grid item sx={{maxWidth: '136px', maxHeight: '136px'}}><SpriteCard key={target.id} target={target} /></Grid>) : <></>
+                        target ? ((target instanceof Stage) && <Grid item sx={{maxWidth: '136px', maxHeight: '136px'}}><SpriteCard key={targetId} target={target} /></Grid>) : <></>
                     );
                 })}
                 <Grid item>

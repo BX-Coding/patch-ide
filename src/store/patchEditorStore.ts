@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand'
 import { EditorState } from './index'
 import { DOMElement } from 'react'
 import { DocumentData, DocumentReference } from 'firebase/firestore'
+import VirtualMachine from '../engine/virtual-machine'
 
 export enum EditorTab {
     CODE = "code",
@@ -41,7 +42,7 @@ export interface PatchEditorState {
     projectName: string,
     projectReference: DocumentReference<DocumentData, DocumentData> | null,
 
-    patchVM: any,
+    patchVM: VirtualMachine,
     patchStage: Stage,
 
     // Actions
@@ -81,7 +82,7 @@ export const createPatchEditorSlice: StateCreator<
     projectChanged: false,
     modalSelectorType: ModalSelectorType.COSTUME,
     modalSelectorOpen: false,
-    patchVM: null,
+    patchVM: new VirtualMachine(),
     patchStage: {
         canvas: document.createElement('canvas'),
         height: 400,

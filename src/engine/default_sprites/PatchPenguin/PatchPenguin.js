@@ -4,7 +4,7 @@ import {
   Watcher,
   Costume,
   Color
-} from "../../../leopard/index.ts";
+} from "leopard";
 
 export default class ScratchCat extends Sprite {
   constructor(...args) {

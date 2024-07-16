@@ -1,19 +1,22 @@
 import EventEmitter from "events";
-import { Project, Sprite, Stage } from "../leopard";
+import { Project, Sprite, Stage } from "leopard";
 import { DefaultSprites, DefaultStage } from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
-import Target from "./target";
+import ScratchStorage from "scratch-storage";
 
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
    leopardProject: Project;
+   storage?: ScratchStorage;
 
    constructor() {
       super();
 
       this.leopardProject = new Project(DefaultStage, DefaultSprites);
+
+      this.emit("WORKER READY");
    }
 
    get targets(): Dictionary<Sprite | Stage> {
@@ -52,8 +55,8 @@ export default class Runtime extends EventEmitter {
       //this.leopardProject.attach(renderer);
    }
 
-   attachStorage(storage: any) {
-
+   attachStorage(storage: ScratchStorage) {
+      this.storage = storage;
    }
 
    getTargetForStage() {
@@ -70,5 +73,23 @@ export default class Runtime extends EventEmitter {
 
    draw() {
       
+   }
+
+   getTargetId(target: Sprite | Stage) {
+      const targets = this.targets;
+
+      const targetIds = Object.keys(targets);
+
+      targetIds.forEach(targetId => {
+         if (targets[targetId] == target) {
+            return targetId;
+         }
+      });
+
+      return "";
+   }
+
+   getTargetById(id: string) {
+      return this.targets[id];
    }
 }

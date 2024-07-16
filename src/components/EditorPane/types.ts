@@ -1,4 +1,6 @@
 import EventEmitter from "events"
+import { Sprite, Stage } from "leopard"
+import { Dictionary } from "../../engine/interfaces"
 
 export enum DataFormat {
     SVG = "svg",
@@ -22,7 +24,7 @@ export type Asset = {
     clean?: boolean,
 }
 
-/*export type Costume = {
+export type Costume = {
     assetId: string,
     name: string,
     md5?: string,
@@ -33,7 +35,7 @@ export type Asset = {
     dataFormat: string,
     rotationCenterX: number,
     rotationCenterY: number,
-}*/
+}
 
 export type Sound = {
     assetId: string,
@@ -64,13 +66,13 @@ export interface Thread {
     updateThreadTriggerEventOption: (option: string) => void,
 }
 
-export interface Sprite {
+/*export interface Sprite {
     id: string,
     name: string,
     isStage: boolean,
     costumes: Costume[],
     sounds: Sound[],
-}
+}*/
 
 export interface SpriteJson {
     name: string,
@@ -125,7 +127,7 @@ type GlobalVariable = {
 }
 
 export type VmState = {
-    targets: Target[],
+    targets: Dictionary<Sprite | Stage>,
     extensions: any[],
     globalVariables: GlobalVariable[],
     meta: {

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Target, VmState } from "../components/EditorPane/types";
+import { VmState } from "../components/EditorPane/types";
 import usePatchStore from "../store"
 import { useEditingTarget } from "./useEditingTarget";
 import { GlobalVariable } from "../store/variableEditorStore";
@@ -41,27 +41,28 @@ export const usePatchSerialization = () => {
         
         setPatchReady(false);
 
-        const oldTargets = patchVM.runtime.targets;
-        const oldExecutableTargets = patchVM.runtime.executableTargets;
-        const oldGlobalVariables = patchVM.runtime._globalVariables;
+        //const oldTargets = patchVM.runtime.targets;
+        //const oldExecutableTargets = patchVM.runtime.executableTargets;
+        //const oldGlobalVariables = patchVM.runtime._globalVariables;
 
-        patchVM.runtime._globalVariables = {};
+        //patchVM.runtime._globalVariables = {};
 
         const result: { globalVariables: GlobalVariable[] } = await patchVM.loadProject(vmState, isJson);
 
         if (!result) {
             console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
 
-            patchVM.runtime.targets = oldTargets;
-            patchVM.runtime.executableTargets = oldExecutableTargets;
-            patchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
+            //patchVM.runtime.targets = oldTargets;
+            //patchVM.runtime.executableTargets = oldExecutableTargets;
+            //patchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
 
             return;
         }
         
         setGlobalVariables(result.globalVariables);
-        setTargetIds(patchVM.getAllRenderedTargets().map((target: Target) => target.id));
-        const editingTargetId = patchVM?.editingTarget?.id ?? patchVM.runtime.targets[0].id;
+        const targetIds = patchVM.getTargetIds();
+        setTargetIds(targetIds);
+        const editingTargetId = (patchVM?.editingTarget ? patchVM.getTargetId(patchVM.editingTarget!) : targetIds[0]);
         setEditingTarget(editingTargetId);
 
         setProjectChanged(false);

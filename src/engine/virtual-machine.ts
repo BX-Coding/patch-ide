@@ -22,7 +22,7 @@ import ScratchConverter from "./conversion/scratch-conversion.mjs";*/
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
 import Runtime from "./runtime";
-import { Sprite, Stage } from "../leopard/index";
+import { Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
 
@@ -277,6 +277,10 @@ export default class VirtualMachine extends EventEmitter {
 
     async installTargets(targets: (Sprite | Stage)[], wholeProject: boolean) {
         // TODO: implement this
+    }
+
+    addSprite(sprite: Sprite, name: string) {
+
     }
 
     /**
@@ -655,6 +659,8 @@ export default class VirtualMachine extends EventEmitter {
         const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
         return zippedProject;*/
 
+        return new Blob();
+
         // TODO: implement this
     }
 
@@ -692,6 +698,8 @@ export default class VirtualMachine extends EventEmitter {
         return converter.getPatchArrayBuffer().then((buf) => buf);*/
 
         // TODO: implement this
+
+        return new ArrayBuffer(0);
     }
 
     /**
@@ -701,7 +709,7 @@ export default class VirtualMachine extends EventEmitter {
      * @param {ArrayBuffer | JSON} projectData - A ArrayBuffer object generated from
      * a valid Patch Project .ptch1 file
      */
-    async loadProject(projectData: ArrayBuffer | JSON, isJson = false) {
+    async loadProject(projectData: any, isJson = false) {
 
         /*let zip;
         let jsonData = projectData;
@@ -820,6 +828,18 @@ export default class VirtualMachine extends EventEmitter {
 
     getAllRenderedTargets() {
         return this.runtime.targets;
+    }
+
+    getTargetId(target: Sprite | Stage) {
+        return this.runtime.getTargetId(target);
+    }
+
+    getTargetById(id: string) {
+        return this.runtime.getTargetById(id);
+    }
+
+    getTargetIds() {
+        return Object.keys(this.getAllRenderedTargets());
     }
 
     getApiInfo() {
