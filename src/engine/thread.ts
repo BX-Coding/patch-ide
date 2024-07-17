@@ -108,19 +108,16 @@ export default class Thread {
     }
 
     async updateThreadScript(script: string) {
-        // I'm leaving the old code below for reference
-        /*await this.loadThread(script);
-        this.script = script;*/
+        await this.loadThread(script);
+        this.script = script;
     }
 
     async updateThreadTriggerEvent(triggerEventId: string) {
-        // I'm leaving the old code below for reference
-        //this.triggerEvent = triggerEventId;
+        this.triggerEvent = triggerEventId;
     }
 
     async updateThreadTriggerEventOption(triggerEventOption: string) {
-        // I'm leaving the old code below for reference
-        //this.triggerEventOption = triggerEventOption;
+        this.triggerEventOption = triggerEventOption;
     }
 
     async executePrimitive(blockFunction: any, args: any, util: any) {

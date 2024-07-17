@@ -775,15 +775,15 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     updateThreadScript(threadId: any, script: any) {
-        //this.runtime.updateThreadScript(threadId, script);
+        this.runtime.updateThreadScript(threadId, script);
     }
 
     updateThreadTriggerEvent(threadId: any, eventTrigger: any) {
-        //this.runtime.updateThreadTriggerEvent(threadId, eventTrigger);
+        this.runtime.updateThreadTriggerEvent(threadId, eventTrigger);
     }
 
     updateThreadTriggerEventOption(threadId: any, eventTriggerOption: any) {
-        //this.runtime.updateThreadTriggerEventOption(threadId, eventTriggerOption);
+        this.runtime.updateThreadTriggerEventOption(threadId, eventTriggerOption);
     }
 
     updateGlobalVariable(name: any, value: any) {

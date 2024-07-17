@@ -42,6 +42,8 @@ export default class Runtime extends EventEmitter {
             "Thread 0"
          );
 
+      console.log(this);
+
       this.emit("WORKER READY");
    }
 
@@ -191,6 +193,21 @@ export default class Runtime extends EventEmitter {
       }
       await newThread.loadPromise;
       return threadId;
+   }
+
+   updateThreadScript(threadId: string, script: string) {
+      const thread = this.getThreadById(threadId);
+      thread && thread.updateThreadScript(script);
+   }
+
+   updateThreadTriggerEvent(threadId: string, eventTrigger: string) {
+      const thread = this.getThreadById(threadId);
+      thread && thread.updateThreadTriggerEvent(eventTrigger);
+   }
+
+   updateThreadTriggerEventOption(threadId: string, eventTriggerOption: string) {
+      const thread = this.getThreadById(threadId);
+      thread && thread.updateThreadTriggerEventOption(eventTriggerOption);
    }
 
    emitProjectChanged() {
