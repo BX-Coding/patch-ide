@@ -1,5 +1,5 @@
 import { FirebaseStorage, StorageReference } from "firebase/storage";
-import { Asset, AssetType, DataFormat } from "../components/EditorPane/types";
+import { Asset, AssetType, DataFormat } from "../components/EditorPane/old-types";
 
 type Store = {
     types: string[],

@@ -1,9 +1,9 @@
 import { Autocomplete, Grid, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Target, Thread } from "../../types";
 import { useEditingTarget } from "../../../../hooks/useEditingTarget";
 import usePatchStore from "../../../../store";
 import { useEventList } from "./useEventList";
+import { Thread } from "../../types";
 
 type TriggerEventSelectorProps = {
   thread: Thread;
@@ -17,10 +17,7 @@ export const TriggerEventSelector = ({ thread }: TriggerEventSelectorProps) => {
   const [triggerEventOption, setTriggerEventOption] = useState(
     thread.triggerEventOption
   );
-  const [editingTarget] = useEditingTarget() as [
-    Target,
-    (target: Target) => void
-  ];
+  const [editingTarget] = useEditingTarget();
 
   // Forces updates displayed trigger event when switching between threads
   useEffect(() => {
@@ -34,7 +31,7 @@ export const TriggerEventSelector = ({ thread }: TriggerEventSelectorProps) => {
     thread.updateThreadTriggerEvent(newValue.id);
     // This Sprite Clicked has an implicit option of "this sprite"
     if (newValue.id === "event_whenthisspriteclicked") {
-      thread.updateThreadTriggerEventOption(editingTarget.id);
+      editingTarget && thread.updateThreadTriggerEventOption(editingTarget.id);
     } else {
       thread.updateThreadTriggerEventOption("");
     }

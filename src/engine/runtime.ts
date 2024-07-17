@@ -4,12 +4,15 @@ import { DefaultSprites, DefaultStage } from "./default_sprites/default-project"
 
 import { Dictionary } from "./interfaces";
 import ScratchStorage from "scratch-storage";
+import { Thread } from "../components/EditorPane/types";
 
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
-   leopardProject: Project;
+   leopardProject?: Project;
    storage?: ScratchStorage;
+   protected _sprites: Dictionary<{sprite: Sprite, threads: Dictionary<Thread>}>;
+   stage: Stage;
 
    constructor() {
       super();
@@ -17,10 +20,17 @@ export default class Runtime extends EventEmitter {
       this.leopardProject = new Project(DefaultStage, DefaultSprites);
 
       this.emit("WORKER READY");
+
+      this._sprites = Object.fromEntries(Object.keys(DefaultSprites).map(id => [(DefaultSprites as Dictionary<Sprite>)[id], []]));
+      this.stage = DefaultStage;
    }
 
    get targets(): Dictionary<Sprite | Stage> {
-      return {"stage": this.leopardProject.stage, ...this.leopardProject.sprites};
+      return {"Stage": this.stage, ...this.sprites};
+   }
+
+   get sprites(): Dictionary<Sprite> {
+      return Object.fromEntries(Object.keys(this._sprites).map(id => [id, this._sprites[id].sprite]));
    }
 
    start() {
@@ -32,7 +42,8 @@ export default class Runtime extends EventEmitter {
    }
 
    async greenFlag() {
-
+      //this.leopardProject = new Project(this.stage, this.sprites);
+      this.leopardProject?.greenFlag();
    }
 
    stopAll() {
@@ -60,7 +71,7 @@ export default class Runtime extends EventEmitter {
    }
 
    getTargetForStage() {
-      return 
+      return this.stage;
    }
 
    getSpriteById(id: string) {
@@ -75,21 +86,11 @@ export default class Runtime extends EventEmitter {
       
    }
 
-   getTargetId(target: Sprite | Stage) {
-      const targets = this.targets;
-
-      const targetIds = Object.keys(targets);
-
-      targetIds.forEach(targetId => {
-         if (targets[targetId] == target) {
-            return targetId;
-         }
-      });
-
-      return "";
-   }
-
    getTargetById(id: string) {
       return this.targets[id];
+   }
+
+   getTargetThreads(id: string) {
+      return this._sprites[id].threads;
    }
 }

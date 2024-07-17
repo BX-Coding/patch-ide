@@ -5,7 +5,6 @@ import { python } from "@codemirror/lang-python";
 import { lintGutter } from "@codemirror/lint";
 import pythonLinter from "../../../../util/python-syntax-lint";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
-import { Thread } from "../../types";
 import usePatchStore from "../../../../store";
 import { useRuntimeDiagnostics } from "../../../../hooks/useRuntimeDiagnostics";
 import { hoverTooltip } from "@codemirror/view";
@@ -13,6 +12,7 @@ import patchAPI from "../../../../assets/patch-api.json";
 import { createRoot } from "react-dom/client";
 import { HoverTooltip } from "../HoverTooltip";
 import { Button } from "@mui/material";
+import { Thread } from "../../types";
 
 type PatchCodeMirrorProps = {
   thread: Thread;

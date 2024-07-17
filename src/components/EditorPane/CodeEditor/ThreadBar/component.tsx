@@ -4,12 +4,13 @@ import { Grid } from '@mui/material';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
-import { Target, Thread } from '../../types';
 import usePatchStore from '../../../../store';
 import { HorizontalButtons, DeleteButton, IconButton } from '../../../PatchButton';
 import { useEditingTarget } from '../../../../hooks/useEditingTarget';
 import { TriggerEventSelector } from './TriggerEventSelector';
 import { useRuntimeDiagnostics } from '../../../../hooks/useRuntimeDiagnostics';
+import { Thread } from '../../types';
+import { Sprite, Stage } from 'leopard';
 
 
 type ThreadEditorProps = {
@@ -47,10 +48,10 @@ const FormatButton = ({ thread }: { thread: Thread }) => {
 
 const AddThreadButton = () => {
     const addThread = usePatchStore((state) => state.addThread);
-    const [editingTarget] = useEditingTarget() as [Target, (target: Target) => void];
+    const [editingTarget] = useEditingTarget();
 
     const handleAdd = () => {
-        addThread(editingTarget);
+        editingTarget && addThread(editingTarget);
     }
     return <IconButton onClick={handleAdd} icon={<PostAddIcon />} sx={{ height: 40 }} />
 }

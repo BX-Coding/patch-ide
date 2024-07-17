@@ -2,11 +2,11 @@ import { doc, updateDoc, addDoc, getDoc, collection } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase'
 import { useEffect, useState } from 'react';
 import { usePatchSerialization } from './usePatchSerialization';
-import { Asset, Project, VmState } from '../components/EditorPane/types';
 import usePatchStore from '../store';
 import defaultPatchProject from '../assets/default-project.json';
 import { useLocalStorage } from 'usehooks-ts';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { PatchProject, VmState } from '../components/EditorPane/types';
 
 
 export const useProjectActions = (defaultProjectId?: string) => {
@@ -74,7 +74,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
     }
 
     const addProjectMeta = (uid: string, name: string, vmState: VmState) => {
-        const projectObject = vmState as Project;
+        const projectObject = vmState as PatchProject;
         projectObject.lastEdited = new Date();
         projectObject.owner = uid;
         projectObject.name = name;
@@ -103,7 +103,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         }
     }
 
-    const createNewProject = async (uid: string, projectObject: Project) => {
+    const createNewProject = async (uid: string, projectObject: PatchProject) => {
         console.warn("Creating new project.");
         const docRef = await addDoc(collection(db, "projects"), projectObject);
         setProjectReference(docRef);
@@ -112,7 +112,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         updateUserMeta(uid, docRef.id, projectObject.name)
     }
 
-    const updateProject = async (projectObject: Project) => {
+    const updateProject = async (projectObject: PatchProject) => {
         const projectReference = getProjectReference();
         if (!projectReference) {
             console.warn("Project reference was null. Aborting.");
@@ -122,7 +122,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
     }
 
     const saveProjectAssets = () => {
-        console.warn("Saving project assets.");
+        /*console.warn("Saving project assets.");
         
         const storage = patchVM.runtime.storage;
         const assets: Asset[] = patchVM.assets;
@@ -137,7 +137,11 @@ export const useProjectActions = (defaultProjectId?: string) => {
                 return Promise.reject();
             }
         });
-        return Promise.all(storePromise);
+        return Promise.all(storePromise);*/
+
+        // TODO: implement this
+
+        return;
     }
 
     const saveCloudProject = async (name: string) => {
@@ -150,7 +154,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
             return;
         }
 
-        setProjectSaving(true);
+        /*setProjectSaving(true);
         
         const projectObject = addProjectMeta(user.uid, name, await patchVM.serializeProject());
         
@@ -164,7 +168,9 @@ export const useProjectActions = (defaultProjectId?: string) => {
         setNewProject(false);
         setProjectSaving(false);
         let id: string= projectReference?.id ?? "";
-        updateUserMeta(user.uid, id, projectName)
+        updateUserMeta(user.uid, id, projectName)*/
+
+        // TODO: implement this
     }
 
     const saveProject = saveCloudProject;

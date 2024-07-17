@@ -3,7 +3,7 @@ import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { Sprite, Stage } from 'leopard';
 import { spriteUpload } from '../../lib/file-uploader';
 import usePatchStore from '../../store';
-import { SpriteJson } from '../EditorPane/types';
+import { SpriteJson } from '../EditorPane/old-types';
 
 export const useUploadSprite = () => {
     const patchVM = usePatchStore(state => state.patchVM);
@@ -14,7 +14,7 @@ export const useUploadSprite = () => {
     const changeSpriteValues = (eventSource: Sprite | Stage | null = null, setEditingTargetAttributes: (x: number, y: number, size: number, direction: number) => void, editingTargetId: string) => {
         // only update the attributes if the active sprite has changes
         if (eventSource) {
-          if (patchVM.getTargetId(eventSource) !== editingTargetId) {
+          if (eventSource.id !== editingTargetId) {
             return;
           }
         }

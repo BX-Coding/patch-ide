@@ -1,7 +1,7 @@
-import { Costume } from "../components/EditorPane/types";
 import usePatchStore from "../store";
 import { costumeUpload, handleFileUpload } from "../lib/file-uploader";
 import { useEditingTarget } from "./useEditingTarget";
+import { Costume } from "leopard";
 
 export const useCostumeHandlers = () => {
     const patchVM = usePatchStore(state => state.patchVM);
@@ -12,7 +12,9 @@ export const useCostumeHandlers = () => {
         const costumes = Array.isArray(costume) ? costume : [costume];
     
         var returnval = await Promise.all(costumes.map(c => {
-            return addCostume(fromCostumeLibrary ? c.md5ext : c.md5 ?? '', c, targetId);
+            // TODO: fix this?
+            //return addCostume(fromCostumeLibrary ? c.md5ext : c.md5 ?? '', c, targetId);
+            return addCostume(fromCostumeLibrary ? c.name : c.name ?? '', c, targetId);
         }));
     
         return returnval;

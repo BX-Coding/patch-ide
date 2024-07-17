@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { EditorState } from './index';
-import { Costume, Target } from '../components/EditorPane/types';
+import { Costume, Sprite, Stage } from 'leopard';
 
 export interface CostumeEditorState {
     costumes: Costume[],
@@ -10,7 +10,7 @@ export interface CostumeEditorState {
     setCostumes: (costumes: Costume[]) => void,
     addCostume: (md5ext: string, costume: Costume, targetId: string) => void,
     setSelectedCostumeIndex: (index: number) => void,
-    loadTargetCostumes: (target: Target) => void,
+    loadTargetCostumes: (target: Sprite | Stage) => void,
 }
 
 export const createCostumeEditorSlice: StateCreator<
@@ -27,8 +27,8 @@ export const createCostumeEditorSlice: StateCreator<
     addCostume: async (md5ext: string, costume: Costume, targetId: string) => {
         await get().patchVM.addCostume(md5ext, costume, targetId);
         const editingTarget = get().patchVM.editingTarget;
-        set({ costumes: [...editingTarget.sprite.costumes]  });
+        set({ costumes: [...(editingTarget?.getCostumes() || [])] });
     },
     setSelectedCostumeIndex: (index: number) => set({ selectedCostumeIndex: index }),
-    loadTargetCostumes: (target: Target) => set({ costumes: target.sprite.costumes, selectedCostumeIndex: target.currentCostume }),
+    loadTargetCostumes: (target: Sprite | Stage) => set({ costumes: target.getCostumes(), selectedCostumeIndex: target.costumeNumber - 1 }),
 })

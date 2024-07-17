@@ -1,7 +1,7 @@
+import { Stage } from "leopard";
 import usePatchStore from "../../store";
-import { Target } from "../EditorPane/types";
 
-export const useStageTarget = (): Target | null => {
+export const useStageTarget = (): Stage | null => {
     const patchVM = usePatchStore(state => state.patchVM);
     if (!patchVM) {
         return null;

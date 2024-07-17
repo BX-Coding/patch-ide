@@ -34,9 +34,9 @@ export const useEditingTarget = (): [Sprite | Stage | null, (target: Sprite | St
         if (!patchVM) {
             return;
         }
-        const targetId = (typeof target == "string") ? target : patchVM.getTargetId(target);
+        const targetId = (typeof target == "string") ? target : target.id;
     
-        saveTargetThreads(patchVM.editingTarget);
+        patchVM.editingTarget && saveTargetThreads(patchVM.editingTarget);
     
         patchVM.setEditingTarget(targetId);
         setEditingTargetId(targetId);

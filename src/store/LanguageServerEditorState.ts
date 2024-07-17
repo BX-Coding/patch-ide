@@ -1,10 +1,11 @@
 import { StateCreator } from "zustand";
 import { EditorState } from "./index";
-import { Target, Costume, Sound } from "../components/EditorPane/types";
+import { Sprite, Stage, Sound } from "leopard";
+import { Costume } from "leopard";
 
 export interface LanguageServerState {
-  targets: Target[];
-  backdrops: [];
+  targets: (Sprite | Stage)[];
+  backdrops: Costume[];
   costumes: Costume[];
   sounds: Sound[];
   messages: [];
@@ -44,7 +45,7 @@ export const createServerStateSlice: StateCreator<
     const serverState = state.languageServerState;
     // state.sendLspState(serverState);
   },
-  updateTargets: (targets: Target[]) => {
+  updateTargets: (targets: (Sprite | Stage)[]) => {
     set((state) => ({
       languageServerState: {
         ...state.languageServerState,
@@ -53,7 +54,7 @@ export const createServerStateSlice: StateCreator<
     }));
     get().updateLanguageServerState();
   },
-  updateBackdrops: (backdrops: []) => {
+  updateBackdrops: (backdrops: Costume[]) => {
     set((state) => ({
       languageServerState: {
         ...state.languageServerState,

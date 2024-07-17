@@ -5,7 +5,7 @@ import bmpConverter from '../util/bmp-converter';
 import gifDecoder from '../util/gif-decoder';
 // @ts-ignore
 import { ScratchStorage } from 'scratch-storage';
-import { SpriteJson } from '../components/EditorPane/types';
+import { SpriteJson } from '../components/EditorPane/old-types';
   
 type AssetType = ScratchStorage.AssetType;
 

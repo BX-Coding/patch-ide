@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
+import { Sprite } from 'leopard';
 
 export function SpriteName() {
     const patchVM = usePatchStore((state) => state.patchVM);
@@ -14,13 +15,13 @@ export function SpriteName() {
 
     const [editingTarget, setEditingTarget] = useEditingTarget();
     const [nameSaved, setNameSaved] = useState(true);
-    const [name, setName] = useState(editingTarget?.sprite.name);
+    const [name, setName] = useState(editingTarget?.id);
 
     const handleSave = () => {
         if (!editingTarget) {
             return;
         }
-        patchVM.renameSprite(editingTarget.id, name);
+        name && patchVM.renameSprite(editingTarget.id, name);
         setProjectChanged(true);
         setNameSaved(true);
     }
@@ -31,10 +32,7 @@ export function SpriteName() {
     }
 
     useEffect(() => {
-        if (!editingTarget) {
-            return;
-        }
-        setName(editingTarget.sprite.name);
+        editingTarget && setName(editingTarget.id);
     }, [editingTarget]);
 
 
@@ -48,7 +46,7 @@ export function SpriteName() {
                 disabled={targetIds[0] == editingTarget?.id}
                 sx={{ minWidth: '532px' }}
             />
-            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !patchVM.editingTarget.isSprite()} sx={{ height: '40px' }} />
+            <IconButton icon={<SaveIcon />} color="success" onClick={handleSave} disabled={nameSaved || !(patchVM.editingTarget instanceof Sprite)} sx={{ height: '40px' }} />
         </HorizontalButtons>
     </Grid>);
 }

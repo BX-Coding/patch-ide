@@ -1,7 +1,7 @@
 import ScratchStorage from 'scratch-storage';
 // @ts-ignore
 import {inlineSvgFonts} from 'scratch-svg-renderer';
-import { Asset } from '../components/EditorPane/types';
+import { Asset } from '../components/EditorPane/old-types';
 
 // Contains 'font-family', but doesn't only contain 'font-family="none"'
 const HAS_FONT_REGEXP = 'font-family(?!="none")';

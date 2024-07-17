@@ -57,6 +57,7 @@ export default function SpritePane(){
             }}>
                 {targetIds.map((targetId) => {
                     const target = patchVM.runtime.getTargetById(targetId);
+                    console.log(patchVM.getAllRenderedTargets());
                     return (
                         target ? ((target instanceof Stage) && <Grid item sx={{maxWidth: '136px', maxHeight: '136px'}}><SpriteCard key={targetId} target={target} /></Grid>) : <></>
                     );

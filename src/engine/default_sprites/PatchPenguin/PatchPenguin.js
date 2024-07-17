@@ -6,7 +6,7 @@ import {
   Color
 } from "leopard";
 
-export default class ScratchCat extends Sprite {
+export default class PatchPenguin extends Sprite {
   constructor(...args) {
     super(...args);
 

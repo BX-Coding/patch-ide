@@ -1,12 +1,15 @@
 import { StateCreator } from "zustand";
 import { EditorState } from "./index";
-import { Thread, VmError } from "../components/EditorPane/types";
+import { VmError } from "../components/EditorPane/types";
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import React from "react";
 import { Transport } from "@open-rpc/client-js/build/transports/Transport";
 import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
 import { LanguageServerState } from "./LanguageServerEditorState";
+import { Sprite, Stage } from "leopard";
+import { Thread } from "../components/EditorPane/types";
+import { Dictionary } from "../engine/interfaces";
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
   let result: ReturnType<T>;
@@ -42,11 +45,11 @@ export interface CodeEditorState {
   sendLspState: () => void;
   setTransportRef: (ref: WebSocketTransport) => void;
   getTransportRef: () => WebSocketTransport | null;
-  addThread: (target: Target) => void;
+  addThread: (target: Sprite | Stage) => void;
   updateThread: (id: string, text: string) => void;
-  loadTargetThreads: (target: Target) => void;
+  loadTargetThreads: (target: Sprite | Stage) => void;
   saveThread: (id: string | string[]) => void;
-  saveTargetThreads: (target: Target) => void;
+  saveTargetThreads: (target: Sprite | Stage) => void;
   saveAllThreads: () => void;
   deleteThread: (id: string) => void;
   getThread: (id: string) => ThreadState;
@@ -83,20 +86,18 @@ export const createCodeEditorSlice: StateCreator<
   // Actions
   sendLspState: () => {
     const patchVM = get().patchVM
+    const targets = patchVM.getAllRenderedTargets()
     const dynamicOptions: LanguageServerState = {
-      targets: patchVM
-        .getAllRenderedTargets()
-        .filter((target: any) => !target.isStage)
-        .map((target: any) => target.getName()),
-      backdrops: patchVM.runtime
+      targets: Object.keys(targets)
+        .filter((targetId: string) => targetId != "Stage")
+        .map(targetId => targets[targetId]),
+      backdrops: patchVM
         .getTargetForStage()
-        .sprite.costumes.map((costume: any) => costume.name),
-      costumes: patchVM.editingTarget.sprite.costumes.map(
-        (costume: any) => costume.name
-      ),
-      sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
-      messages: patchVM.getAllBroadcastMessages(),
-      apiData: patchVM.getApiInfo(),
+        .getCostumes(),
+      costumes: patchVM.editingTarget?.getCostumes() || [],
+      sounds: patchVM.editingTarget?.getSounds() || [],
+      messages: patchVM.getAllBroadcastMessages() || [],
+      apiData: patchVM.getApiInfo() || [],
     };
 
     const transport = get().transportRef;
@@ -123,20 +124,18 @@ export const createCodeEditorSlice: StateCreator<
     const patchVM = get().patchVM
 
     setTimeout(()=>{
+      const targets = patchVM.getAllRenderedTargets()
       const dynamicOptions: LanguageServerState = {
-        targets: patchVM
-          .getAllRenderedTargets()
-          .filter((target: any) => !target.isStage)
-          .map((target: any) => target.getName()),
-        backdrops: patchVM.runtime
+        targets: Object.keys(targets)
+          .filter((targetId: string) => targetId != "Stage")
+          .map(targetId => targets[targetId]),
+        backdrops: patchVM
           .getTargetForStage()
-          .sprite.costumes.map((costume: any) => costume.name),
-        costumes: patchVM.editingTarget.sprite.costumes.map(
-          (costume: any) => costume.name
-        ),
-        sounds: patchVM.editingTarget.getSounds().map((sound: any) => sound.name),
-        messages: patchVM.getAllBroadcastMessages(),
-        apiData: patchVM.getApiInfo(),
+          .getCostumes(),
+        costumes: patchVM.editingTarget?.getCostumes() || [],
+        sounds: patchVM.editingTarget?.getSounds() || [],
+        messages: patchVM.getAllBroadcastMessages() || [],
+        apiData: patchVM.getApiInfo() || [],
       };
 
       const transport = ref;
@@ -190,9 +189,10 @@ export const createCodeEditorSlice: StateCreator<
 
       return state;
     }),
-  addThread: async (target: Target) => {
-    const id = await target.addThread("", "event_whenflagclicked", "");
-    const thread = target.getThread(id);
+  addThread: async (target: Sprite | Stage) => {
+    const patchVM = get().patchVM;
+    const id = await patchVM.addThread(target.id, "", "event_whenflagclicked", "");
+    const thread = patchVM.getThread(target.id, id);
     thread.displayName = "Thread " + get().nextThreadNumber;
     set((state) => {
       state.nextThreadNumber++;
@@ -221,18 +221,19 @@ export const createCodeEditorSlice: StateCreator<
         },
       },
     })),
-  loadTargetThreads: (target: Target) =>
+  loadTargetThreads: (target: Sprite | Stage) =>
     set((state) => {
-      const newThreads: { [key: string]: ThreadState } = {};
+      const patchVM = get().patchVM;
+      const newThreads: Dictionary<ThreadState> = {};
 
       let nextThreadNumber = state.nextThreadNumber;
 
-      const keys = Object.keys(target.threads);
+      const keys = Object.keys(patchVM.getThreadsForTarget(target.id));
       keys.forEach((id) => {
         newThreads[id] = {
           ...state.threads[id],
-          thread: target.getThread(id),
-          text: target.getThread(id).script,
+          thread: patchVM.getThread(target.id, id),
+          text: patchVM.getThread(target.id, id).script,
           saved: true,
         };
         if (!newThreads[id].thread.displayName) {
@@ -246,7 +247,7 @@ export const createCodeEditorSlice: StateCreator<
         threads: newThreads,
         nextThreadNumber: nextThreadNumber,
       };
-      newState.codeThreadId = keys.length > 0 ? target.threads[keys[0]].id : "";
+      newState.codeThreadId = keys.length > 0 ? patchVM.getThreadsForTarget(target.id)[keys[0]].id : "";
       return newState;
     }),
   saveThread: (id: string | string[]) =>
@@ -266,8 +267,10 @@ export const createCodeEditorSlice: StateCreator<
       Promise.all(updatePromises).then(state.pollDiagnostics);
       return { ...state, threads: newThreads };
     }),
-  saveTargetThreads: (target: Target) => {
-    const editingThreadIds = Object.keys(target.threads);
+  saveTargetThreads: (target: Sprite | Stage) => {
+    const patchVM = get().patchVM;
+    
+    const editingThreadIds = Object.keys(patchVM.getThreadsForTarget(target.id));
 
     editingThreadIds.forEach((threadId) => {
       get().saveThread(threadId);

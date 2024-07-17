@@ -1,4 +1,4 @@
-import { SpriteJson } from "../components/EditorPane/types";
+import { SpriteJson } from "../components/EditorPane/old-types";
 
 export const backdrops: SpriteJson[] = [
     {

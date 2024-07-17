@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { VmState } from "../components/EditorPane/types";
 import usePatchStore from "../store"
 import { useEditingTarget } from "./useEditingTarget";
 import { GlobalVariable } from "../store/variableEditorStore";
+import { VmState } from "../components/EditorPane/types";
 
 const b64dataurltoBlob = (b64Data: string, contentType = '', sliceSize = 512) => {
     // the split removes the encoding info from the data url and just returns the raw data
@@ -62,7 +62,7 @@ export const usePatchSerialization = () => {
         setGlobalVariables(result.globalVariables);
         const targetIds = patchVM.getTargetIds();
         setTargetIds(targetIds);
-        const editingTargetId = (patchVM?.editingTarget ? patchVM.getTargetId(patchVM.editingTarget!) : targetIds[0]);
+        const editingTargetId = (patchVM.editingTarget ? patchVM.editingTarget.id : targetIds[0]);
         setEditingTarget(editingTargetId);
 
         setProjectChanged(false);

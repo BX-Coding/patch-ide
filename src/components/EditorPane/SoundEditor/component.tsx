@@ -13,7 +13,6 @@ import { useSoundHandlers } from "../../../hooks/useSoundUploadHandlers";
 import { useAudioPlayback } from "./useAudioPlayback";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import { useEditingTarget } from "../../../hooks/useEditingTarget";
-import { Target } from "../types";
 import { DropdownMenu } from "../../DropdownMenu";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -31,17 +30,14 @@ function AddSoundButton() {
   const showModalSelector = usePatchStore((state) => state.showModalSelector);
   const { handleUploadSound } = useSoundHandlers();
 
-  const [editingTarget] = useEditingTarget() as [
-    Target,
-    (target: Target) => void
-  ];
+  const [editingTarget] = useEditingTarget();
 
   const handleBuiltIn = () => {
     showModalSelector(ModalSelectorType.SOUND);
   };
 
   const handleFromUpload = () => {
-    handleUploadSound(editingTarget.id);
+    editingTarget && handleUploadSound(editingTarget.id);
   };
 
   return (
@@ -100,10 +96,7 @@ function SoundInspector() {
   const setSounds = usePatchStore((state) => state.setSounds);
   const playByteArray = useAudioPlayback();
 
-  const [editingTarget, setEditingTarget] = useEditingTarget() as [
-    Target,
-    (target: Target) => void
-  ];
+  const [editingTarget, setEditingTarget] = useEditingTarget();
 
   const handleClick = (index: number, soundName: string) => () => {
     setSelectedSoundIndex(index);
@@ -111,10 +104,14 @@ function SoundInspector() {
 
   useEffect(() => {
     setSelectedSoundIndex(0);
-    setSounds(editingTarget.getSounds());
+    editingTarget && setSounds(editingTarget.getSounds());
   }, [editingTarget, patchVM]);
 
   const handleDeleteClick = () => {
+    if (!editingTarget) {
+      console.warn("No editing target set.");
+      return;
+    }
     editingTarget.deleteSound(selectedSoundIndex);
     let newSounds = editingTarget.getSounds();
     setSelectedSoundIndex(Math.max(0, selectedSoundIndex - 1));
@@ -124,9 +121,10 @@ function SoundInspector() {
   const handlePlayClick = () => {
     const sound = sounds[selectedSoundIndex];
 
-    if (sound?.asset?.data) {
+    // TODO: implement this
+    /*if (sound?.asset?.data) {
       playByteArray(sound.asset.data);
-    }
+    }*/
   };
 
   return (
@@ -158,7 +156,7 @@ function SoundInspector() {
           <IconButton
             icon={<PlayArrowIcon />}
             disabled={
-              sounds.length < 1 || sounds[selectedSoundIndex]?.rate === 22050
+              sounds.length < 1 // TODO: fix this? idk if it'll be needed. || sounds[selectedSoundIndex]?.rate === 22050
             }
             onClick={handlePlayClick}
           />

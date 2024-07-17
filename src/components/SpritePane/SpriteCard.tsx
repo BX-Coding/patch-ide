@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ItemCard } from '../ItemCard';
 import getCostumeUrl from '../../util/get-costume-url';
-import { Target } from '../EditorPane/types';
 import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { CostumeImage } from '../CostumeImage';
+import { Sprite, Stage } from 'leopard';
 
 type SpriteCardProps = {
-    target: Target,
+    target: Sprite | Stage,
 }
 
 export function SpriteCard({ target }: SpriteCardProps) {
@@ -17,9 +17,9 @@ export function SpriteCard({ target }: SpriteCardProps) {
         setEditingTarget(target.id);
     }
 
-    let titleName = target?.sprite?.name
+    let titleName = target?.id
 
-    if (target?.sprite?.name.length > 13) {
+    if (target && (target.id.length > 13)) {
         titleName = titleName.substring(0, 10) + '...'
     }
 
@@ -29,11 +29,11 @@ export function SpriteCard({ target }: SpriteCardProps) {
                 title={titleName}
                 selected={editingTarget?.id === target.id}
                 onClick={onClick}
-                key={target?.sprite?.name}
+                key={target?.id}
                 width={120}
                 height={120}
             >
-                <CostumeImage costume={target?.sprite?.costumes[0]} className="costumeCardImage" />
+                <CostumeImage costume={target?.getCostumes()[0]} className="costumeCardImage" />
             </ItemCard>
 
         </>

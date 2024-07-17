@@ -7,7 +7,7 @@ import { Typography, Box, Grid } from "@mui/material";
 import { HorizontalButtons, IconButton } from "../PatchButton";
 import usePatchStore, { ModalSelectorType } from "../../store";
 import { useAddSprite } from "../SpritePane/onAddSpriteHandler";
-import { Asset, SoundJson, SpriteJson } from "../EditorPane/types";
+import { Asset, SoundJson, SpriteJson } from "../EditorPane/old-types";
 import { useSoundHandlers } from "../../hooks/useSoundUploadHandlers";
 import { ItemCard } from "../ItemCard";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
@@ -32,7 +32,8 @@ export const ModalSelector = () => {
       modalSelectorType === ModalSelectorType.BACKDROP
     ) {
       const sprite = asset as SpriteJson;
-      handleAddCostumesToEditingTarget(sprite.costumes, true);
+      // TODO: fix this
+      //handleAddCostumesToEditingTarget(sprite.costumes, true);
     } else if (modalSelectorType === ModalSelectorType.SOUND) {
       const sound = asset as SoundJson;
       handleAddSoundToEditingTarget(sound, true);

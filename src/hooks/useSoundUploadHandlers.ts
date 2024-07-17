@@ -1,6 +1,7 @@
 import { handleFileUpload, soundUpload } from '../lib/file-uploader';
 import usePatchStore from '../store';
-import { Sound, SoundJson } from '../components/EditorPane/types';
+import { SoundJson } from '../components/EditorPane/old-types';
+import { Sound } from 'leopard';
 
 export const useSoundHandlers = () => {
     const patchVM = usePatchStore(state => state.patchVM);
@@ -42,7 +43,9 @@ export const useSoundHandlers = () => {
     };
 
     const handleAddSoundToEditingTarget = (sound: Sound | SoundJson, fromLibrary: boolean) => {
-        addSound(fromLibrary ? {...sound, md5: sound.md5ext} : sound);
+        // TODO: fix this
+        //addSound(fromLibrary ? {...sound, md5: sound.md5ext} : sound);
+        addSound(fromLibrary ? {...sound, md5: sound.name} : sound);
     }
 
     return {

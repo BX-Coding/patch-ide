@@ -1,6 +1,6 @@
 import ScratchStorage from "scratch-storage";
 import { FirebaseStorage, ref } from "firebase/storage";
-import { Asset, AssetType, DataFormat } from "../components/EditorPane/types";
+import { Asset, AssetType, DataFormat } from "../components/EditorPane/old-types";
 
 export const SCRATCH_PATH = "scratch";
 export const URL_SLASH = "%2F";

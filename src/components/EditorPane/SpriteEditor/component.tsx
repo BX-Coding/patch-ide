@@ -4,12 +4,12 @@ import getCostumeUrl from '../../../util/get-costume-url';
 import { AddButton, DeleteButton, HorizontalButtons } from '../../PatchButton';
 import { ItemCard } from '../../ItemCard';
 import { Box, Grid, Menu, MenuItem } from '@mui/material';
-import { Costume, Target } from '../types';
 import { useEditingTarget } from '../../../hooks/useEditingTarget';
 import { CostumeImage } from '../../CostumeImage';
 import { DropdownMenu } from '../../DropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
 import { useCostumeHandlers } from '../../../hooks/useCostumeUploadHandlers';
+import { Costume, Sprite, Stage } from 'leopard';
 
 function AddCostumeButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
@@ -18,7 +18,7 @@ function AddCostumeButton() {
 
     const handleBuiltIn = () => {
         if (!editingTarget) return;
-        if (editingTarget.isSprite()) {
+        if (editingTarget.id != "Stage") {
             showModalSelector(ModalSelectorType.COSTUME);
         } else {
             showModalSelector(ModalSelectorType.BACKDROP);
@@ -64,18 +64,23 @@ export const SpriteEditor = () => {
     const setCostumes = usePatchStore((state) => state.setCostumes);
     const costumes = usePatchStore((state) => state.costumes);
 
-    const [editingTarget, setEditingTarget] = useEditingTarget() as [Target, (target: Target) => void];
+    const [editingTarget, setEditingTarget] = useEditingTarget() as [Sprite | Stage, (target: Sprite | Stage) => void];
 
+    const getCostumeIndexByName = (costumeName: string) => {
+        const costumes = editingTarget.getCostumes();
+        const filtered = costumes.filter((costume) => costume.name == costumeName);
+        return (filtered && filtered[0]) ? costumes.indexOf(filtered[0]) : -1;
+    }
+    
     const handleClick = (costumeName: string) => {
-        const newCostumeIndex = editingTarget.getCostumeIndexByName(costumeName);
-        editingTarget.setCostume(newCostumeIndex);
+        const newCostumeIndex = getCostumeIndexByName(costumeName);
         setSelectedCostumeIndex(newCostumeIndex);
     }
 
     const handleDeleteClick = (costumeName: string) => {
-        const newCostumeIndex = editingTarget.getCostumeIndexByName(costumeName);
+        const newCostumeIndex = getCostumeIndexByName(costumeName);
         editingTarget.deleteCostume(newCostumeIndex);
-        setSelectedCostumeIndex(editingTarget.currentCostume);
+        setSelectedCostumeIndex(/* costumeNumber is 1-based instead of 0-based (it's a leopard thing) */ editingTarget.costumeNumber - 1);
         setCostumes([...editingTarget.getCostumes()]);
     }
 

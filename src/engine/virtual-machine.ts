@@ -25,6 +25,8 @@ import Runtime from "./runtime";
 import { Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
+import { Thread } from "../components/EditorPane/types";
+import { SpriteJson } from "../components/EditorPane/old-types";
 
 /**
  * Handles connections between blocks, stage, and extensions.
@@ -279,7 +281,7 @@ export default class VirtualMachine extends EventEmitter {
         // TODO: implement this
     }
 
-    addSprite(sprite: Sprite, name: string) {
+    addSprite(sprite: Sprite | SpriteJson, name: string) {
 
     }
 
@@ -525,7 +527,7 @@ export default class VirtualMachine extends EventEmitter {
      * @param {string} optVersion - if this is 2, load costume as sb2, otherwise load costume as sb3.
      * @returns {?Promise} - a promise that resolves when the costume has been added
      */
-    async addCostume(md5ext: string, costumeObject: object, optTargetId: string, optVersion: string) {
+    async addCostume(md5ext: string, costumeObject: object, optTargetId?: string, optVersion?: string) {
         /*const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
             // eslint-disable-next-line no-undef
@@ -547,7 +549,7 @@ export default class VirtualMachine extends EventEmitter {
      * @param {string} optTargetId - the id of the target to add to, if not the editing target.
      * @returns {?Promise} - a promise that resolves when the sound has been decoded and added
      */
-    async addSound(soundObject: object, optTargetId: string) {
+    async addSound(soundObject: object, optTargetId?: string) {
         /*const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
             // eslint-disable-next-line no-undef
@@ -562,7 +564,7 @@ export default class VirtualMachine extends EventEmitter {
         // TODO: implement this
     }
 
-    getEventLabels() {
+    getEventLabels(): Dictionary<string> {
         /*const hats = this.runtime._hats;
         const eventLabels = {};
         Object.keys(hats).forEach((hatId) => {
@@ -571,6 +573,8 @@ export default class VirtualMachine extends EventEmitter {
         return eventLabels;*/
 
         // TODO: implement this
+
+        return {}
     }
 
     getBackdropNames() {
@@ -777,9 +781,15 @@ export default class VirtualMachine extends EventEmitter {
         //return startedHat;
     }
 
-    async addThread(targetId: any, script: any, triggerEventId: any, option: any, displayName = "") {
+    async addThread(targetId: any, script: any, triggerEventId: any, option: any, displayName = ""): Promise<string> {
         //const newThreadId = await this.runtime.addThread(targetId, script, triggerEventId, option, displayName);
         //return newThreadId;
+
+        return "";
+    }
+
+    getThread(targetId: string, threadId: string): Thread {
+        return this.runtime.getTargetThreads(targetId)[threadId];
     }
 
     deleteThread(threadId: any) {
@@ -791,7 +801,23 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     getThreadsForTarget(targetId: any) {
-        //return this.runtime.getThreadsForTarget(targetId);
+        return this.runtime.getTargetThreads(targetId);
+    }
+
+    getAllRenderedTargets() {
+        return this.runtime.targets;
+    }
+
+    getTargetById(id: string) {
+        return this.runtime.getTargetById(id);
+    }
+
+    getTargetIds() {
+        return Object.keys(this.getAllRenderedTargets());
+    }
+
+    getTargetForStage() {
+        return this.runtime.getTargetForStage();
     }
 
     updateThreadScript(threadId: any, script: any) {
@@ -826,24 +852,10 @@ export default class VirtualMachine extends EventEmitter {
         //return this.runtime.workerLoaded;
     }
 
-    getAllRenderedTargets() {
-        return this.runtime.targets;
-    }
-
-    getTargetId(target: Sprite | Stage) {
-        return this.runtime.getTargetId(target);
-    }
-
-    getTargetById(id: string) {
-        return this.runtime.getTargetById(id);
-    }
-
-    getTargetIds() {
-        return Object.keys(this.getAllRenderedTargets());
-    }
-
-    getApiInfo() {
+    getApiInfo(): [] {
         //return PrimProxy.patchApi;
+
+        return [];
     }
 
     getDynamicFunctionInfo(functionName: any) {
@@ -852,16 +864,20 @@ export default class VirtualMachine extends EventEmitter {
 
     getRuntimeErrors() {
         //return this.runtime.runtimeErrors;
+
+        return []
     }
 
     getCompileTimeErrors() {
         //return this.runtime.compileTimeErrors;
+
+        return []
     }
 
     /**
      * Get all messagesIds that are currently being listened for by threads
      */
-    getAllBroadcastMessages() {
+    getAllBroadcastMessages(): [] {
         /*const messages: any[] = [];
         this.getAllRenderedTargets().forEach((target: { threads: any; }) => {
             const { threads } = target;
@@ -873,6 +889,8 @@ export default class VirtualMachine extends EventEmitter {
             });
         });
         return messages;*/
+
+        return [];
     }
 
         /*

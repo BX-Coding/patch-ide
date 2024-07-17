@@ -1,4 +1,4 @@
-import { SoundJson } from "../components/EditorPane/types";
+import { SoundJson } from "../components/EditorPane/old-types";
 
 
 export const sounds: SoundJson[] = [
