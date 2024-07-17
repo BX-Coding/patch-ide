@@ -27,6 +27,7 @@ import { Costume, Sound, Sprite, Stage } from "leopard";
 import { Dictionary } from "./interfaces";
 import { SpriteJson } from "../components/EditorPane/old-types";
 import Thread from "./thread";
+import PrimProxy from "./prim-proxy";
 
 /**
  * Handles connections between blocks, stage, and extensions.
@@ -746,11 +747,11 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     deleteThread(threadId: any) {
-        //this.runtime.deleteThread(threadId);
+        this.runtime.deleteThread(threadId);
     }
 
     getThreadById(threadId: any) {
-        //return this.runtime.getThreadById(threadId);
+        return this.runtime.getThreadById(threadId);
     }
 
     getThreadsForTarget(targetId: any) {
@@ -805,10 +806,8 @@ export default class VirtualMachine extends EventEmitter {
         //return this.runtime.workerLoaded;
     }
 
-    getApiInfo(): [] {
-        //return PrimProxy.patchApi;
-
-        return [];
+    getApiInfo() {
+        return PrimProxy.patchApi;
     }
 
     getDynamicFunctionInfo(functionName: any) {

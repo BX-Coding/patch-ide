@@ -55,7 +55,7 @@ export default class Runtime extends EventEmitter {
             console.error("Can't add a stage; one already exists.");
             return "";
          } else {
-            this._stage = {stage: target, threads: {}};
+            this._stage = { stage: target, threads: {} };
             return "Stage";
          }
       } else {
@@ -68,7 +68,7 @@ export default class Runtime extends EventEmitter {
 
             const tryId = "Sprite";
             let tryNumber = 1;
-            
+
             while (this.getTargetById(tryId + tryNumber.toString())) {
                tryNumber++;
             }
@@ -136,6 +136,36 @@ export default class Runtime extends EventEmitter {
 
    getTargetThreads(id: string) {
       return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
+   }
+
+   getThreadSprite(id: string) {
+      const spriteIds = Object.keys(this._sprites);
+
+      for (const spriteId of spriteIds) {
+         if (this._sprites[spriteId].threads[id]) return spriteId;
+      }
+
+      return undefined;
+   }
+
+   getThreadById(id: string) {
+      const spriteId = this.getThreadSprite(id);
+
+      if (spriteId) return this._sprites[spriteId].threads[id];
+
+      console.log("Thread " + id + " not found.");
+
+      return undefined;
+   }
+
+   deleteThread(id: string) {
+      const spriteId = this.getThreadSprite(id);
+
+      if (spriteId) { delete this._sprites[spriteId].threads[id]; return 0; }
+
+      console.log("Thread " + id + " not found; couldn't delete it.");
+
+      return -1;
    }
 
    async addThread(
@@ -263,6 +293,6 @@ export default class Runtime extends EventEmitter {
             label: "When Broadcast Received",
             restartExistingThreads: true,
          },
-      } as Dictionary<{restartExistingThreads: boolean, label: string}>;
+      } as Dictionary<{ restartExistingThreads: boolean, label: string }>;
    }
 }

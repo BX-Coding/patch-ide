@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { EditorState } from "./index";
 import { Sprite, Stage, Sound } from "leopard";
 import { Costume } from "leopard";
+import { Dictionary } from "../engine/interfaces";
 
 export interface LanguageServerState {
   targets: (Sprite | Stage)[];
@@ -9,7 +10,7 @@ export interface LanguageServerState {
   costumes: Costume[];
   sounds: Sound[];
   messages: [];
-  apiData: [];
+  apiData: Dictionary<any>;
 }
 
 export interface ServerEditorState {
