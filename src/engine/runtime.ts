@@ -4,7 +4,7 @@ import { DefaultSprites, DefaultStage } from "./default_sprites/default-project"
 
 import { Dictionary } from "./interfaces";
 import ScratchStorage from "scratch-storage";
-import { Thread } from "../components/EditorPane/types";
+import Thread from "./thread";
 
 // This class manages the state of targets and other stuff
 
@@ -95,5 +95,13 @@ export default class Runtime extends EventEmitter {
 
    getTargetThreads(id: string) {
       return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
+   }
+
+   async addThread(targetId: string, script: string, triggerEventId: string, option: string, displayName = "") {
+      const newThread = new Thread(this, this.getTargetById(targetId), script, triggerEventId, option, displayName);
+      const threadId = newThread.id;
+      targetId == "Stage" ? this._stage.threads[threadId] = newThread : this._sprites[targetId].threads[threadId] = newThread;
+      await newThread.loadPromise;
+      return threadId;
    }
 }

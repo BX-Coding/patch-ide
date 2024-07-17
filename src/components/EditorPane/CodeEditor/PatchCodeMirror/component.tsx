@@ -1,5 +1,5 @@
 // Keeping this file in jsx for now in order to use the CodeMirror component see error triage BXC-210
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { lintGutter } from "@codemirror/lint";
@@ -11,8 +11,7 @@ import { hoverTooltip } from "@codemirror/view";
 import patchAPI from "../../../../assets/patch-api.json";
 import { createRoot } from "react-dom/client";
 import { HoverTooltip } from "../HoverTooltip";
-import { Button } from "@mui/material";
-import { Thread } from "../../types";
+import Thread from "../../../../engine/thread";
 
 type PatchCodeMirrorProps = {
   thread: Thread;

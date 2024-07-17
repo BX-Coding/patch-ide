@@ -1,20 +1,3 @@
-export interface Thread {
-    status: number,
-    id: string,
-    blockUtility: any,
-    script: string,
-    triggerEvent: string,
-    triggerEventOption: string,
-    loadPromise: Promise<boolean>,
-    interruptThread: boolean,
-    running: boolean,
-    displayName: string,
-
-    updateThreadScript: (script: string) => Promise<void>,
-    updateThreadTriggerEvent: (trigger: string) => void,
-    updateThreadTriggerEventOption: (option: string) => void,
-}
-
 export interface VmState {
 
 }

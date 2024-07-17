@@ -25,8 +25,8 @@ import Runtime from "./runtime";
 import { Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
-import { Thread } from "../components/EditorPane/types";
 import { SpriteJson } from "../components/EditorPane/old-types";
+import Thread from "./thread";
 
 /**
  * Handles connections between blocks, stage, and extensions.
@@ -773,10 +773,8 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     async addThread(targetId: any, script: any, triggerEventId: any, option: any, displayName = ""): Promise<string> {
-        //const newThreadId = await this.runtime.addThread(targetId, script, triggerEventId, option, displayName);
-        //return newThreadId;
-
-        return "";
+        const newThreadId = await this.runtime.addThread(targetId, script, triggerEventId, option, displayName);
+        return newThreadId;
     }
 
     getThread(targetId: string, threadId: string): Thread {

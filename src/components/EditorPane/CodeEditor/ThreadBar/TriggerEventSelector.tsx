@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useEditingTarget } from "../../../../hooks/useEditingTarget";
 import usePatchStore from "../../../../store";
 import { useEventList } from "./useEventList";
-import { Thread } from "../../types";
+import Thread from "../../../../engine/thread";
 
 type TriggerEventSelectorProps = {
   thread: Thread;

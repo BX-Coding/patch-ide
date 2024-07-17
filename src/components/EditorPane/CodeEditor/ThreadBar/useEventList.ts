@@ -1,5 +1,5 @@
+import Thread from "../../../../engine/thread";
 import usePatchStore from "../../../../store";
-import { Thread } from "../../types";
 
 type AutoCompleteOption = {
     id: string,

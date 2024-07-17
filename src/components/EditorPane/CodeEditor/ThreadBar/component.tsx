@@ -8,8 +8,7 @@ import usePatchStore from '../../../../store';
 import { HorizontalButtons, DeleteButton, IconButton } from '../../../PatchButton';
 import { useEditingTarget } from '../../../../hooks/useEditingTarget';
 import { TriggerEventSelector } from './TriggerEventSelector';
-import { Thread } from '../../types';
-
+import Thread from '../../../../engine/thread';
 
 type ThreadEditorProps = {
     thread: Thread,

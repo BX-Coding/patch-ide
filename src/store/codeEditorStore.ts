@@ -8,8 +8,8 @@ import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
 import { LanguageServerState } from "./LanguageServerEditorState";
 import { Sprite, Stage } from "leopard";
-import { Thread } from "../components/EditorPane/types";
 import { Dictionary } from "../engine/interfaces";
+import Thread from "../engine/thread";
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
   let result: ReturnType<T>;

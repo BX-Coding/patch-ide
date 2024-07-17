@@ -1,4 +1,4 @@
-import { Thread } from "../../components/EditorPane/types";
+import Thread from "../thread";
 import PatchPenguin from "./PatchPenguin/PatchPenguin";
 import Stage from "./Stage/Stage";
 
