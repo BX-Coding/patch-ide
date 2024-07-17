@@ -143,22 +143,23 @@ export default class VirtualMachine extends EventEmitter {
      * Defaults to true.
      */
     emitTargetsUpdate(triggerProjectChange: any) {
-        /*// eslint-disable-next-line no-param-reassign
+        // eslint-disable-next-line no-param-reassign
+        const targets = this.getAllRenderedTargets();
         if (typeof triggerProjectChange === "undefined") triggerProjectChange = true;
         this.emit("targetsUpdate", {
             // [[target id, human readable target name], ...].
-            targetList: this.runtime.targets
+            targetList: Object.keys(targets)
                 .filter(
                     // Don't report clones.
-                    (target) => !target.hasOwnProperty("isOriginal") || target.isOriginal
+                    (targetId) => targets[targetId] instanceof Sprite && (targets[targetId] as Sprite).isOriginal
                 )
-                .map((target) => target.toJSON()),
+                /*.map((target) => target.toJSON())*/,
             // Currently editing target id.
             editingTarget: this.editingTarget ? this.editingTarget.id : null,
         });
         if (triggerProjectChange) {
             this.runtime.emitProjectChanged();
-        }*/
+        }
     }
 
     /**
@@ -166,55 +167,47 @@ export default class VirtualMachine extends EventEmitter {
      * of the current editing target's blocks.
      */
     emitWorkspaceUpdate() {
-        /*// Create a list of broadcast message Ids according to the stage variables
-        const stageVariables = this.runtime.getTargetForStage().variables;
+        // Create a list of broadcast message Ids according to the stage variables
+        const stageVariables = this.runtime.getTargetForStage().vars as Dictionary<any>;
         const messageIds = [];
         // eslint-disable-next-line no-restricted-syntax
-        for (const varId in stageVariables) {
+        // TODO: re-implement this once broadcasts are figured out
+        /*for (const varId in stageVariables) {
             if (stageVariables[varId].type === Variable.BROADCAST_MESSAGE_TYPE) {
                 messageIds.push(varId);
             }
         }
-        // // Go through all blocks on all targets, removing referenced
-        // // broadcast ids from the list.
-        // for (let i = 0; i < this.runtime.targets.length; i++) {
-        //     const currTarget = this.runtime.targets[i];
-        //     const currBlocks = currTarget.blocks._blocks;
-        //     for (const blockId in currBlocks) {
-        //         if (currBlocks[blockId].fields.BROADCAST_OPTION) {
-        //             const id = currBlocks[blockId].fields.BROADCAST_OPTION.id;
-        //             const index = messageIds.indexOf(id);
-        //             if (index !== -1) {
-        //                 messageIds = messageIds.slice(0, index)
-        //                     .concat(messageIds.slice(index + 1));
-        //             }
-        //         }
-        //     }
-        // }
         // Anything left in messageIds is not referenced by a block, so delete it.
         for (let i = 0; i < messageIds.length; i++) {
             const id = messageIds[i];
-            delete this.runtime.getTargetForStage().variables[id];
-        }
-        const globalVarMap = { ...this.runtime.getTargetForStage().variables };
-        const localVarMap = this.editingTarget.isStage ? Object.create(null) : { ...this.editingTarget.variables };
+            delete (this.runtime.getTargetForStage().vars as Dictionary<any>)[id];
+        }*/
+        const globalVarMap = { ...this.runtime.getTargetForStage().vars } as Dictionary<any>;
+        const localVarMap = (this.editingTarget instanceof Stage) ? Object.create(null) : { ...this.editingTarget?.vars };
 
         const globalVariables = Object.keys(globalVarMap).map((k) => globalVarMap[k]);
         const localVariables = Object.keys(localVarMap).map((k) => localVarMap[k]);
-        const workspaceComments = Object.keys(this.editingTarget.comments)
+        /*const workspaceComments = Object.keys(this.editingTarget.comments)
             .map((k) => this.editingTarget.comments[k])
-            .filter((c) => c.blockId === null);
+            .filter((c) => c.blockId === null);*/
 
-        const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
+        /*const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
                             <variables>
                                 ${globalVariables.map((v) => v.toXML()).join()}
                                 ${localVariables.map((v) => v.toXML(true)).join()}
                             </variables>
                             ${workspaceComments.map((c) => c.toXML()).join()}
                             ${this.editingTarget.blocks.toXML(this.editingTarget.comments)}
+                        </xml>`;*/
+
+        const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
+                            <variables>
+                                ${globalVariables.map((v) => v.toXML()).join()}
+                                ${localVariables.map((v) => v.toXML(true)).join()}
+                            </variables>
                         </xml>`;
 
-        this.emit("workspaceUpdate", { xml: xmlString });*/
+        this.emit("workspaceUpdate", { xml: xmlString });
     }
 
     /**

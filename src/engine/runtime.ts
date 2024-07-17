@@ -1,6 +1,9 @@
 import EventEmitter from "events";
 import { Project, Sprite, Stage } from "leopard";
-import { DefaultSprites, DefaultStage } from "./default_sprites/default-project";
+import {
+    DefaultSprites,
+    DefaultStage,
+} from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
 import ScratchStorage from "scratch-storage";
@@ -9,99 +12,152 @@ import Thread from "./thread";
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
-   leopardProject?: Project;
-   storage?: ScratchStorage;
-   protected _sprites: Dictionary<{sprite: Sprite, threads: Dictionary<Thread>}>;
-   protected _stage: {stage: Stage, threads: Dictionary<Thread>};
-   protected renderTarget?: string | HTMLElement;
+    leopardProject?: Project;
+    storage?: ScratchStorage;
+    protected _sprites: Dictionary<{
+        sprite: Sprite;
+        threads: Dictionary<Thread>;
+    }>;
+    protected _stage: { stage: Stage; threads: Dictionary<Thread> };
+    protected renderTarget?: string | HTMLElement;
 
-   constructor() {
-      super();
+    constructor() {
+        super();
 
-      this.emit("WORKER READY");
+        this._sprites = DefaultSprites;
+        this._stage = { stage: DefaultStage, threads: {} };
 
-      this._sprites = DefaultSprites;
-      this._stage = {stage: DefaultStage, threads: {}};
-      console.log(this.targets);
+        this.leopardProject = new Project(
+            this.getTargetForStage(),
+            this.sprites
+        );
 
-      this.leopardProject = new Project(this.getTargetForStage(), this.sprites);
-   }
+        // In React, the constructor runs twice for some reason. Only add a thread the first time.
+        !Object.keys(this._sprites["Patch"].threads).length &&
+            this.addThread(
+                "Patch",
+                "",
+                "event_whenflagclicked",
+                "",
+                "Thread 0"
+            );
 
-   get targets(): Dictionary<Sprite | Stage> {
-      return {"Stage": this._stage.stage, ...this.sprites};
-   }
+        this.emit("WORKER READY");
+    }
 
-   get sprites(): Dictionary<Sprite> {
-      return Object.fromEntries(Object.keys(this._sprites).map(id => [id, this._sprites[id].sprite]));
-   }
+    static get STAGE_WIDTH() { return 480; }
 
-   start() {
-      
-   }
+    static get STAGE_HEIGHT() { return 360; }
 
-   quit() {
+    static get PROJECT_START() { return "PROJECT_START"; }
 
-   }
+    static get PROJECT_STOP_ALL() { return "PROJECT_STOP_ALL"; }
 
-   async greenFlag() {
-      //this.leopardProject = new Project(this.stage, this.sprites);
-      this.leopardProject?.greenFlag();
-   }
+    static get STOP_FOR_TARGET() { return "STOP_FOR_TARGET"; }
 
-   stopAll() {
+    static get PROJECT_LOADED() { return "PROJECT_LOADED"; }
 
-   }
+    static get PROJECT_CHANGED() { return "PROJECT_CHANGED"; }
 
-   dispose() {
+    static get TARGETS_UPDATE() { return "TARGETS_UPDATE"; }
 
-   }
+    static get MONITORS_UPDATE() { return "MONITORS_UPDATE"; }
 
-   attachAudioEngine(engine: any) {
+    static get BLOCKSINFO_UPDATE() { return "BLOCKSINFO_UPDATE"; }
 
-   }
+    static get RUNTIME_STARTED() { return "RUNTIME_STARTED" }
 
-   attachV2BitmapAdapter(adapter: any) {
+    static get RUNTIME_DISPOSED() { return "RUNTIME_DISPOSED"; }
 
-   }
+    static get MAX_CLONES() { return 50; }
 
-   attachRenderTarget(renderTarget: string | HTMLElement) {
-      this.renderTarget = renderTarget;
-      this.leopardProject?.attach(renderTarget);
-   }
+    static get RENDER_INTERVAL() { return 1000 / 60; }
 
-   attachStorage(storage: ScratchStorage) {
-      this.storage = storage;
-   }
+    get targets(): Dictionary<Sprite | Stage> {
+        return { Stage: this._stage.stage, ...this.sprites };
+    }
 
-   getTargetForStage() {
-      return this._stage.stage;
-   }
+    get sprites(): Dictionary<Sprite> {
+        return Object.fromEntries(
+            Object.keys(this._sprites).map((id) => [
+                id,
+                this._sprites[id].sprite,
+            ])
+        );
+    }
 
-   getSpriteById(id: string) {
-      //if (this.leopardProject.sprites[id]) 
-   }
+    start() {}
 
-   renameSprite(id: string, newName: string) {
+    quit() {}
 
-   }
+    async greenFlag() {
+        //this.leopardProject = new Project(this.stage, this.sprites);
+        this.leopardProject?.greenFlag();
+    }
 
-   draw() {
-      
-   }
+    stopAll() {}
 
-   getTargetById(id: string) {
-      return this.targets[id];
-   }
+    dispose() {}
 
-   getTargetThreads(id: string) {
-      return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
-   }
+    attachAudioEngine(engine: any) {}
 
-   async addThread(targetId: string, script: string, triggerEventId: string, option: string, displayName = "") {
-      const newThread = new Thread(this, this.getTargetById(targetId), script, triggerEventId, option, displayName);
-      const threadId = newThread.id;
-      targetId == "Stage" ? this._stage.threads[threadId] = newThread : this._sprites[targetId].threads[threadId] = newThread;
-      await newThread.loadPromise;
-      return threadId;
-   }
+    attachV2BitmapAdapter(adapter: any) {}
+
+    attachRenderTarget(renderTarget: string | HTMLElement) {
+        this.renderTarget = renderTarget;
+        this.leopardProject?.attach(renderTarget);
+    }
+
+    attachStorage(storage: ScratchStorage) {
+        this.storage = storage;
+    }
+
+    getTargetForStage() {
+        return this._stage.stage;
+    }
+
+    getSpriteById(id: string) {
+        //if (this.leopardProject.sprites[id])
+    }
+
+    renameSprite(id: string, newName: string) {}
+
+    draw() {}
+
+    getTargetById(id: string) {
+        return this.targets[id];
+    }
+
+    getTargetThreads(id: string) {
+        return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
+    }
+
+    async addThread(
+        targetId: string,
+        script: string,
+        triggerEventId: string,
+        option: string,
+        displayName = ""
+    ) {
+        const newThread = new Thread(
+            this,
+            this.getTargetById(targetId),
+            script,
+            triggerEventId,
+            option,
+            displayName
+        );
+        const threadId = newThread.id;
+        if (targetId == "Stage") {
+            this._stage.threads[threadId] = newThread;
+        } else {
+            this._sprites[targetId].threads[threadId] = newThread;
+        }
+        await newThread.loadPromise;
+        return threadId;
+    }
+
+    emitProjectChanged() {
+        this.emit(Runtime.PROJECT_CHANGED);
+    }
 }

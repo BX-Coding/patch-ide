@@ -14,5 +14,5 @@ export const DefaultSprites = {
     visible: true,
     layerOrder: 1,
     id: "Patch"
-  }), threads: {"1": {id: "1", script: "", triggerEvent: "event_whenflagclicked", triggerEventOption: ""} as Thread}}
+  }), threads: {}}
 };
