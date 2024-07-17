@@ -14,6 +14,7 @@ export function SpriteCard({ target }: SpriteCardProps) {
     const [editingTarget, setEditingTarget] = useEditingTarget();
 
     const onClick = () => {
+        console.log(target.id);
         setEditingTarget(target.id);
     }
 

@@ -17,12 +17,13 @@ export default class Runtime extends EventEmitter {
    constructor() {
       super();
 
-      this.leopardProject = new Project(DefaultStage, DefaultSprites);
+      //this.leopardProject = new Project(DefaultStage, DefaultSprites);
 
       this.emit("WORKER READY");
 
-      this._sprites = Object.fromEntries(Object.keys(DefaultSprites).map(id => [(DefaultSprites as Dictionary<Sprite>)[id], []]));
+      this._sprites = DefaultSprites;
       this.stage = DefaultStage;
+      console.log(this._sprites);
    }
 
    get targets(): Dictionary<Sprite | Stage> {
