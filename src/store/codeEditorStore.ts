@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { EditorState } from "./index";
-import { Target, Thread, VmError } from "../components/EditorPane/types";
+import { Thread, VmError } from "../components/EditorPane/types";
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import React from "react";
 import { Transport } from "@open-rpc/client-js/build/transports/Transport";
