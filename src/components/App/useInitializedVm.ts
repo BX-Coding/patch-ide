@@ -46,8 +46,10 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       const patchVM = new VirtualMachine();
       patchStorage.addFirebaseStorageStores(storage);
       patchVM.attachStorage(patchStorage);
-      const scratchRenderer = new Renderer(patchStage.canvas);
-      patchVM.attachRenderer(scratchRenderer);
+      //const scratchRenderer = new Renderer(patchStage.canvas);
+      //patchVM.attachRenderer(scratchRenderer);
+      patchVM.attachRenderTarget(patchStage.canvas);
+      
       patchVM.attachAudioEngine(new AudioEngine());
       patchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 

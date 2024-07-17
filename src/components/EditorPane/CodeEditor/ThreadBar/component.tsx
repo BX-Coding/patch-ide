@@ -8,9 +8,7 @@ import usePatchStore from '../../../../store';
 import { HorizontalButtons, DeleteButton, IconButton } from '../../../PatchButton';
 import { useEditingTarget } from '../../../../hooks/useEditingTarget';
 import { TriggerEventSelector } from './TriggerEventSelector';
-import { useRuntimeDiagnostics } from '../../../../hooks/useRuntimeDiagnostics';
 import { Thread } from '../../types';
-import { Sprite, Stage } from 'leopard';
 
 
 type ThreadEditorProps = {

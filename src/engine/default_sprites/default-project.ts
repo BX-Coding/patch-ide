@@ -1,3 +1,4 @@
+import { Thread } from "../../components/EditorPane/types";
 import PatchPenguin from "./PatchPenguin/PatchPenguin";
 import Stage from "./Stage/Stage";
 
@@ -13,5 +14,5 @@ export const DefaultSprites = {
     visible: true,
     layerOrder: 1,
     id: "Patch"
-  }), threads: {}}
+  }), threads: {"1": {id: "1", script: "", triggerEvent: "event_whenflagclicked", triggerEventOption: ""} as Thread}}
 };

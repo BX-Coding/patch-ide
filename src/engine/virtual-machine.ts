@@ -112,12 +112,8 @@ export default class VirtualMachine extends EventEmitter {
         this.runtime.attachV2BitmapAdapter(bitmapAdapter);
     }
 
-    /**
-     * Set the renderer for the VM/runtime
-     * @param {!RenderWebGL} renderer The renderer to attach
-     */
-    attachRenderer(renderer: any) {
-        this.runtime.attachRenderer(renderer);
+    attachRenderTarget(renderer: string | HTMLElement) {
+        this.runtime.attachRenderTarget(renderer);
     }
 
     /**
@@ -466,15 +462,7 @@ export default class VirtualMachine extends EventEmitter {
         return () => {};
     }
 
-    /**
-     * Set an editing target. An editor UI can use this function to switch
-     * between editing different targets, sprites, etc.
-     * After switching the editing target, the VM may emit updates
-     * to the list of targets and any attached workspace blocks
-     * (see `emitTargetsUpdate` and `emitWorkspaceUpdate`).
-     * @param {string} targetId Id of target to set as editing.
-     */
-    setEditingTarget(targetId: string) {
+    setEditingTarget(target: string | Sprite | Stage) {
         /*// Has the target id changed? If not, exit.
         if (this.editingTarget && targetId === this.editingTarget.id) {
             return;
@@ -488,7 +476,10 @@ export default class VirtualMachine extends EventEmitter {
             this.runtime.setEditingTarget(target);
         }*/
 
-        // TODO: implement this
+        if (typeof target == "string")
+            this.editingTarget = this.getTargetById(target);
+        else
+            this.editingTarget = target;
     }
 
     /**

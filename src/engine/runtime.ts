@@ -12,22 +12,23 @@ export default class Runtime extends EventEmitter {
    leopardProject?: Project;
    storage?: ScratchStorage;
    protected _sprites: Dictionary<{sprite: Sprite, threads: Dictionary<Thread>}>;
-   stage: Stage;
+   protected _stage: {stage: Stage, threads: Dictionary<Thread>};
+   protected renderTarget?: string | HTMLElement;
 
    constructor() {
       super();
 
-      //this.leopardProject = new Project(DefaultStage, DefaultSprites);
-
       this.emit("WORKER READY");
 
       this._sprites = DefaultSprites;
-      this.stage = DefaultStage;
-      console.log(this._sprites);
+      this._stage = {stage: DefaultStage, threads: {}};
+      console.log(this.targets);
+
+      this.leopardProject = new Project(this.getTargetForStage(), this.sprites);
    }
 
    get targets(): Dictionary<Sprite | Stage> {
-      return {"Stage": this.stage, ...this.sprites};
+      return {"Stage": this._stage.stage, ...this.sprites};
    }
 
    get sprites(): Dictionary<Sprite> {
@@ -63,8 +64,9 @@ export default class Runtime extends EventEmitter {
 
    }
 
-   attachRenderer(renderer: any) {
-      //this.leopardProject.attach(renderer);
+   attachRenderTarget(renderTarget: string | HTMLElement) {
+      this.renderTarget = renderTarget;
+      this.leopardProject?.attach(renderTarget);
    }
 
    attachStorage(storage: ScratchStorage) {
@@ -72,7 +74,7 @@ export default class Runtime extends EventEmitter {
    }
 
    getTargetForStage() {
-      return this.stage;
+      return this._stage.stage;
    }
 
    getSpriteById(id: string) {
@@ -92,6 +94,6 @@ export default class Runtime extends EventEmitter {
    }
 
    getTargetThreads(id: string) {
-      return this._sprites[id].threads;
+      return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
    }
 }

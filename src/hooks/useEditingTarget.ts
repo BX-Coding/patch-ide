@@ -25,6 +25,7 @@ export const useEditingTarget = (): [Sprite | Stage | null, (target: Sprite | St
     }
 
     const loadTargetAssets = (editingTarget: Sprite | Stage) => {
+        console.log(editingTarget);
         loadTargetThreads(editingTarget);
         loadTargetCostumes(editingTarget);
         loadTargetSounds(editingTarget);
