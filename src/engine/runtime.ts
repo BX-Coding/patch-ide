@@ -1,8 +1,8 @@
 import EventEmitter from "events";
 import { Project, Sprite, Stage } from "leopard";
 import {
-    DefaultSprites,
-    DefaultStage,
+   DefaultSprites,
+   DefaultStage,
 } from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
@@ -12,152 +12,257 @@ import Thread from "./thread";
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
-    leopardProject?: Project;
-    storage?: ScratchStorage;
-    protected _sprites: Dictionary<{
-        sprite: Sprite;
-        threads: Dictionary<Thread>;
-    }>;
-    protected _stage: { stage: Stage; threads: Dictionary<Thread> };
-    protected renderTarget?: string | HTMLElement;
+   leopardProject?: Project;
+   storage?: ScratchStorage;
+   protected _sprites: Dictionary<{
+      sprite: Sprite;
+      threads: Dictionary<Thread>;
+   }>;
+   protected _stage: { stage: Stage; threads: Dictionary<Thread> };
+   protected renderTarget?: string | HTMLElement;
 
-    constructor() {
-        super();
+   constructor() {
+      super();
 
-        this._sprites = DefaultSprites;
-        this._stage = { stage: DefaultStage, threads: {} };
+      this._sprites = DefaultSprites;
+      this._stage = { stage: DefaultStage, threads: {} };
 
-        this.leopardProject = new Project(
-            this.getTargetForStage(),
-            this.sprites
-        );
+      this.leopardProject = new Project(
+         this.getTargetForStage(),
+         this.sprites
+      );
 
-        // In React, the constructor runs twice for some reason. Only add a thread the first time.
-        !Object.keys(this._sprites["Patch"].threads).length &&
-            this.addThread(
-                "Patch",
-                "",
-                "event_whenflagclicked",
-                "",
-                "Thread 0"
-            );
+      // In React, the constructor runs twice for some reason. Only add a thread the first time.
+      !Object.keys(this._sprites["Patch"].threads).length &&
+         this.addThread(
+            "Patch",
+            "",
+            "event_whenflagclicked",
+            "",
+            "Thread 0"
+         );
 
-        this.emit("WORKER READY");
-    }
+      this.emit("WORKER READY");
+   }
 
-    static get STAGE_WIDTH() { return 480; }
+   get targets(): Dictionary<Sprite | Stage> {
+      return { Stage: this._stage.stage, ...this.sprites };
+   }
 
-    static get STAGE_HEIGHT() { return 360; }
+   addTarget(target: Sprite | Stage) {
+      if (target instanceof Stage) {
+         if (this._stage) {
+            console.error("Can't add a stage; one already exists.");
+            return "";
+         } else {
+            this._stage = {stage: target, threads: {}};
+            return "Stage";
+         }
+      } else {
+         if (target.id && target.id != "") {
+            this._sprites[target.id] = { sprite: target, threads: {} };
 
-    static get PROJECT_START() { return "PROJECT_START"; }
+            return target.id;
+         } else {
+            console.warn("No id on the target to add. Creating a new one.");
 
-    static get PROJECT_STOP_ALL() { return "PROJECT_STOP_ALL"; }
+            const tryId = "Sprite";
+            let tryNumber = 1;
+            
+            while (this.getTargetById(tryId + tryNumber.toString())) {
+               tryNumber++;
+            }
 
-    static get STOP_FOR_TARGET() { return "STOP_FOR_TARGET"; }
+            const newId = tryId + tryNumber;
 
-    static get PROJECT_LOADED() { return "PROJECT_LOADED"; }
+            target.id = newId;
+            this._sprites[newId] = { sprite: target, threads: {} };
 
-    static get PROJECT_CHANGED() { return "PROJECT_CHANGED"; }
+            return newId;
+         }
+      }
+   }
 
-    static get TARGETS_UPDATE() { return "TARGETS_UPDATE"; }
+   get sprites(): Dictionary<Sprite> {
+      return Object.fromEntries(
+         Object.keys(this._sprites).map((id) => [
+            id,
+            this._sprites[id].sprite,
+         ])
+      );
+   }
 
-    static get MONITORS_UPDATE() { return "MONITORS_UPDATE"; }
+   start() { }
 
-    static get BLOCKSINFO_UPDATE() { return "BLOCKSINFO_UPDATE"; }
+   quit() { }
 
-    static get RUNTIME_STARTED() { return "RUNTIME_STARTED" }
+   async greenFlag() {
+      //this.leopardProject = new Project(this.stage, this.sprites);
+      this.leopardProject?.greenFlag();
+   }
 
-    static get RUNTIME_DISPOSED() { return "RUNTIME_DISPOSED"; }
+   stopAll() { }
 
-    static get MAX_CLONES() { return 50; }
+   dispose() { }
 
-    static get RENDER_INTERVAL() { return 1000 / 60; }
+   attachAudioEngine(engine: any) { }
 
-    get targets(): Dictionary<Sprite | Stage> {
-        return { Stage: this._stage.stage, ...this.sprites };
-    }
+   attachV2BitmapAdapter(adapter: any) { }
 
-    get sprites(): Dictionary<Sprite> {
-        return Object.fromEntries(
-            Object.keys(this._sprites).map((id) => [
-                id,
-                this._sprites[id].sprite,
-            ])
-        );
-    }
+   attachRenderTarget(renderTarget: string | HTMLElement) {
+      this.renderTarget = renderTarget;
+      this.leopardProject?.attach(renderTarget);
+   }
 
-    start() {}
+   attachStorage(storage: ScratchStorage) {
+      this.storage = storage;
+   }
 
-    quit() {}
+   getTargetForStage() {
+      return this._stage.stage;
+   }
 
-    async greenFlag() {
-        //this.leopardProject = new Project(this.stage, this.sprites);
-        this.leopardProject?.greenFlag();
-    }
+   getSpriteById(id: string) {
+      //if (this.leopardProject.sprites[id])
+   }
 
-    stopAll() {}
+   renameSprite(id: string, newName: string) { }
 
-    dispose() {}
+   draw() { }
 
-    attachAudioEngine(engine: any) {}
+   getTargetById(id: string) {
+      return this.targets[id];
+   }
 
-    attachV2BitmapAdapter(adapter: any) {}
+   getTargetThreads(id: string) {
+      return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
+   }
 
-    attachRenderTarget(renderTarget: string | HTMLElement) {
-        this.renderTarget = renderTarget;
-        this.leopardProject?.attach(renderTarget);
-    }
+   async addThread(
+      targetId: string,
+      script: string,
+      triggerEventId: string,
+      option: string,
+      displayName = ""
+   ) {
+      const newThread = new Thread(
+         this,
+         this.getTargetById(targetId),
+         script,
+         triggerEventId,
+         option,
+         displayName
+      );
+      const threadId = newThread.id;
+      if (targetId == "Stage") {
+         this._stage.threads[threadId] = newThread;
+      } else {
+         this._sprites[targetId].threads[threadId] = newThread;
+      }
+      await newThread.loadPromise;
+      return threadId;
+   }
 
-    attachStorage(storage: ScratchStorage) {
-        this.storage = storage;
-    }
+   emitProjectChanged() {
+      this.emit(Runtime.PROJECT_CHANGED);
+   }
 
-    getTargetForStage() {
-        return this._stage.stage;
-    }
+   static get STAGE_WIDTH() {
+      return 480;
+   }
 
-    getSpriteById(id: string) {
-        //if (this.leopardProject.sprites[id])
-    }
+   static get STAGE_HEIGHT() {
+      return 360;
+   }
 
-    renameSprite(id: string, newName: string) {}
+   static get PROJECT_START() {
+      return "PROJECT_START";
+   }
 
-    draw() {}
+   static get PROJECT_STOP_ALL() {
+      return "PROJECT_STOP_ALL";
+   }
 
-    getTargetById(id: string) {
-        return this.targets[id];
-    }
+   static get STOP_FOR_TARGET() {
+      return "STOP_FOR_TARGET";
+   }
 
-    getTargetThreads(id: string) {
-        return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
-    }
+   static get PROJECT_LOADED() {
+      return "PROJECT_LOADED";
+   }
 
-    async addThread(
-        targetId: string,
-        script: string,
-        triggerEventId: string,
-        option: string,
-        displayName = ""
-    ) {
-        const newThread = new Thread(
-            this,
-            this.getTargetById(targetId),
-            script,
-            triggerEventId,
-            option,
-            displayName
-        );
-        const threadId = newThread.id;
-        if (targetId == "Stage") {
-            this._stage.threads[threadId] = newThread;
-        } else {
-            this._sprites[targetId].threads[threadId] = newThread;
-        }
-        await newThread.loadPromise;
-        return threadId;
-    }
+   static get PROJECT_CHANGED() {
+      return "PROJECT_CHANGED";
+   }
 
-    emitProjectChanged() {
-        this.emit(Runtime.PROJECT_CHANGED);
-    }
+   static get TARGETS_UPDATE() {
+      return "TARGETS_UPDATE";
+   }
+
+   static get MONITORS_UPDATE() {
+      return "MONITORS_UPDATE";
+   }
+
+   static get BLOCKSINFO_UPDATE() {
+      return "BLOCKSINFO_UPDATE";
+   }
+
+   static get RUNTIME_STARTED() {
+      return "RUNTIME_STARTED";
+   }
+
+   static get RUNTIME_DISPOSED() {
+      return "RUNTIME_DISPOSED";
+   }
+
+   static get MAX_CLONES() {
+      return 50;
+   }
+
+   static get RENDER_INTERVAL() {
+      return 1000 / 60;
+   }
+
+   static get HATS() {
+      return {
+         control_start_as_clone: {
+            label: "When I Start As Clone",
+            restartExistingThreads: false,
+         },
+         event_whenflagclicked: {
+            label: "When Flag Clicked",
+            restartExistingThreads: true,
+         },
+         event_whenkeypressed: {
+            label: "When Key Pressed",
+            restartExistingThreads: false,
+         },
+         event_whenthisspriteclicked: {
+            label: "When This Sprite Clicked",
+            restartExistingThreads: true,
+         },
+         event_whentouchingobject: {
+            label: "When Touching",
+            restartExistingThreads: false,
+            edgeActivated: true,
+         },
+         event_whenstageclicked: {
+            label: "When Stage Clicked",
+            restartExistingThreads: true,
+         },
+         event_whenbackdropswitchesto: {
+            label: "When Backdrop Switches To",
+            restartExistingThreads: true,
+         },
+         event_whengreaterthan: {
+            label: "When Greater Than",
+            restartExistingThreads: false,
+            edgeActivated: true,
+         },
+         event_whenbroadcastreceived: {
+            label: "When Broadcast Received",
+            restartExistingThreads: true,
+         },
+      } as Dictionary<{restartExistingThreads: boolean, label: string}>;
+   }
 }

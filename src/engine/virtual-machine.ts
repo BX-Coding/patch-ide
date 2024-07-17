@@ -22,7 +22,7 @@ import ScratchConverter from "./conversion/scratch-conversion.mjs";*/
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
 import Runtime from "./runtime";
-import { Sprite, Stage } from "leopard";
+import { Costume, Sound, Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
 import { SpriteJson } from "../components/EditorPane/old-types";
@@ -475,109 +475,80 @@ export default class VirtualMachine extends EventEmitter {
             this.editingTarget = target;
     }
 
-    /**
-     * Duplicate a sprite.
-     * @param {string} targetId ID of a target whose sprite to duplicate.
-     * @returns {Promise} Promise that resolves when duplicated target has
-     *     been added to the runtime.
-     */
     async duplicateSprite(targetId: string) {
-        /*const target = this.runtime.getTargetById(targetId);
+        const target = this.runtime.getTargetById(targetId);
         if (!target) {
             throw new Error("No target with the provided id.");
-        } else if (!target.isSprite()) {
+        } else if (!(target instanceof Sprite)) {
             throw new Error("Cannot duplicate non-sprite targets.");
-        } else if (!target.sprite) {
-            throw new Error("No sprite associated with this target.");
         }
-        return target.duplicate().then((newTarget) => {
-            this.runtime.addTarget(newTarget);
-            newTarget.goBehindOther(target);
-            this.setEditingTarget(newTarget.id);
-        });*/
+        const newTarget = target.createClone();
 
-        // TODO: implement this
+        this.runtime.addTarget(newTarget);
+        // TODO: implement this next line (probably involves the _layerOrder variable);
+        // This function is implemented in rendered-target in the old patch vm/scratch vm
+        //newTarget.goBehindOther(target);
+        this.setEditingTarget(newTarget.id);
     }
 
-    /**
-     * Add a costume to the current editing target.
-     * @param {string} md5ext - the MD5 and extension of the costume to be loaded.
-     * @param {!object} costumeObject Object representing the costume.
-     * @property {int} skinId - the ID of the costume's render skin, once installed.
-     * @property {number} rotationCenterX - the X component of the costume's origin.
-     * @property {number} rotationCenterY - the Y component of the costume's origin.
-     * @property {number} [bitmapResolution] - the resolution scale for a bitmap costume.
-     * @param {string} optTargetId - the id of the target to add to, if not the editing target.
-     * @param {string} optVersion - if this is 2, load costume as sb2, otherwise load costume as sb3.
-     * @returns {?Promise} - a promise that resolves when the costume has been added
-     */
-    async addCostume(md5ext: string, costumeObject: object, optTargetId?: string, optVersion?: string) {
-        /*const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
+    async addCostume(md5ext: string, costumeObject: Costume, optTargetId?: string, optVersion?: string) {
+        const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
             // eslint-disable-next-line no-undef
-            return loadCostume(md5ext, costumeObject, this.runtime, optVersion).then(() => {
+            /*return loadCostume(md5ext, costumeObject, this.runtime, optVersion).then(() => {
                 target.addCostume(costumeObject);
                 target.setCostume(target.getCostumes().length - 1);
                 this.runtime.emitProjectChanged();
-            });
+            });*/
+            // TODO: upload costume to storage or something
+            target.addCostume(costumeObject);
+            target.costume = costumeObject;
+            return;
         }
         // If the target cannot be found by id, return a rejected promise
-        return Promise.reject();*/
-
-        // TODO: implement this
+        return Promise.reject();
     }
 
-    /**
-     * Add a sound to the current editing target.
-     * @param {!object} soundObject Object representing the costume.
-     * @param {string} optTargetId - the id of the target to add to, if not the editing target.
-     * @returns {?Promise} - a promise that resolves when the sound has been decoded and added
-     */
-    async addSound(soundObject: object, optTargetId?: string) {
-        /*const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
+    async addSound(soundObject: Sound, optTargetId?: string) {
+        const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
             // eslint-disable-next-line no-undef
-            return loadSound(soundObject, this.runtime, target.sprite.soundBank).then(() => {
+            /*return loadSound(soundObject, this.runtime, target.sprite.soundBank).then(() => {
                 target.addSound(soundObject);
                 this.emitTargetsUpdate();
-            });
+            });*/
+            // TODO: upload sound to storage or something
+            target.addSound(soundObject);
         }
         // If the target cannot be found by id, return a rejected promise
-        return Promise.reject();*/
-
-        // TODO: implement this
+        return Promise.reject();
     }
 
     getEventLabels(): Dictionary<string> {
-        /*const hats = this.runtime._hats;
-        const eventLabels = {};
+        const hats = Runtime.HATS;
+        const eventLabels: Dictionary<string> = {};
         Object.keys(hats).forEach((hatId) => {
             eventLabels[hatId] = hats[hatId].label;
         });
-        return eventLabels;*/
-
-        // TODO: implement this
+        return eventLabels;
 
         return {}
     }
 
     getBackdropNames() {
-        /*const target = this.runtime.targets[0];
+        const target = this.getTargetForStage();
         const costumes = target.getCostumes();
         const names = [];
         for (let i = 0; i < costumes.length; i++) {
             names.push(costumes[i].name);
         }
-        return names;*/
-
-        // TODO: implement this
+        return names;
     }
 
     getSpriteNames() {
-        /*const targetNames = this.runtime.targets.map((target) => target.sprite.name);
-        return targetNames;*/
-
-        // TODO: implement this
+        const targets = this.getAllRenderedTargets();
+        const targetNames = Object.keys(targets).map((targetId) => targets[targetId].id);
+        return targetNames;
     }
 
     getKeyboardOptions() {
