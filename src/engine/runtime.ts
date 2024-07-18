@@ -42,6 +42,15 @@ export default class Runtime extends EventEmitter {
             "Thread 0"
          );
 
+      !Object.keys(this._stage.threads).length &&
+         this.addThread(
+            "Stage",
+            "",
+            "event_whenflagclicked",
+            "",
+            "Thread 0"
+         );
+
       console.log(this);
 
       this.emit("WORKER READY");
