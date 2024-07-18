@@ -9,7 +9,7 @@ export interface LanguageServerState {
   backdrops: Costume[];
   costumes: Costume[];
   sounds: Sound[];
-  messages: [];
+  messages: string[];
   apiData: Dictionary<any>;
 }
 
