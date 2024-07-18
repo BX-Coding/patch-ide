@@ -799,6 +799,7 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     loadCostumeWrap(md5ext: any, costume: any, runtime: any, optVersion: any) {
+        // we gotta figure out a storage solution before this can be fixed
         //return loadCostume(md5ext, costume, runtime, optVersion);
     }
 
@@ -811,7 +812,7 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     getDynamicFunctionInfo(functionName: any) {
-        //return PrimProxy.getDynamicFunctionInfo(functionName, this);
+        return PrimProxy.getDynamicFunctionInfo(functionName, this);
     }
 
     getRuntimeErrors() {
@@ -829,10 +830,11 @@ export default class VirtualMachine extends EventEmitter {
     /**
      * Get all messagesIds that are currently being listened for by threads
      */
-    getAllBroadcastMessages(): [] {
-        /*const messages: any[] = [];
-        this.getAllRenderedTargets().forEach((target: { threads: any; }) => {
-            const { threads } = target;
+    getAllBroadcastMessages() {
+        const messages: string[] = [];
+        const targetIds = Object.keys(this.getAllRenderedTargets());
+        targetIds.forEach((targetId) => {
+            const threads = this.runtime.getTargetThreads(targetId);
             Object.keys(threads).forEach((threadId) => {
                 const thread = threads[threadId];
                 if (thread.triggerEvent === "event_whenbroadcastreceived") {
@@ -840,9 +842,7 @@ export default class VirtualMachine extends EventEmitter {
                 }
             });
         });
-        return messages;*/
-
-        return [];
+        return messages;
     }
 
         /*
