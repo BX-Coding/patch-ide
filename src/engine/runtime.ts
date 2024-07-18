@@ -27,11 +27,6 @@ export default class Runtime extends EventEmitter {
       this._sprites = DefaultSprites;
       this._stage = { stage: DefaultStage, threads: {} };
 
-      this.leopardProject = new Project(
-         this.getTargetForStage(),
-         this.sprites
-      );
-
       // In React, the constructor runs twice for some reason. Only add a thread the first time.
       !Object.keys(this._sprites["Patch"].threads).length &&
          this.addThread(
@@ -50,6 +45,11 @@ export default class Runtime extends EventEmitter {
             "",
             "Thread 0"
          );
+
+      this.leopardProject = new Project(
+         this.getTargetForStage(),
+         this.sprites
+      );
 
       console.log(this);
 
