@@ -84,7 +84,7 @@ export const createPatchEditorSlice: StateCreator<
     modalSelectorOpen: false,
     patchVM: new VirtualMachine(),
     patchStage: {
-        canvas: document.createElement('canvas'),
+        canvas: Object.assign(document.createElement('canvas'), { id: 'canvasBox' }),
         height: 400,
         width: 600,
     },

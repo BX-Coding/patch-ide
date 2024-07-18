@@ -48,7 +48,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       patchVM.attachStorage(patchStorage);
       //const scratchRenderer = new Renderer(patchStage.canvas);
       //patchVM.attachRenderer(scratchRenderer);
-      patchVM.attachRenderTarget(patchStage.canvas);
+      patchVM.attachRenderTarget(`#${patchStage.canvas.id}`);
       
       patchVM.attachAudioEngine(new AudioEngine());
       patchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
