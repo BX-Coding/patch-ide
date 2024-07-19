@@ -272,7 +272,7 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     addSprite(sprite: Sprite | SpriteJson, name: string) {
-
+        // TODO: implement this
     }
 
     /**
@@ -558,7 +558,7 @@ export default class VirtualMachine extends EventEmitter {
 
         return characterKeys.concat(scratchKeys);*/
 
-        // TODO: implement this
+        // TODO: implement this? idk if its needed
     }
 
     // There is 100% a better way to implement this
