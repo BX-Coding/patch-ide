@@ -11,14 +11,14 @@ export default class PatchPenguin extends Sprite {
     super(...args);
 
     this.costumes = [
-      new Costume("costume1", "/patchPenguin.png", {
+      new Costume("costume1", "/costume1.png", {
         x: 48,
         y: 50
       }),
-      new Costume("costume2", "/patchPenguin.png", {
-        x: 46,
-        y: 53
-      })
+      // new Costume("costume2", "/costume2.svg", {
+      //   x: 46,
+      //   y: 53
+      // })
     ];
 
     this.triggers = [
@@ -26,8 +26,8 @@ export default class PatchPenguin extends Sprite {
       new Trigger(Trigger.GREEN_FLAG, this.whenGreenFlagClicked)
     ];
 
-    this.vars.myVariable = 1;
-    this.vars.myList = ["one", "two", "three", "four"];
+    // this.vars.myVariable = 1;
+    // this.vars.myList = ["one", "two", "three", "four"];
 
     this.watchers.myVariable = new Watcher({
       label: "My Variable",
