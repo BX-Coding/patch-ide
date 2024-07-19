@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import { Project, Sprite, Stage } from "leopard";
 import {
    DefaultSprites,
-   DefaultStage,
+   defaultStage,
 } from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
@@ -25,7 +25,7 @@ export default class Runtime extends EventEmitter {
       super();
 
       this._sprites = DefaultSprites;
-      this._stage = { stage: DefaultStage, threads: {} };
+      this._stage = { stage: defaultStage, threads: {} };
 
       // In React, the constructor runs twice for some reason. Only add a thread the first time.
       !Object.keys(this._sprites["Patch"].threads).length &&
