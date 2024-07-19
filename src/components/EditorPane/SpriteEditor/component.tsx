@@ -75,6 +75,7 @@ export const SpriteEditor = () => {
     
     const handleClick = (costumeName: string) => {
         const newCostumeIndex = getCostumeIndexByName(costumeName);
+        editingTarget.costume = newCostumeIndex + 1;
         setSelectedCostumeIndex(newCostumeIndex);
     }
 
