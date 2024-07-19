@@ -89,7 +89,7 @@ export const createCodeEditorSlice: StateCreator<
     const targets = patchVM.getAllRenderedTargets()
     const dynamicOptions: LanguageServerState = {
       targets: Object.keys(targets)
-        .filter((targetId: string) => targetId != "Stage")
+        .filter((targetId: string) => targets[targetId] !instanceof Stage)
         .map(targetId => targets[targetId]),
       backdrops: patchVM
         .getTargetForStage()
@@ -113,7 +113,10 @@ export const createCodeEditorSlice: StateCreator<
           },
         },
       };
-      transport.sendData(data);
+      // TODO: fix this
+      // This line will throw an error because each target in the JSON references its project,
+      // which in turn references the target creating a circular structure. 
+      //transport.sendData(data);
     } else {
       console.error("WebSocket is not initialized.");
     }
@@ -127,7 +130,7 @@ export const createCodeEditorSlice: StateCreator<
       const targets = patchVM.getAllRenderedTargets()
       const dynamicOptions: LanguageServerState = {
         targets: Object.keys(targets)
-          .filter((targetId: string) => targetId != "Stage")
+          .filter((targetId: string) => targets[targetId] !instanceof Stage)
           .map(targetId => targets[targetId]),
         backdrops: patchVM
           .getTargetForStage()
@@ -151,7 +154,10 @@ export const createCodeEditorSlice: StateCreator<
             },
           },
         };
-        transport.sendData(data);
+        // TODO: fix this
+        // This line will throw an error because each target in the JSON references its project,
+        // which in turn references the target creating a circular structure. 
+        //transport.sendData(data);
       } else {
         console.error("WebSocket is not initialized.");
       }
