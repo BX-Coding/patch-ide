@@ -19,7 +19,7 @@ export enum ModalSelectorType {
 }
 
 type Stage = {
-    canvas: HTMLCanvasElement,
+    canvas: HTMLDivElement,
     height: number,
     width: number,
 }
@@ -84,7 +84,7 @@ export const createPatchEditorSlice: StateCreator<
     modalSelectorOpen: false,
     patchVM: new VirtualMachine(),
     patchStage: {
-        canvas: Object.assign(document.createElement('canvas'), { id: 'project' }),
+        canvas: Object.assign(document.createElement('div'), { id: 'project' }),
         height: 400,
         width: 600,
     },
