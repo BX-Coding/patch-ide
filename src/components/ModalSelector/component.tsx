@@ -14,6 +14,8 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useCostumeHandlers } from "../../hooks/useCostumeUploadHandlers";
 import { getPatchAssetImageUrl } from "../../lib/patch-asset-image-fetch";
+import { createVMAsset } from "../../lib/file-uploader";
+import { Costume } from "leopard";
 
 export const ModalSelector = () => {
   const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
@@ -31,9 +33,10 @@ export const ModalSelector = () => {
       modalSelectorType === ModalSelectorType.COSTUME ||
       modalSelectorType === ModalSelectorType.BACKDROP
     ) {
-      const sprite = asset as SpriteJson;
-      // TODO: fix this
-      //handleAddCostumesToEditingTarget(sprite.costumes, true);
+      // TODO: finish this
+      /*const sprite = asset as SpriteJson;
+      const costumes = sprite.costumes.map((oldCostume) => {return createVMAsset()}) as Costume[];
+      handleAddCostumesToEditingTarget(, true);*/
     } else if (modalSelectorType === ModalSelectorType.SOUND) {
       const sound = asset as SoundJson;
       handleAddSoundToEditingTarget(sound, true);

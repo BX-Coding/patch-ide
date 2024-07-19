@@ -6,14 +6,14 @@ import {
 } from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
-import ScratchStorage from "scratch-storage";
 import Thread from "./thread";
+import { createVMAsset } from "../lib/file-uploader";
 
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
    leopardProject?: Project;
-   storage?: ScratchStorage;
+   storage?: any;
    protected _sprites: Dictionary<{
       sprite: Sprite;
       threads: Dictionary<Thread>;
@@ -125,7 +125,7 @@ export default class Runtime extends EventEmitter {
       this.leopardProject?.attach(renderTarget);
    }
 
-   attachStorage(storage: ScratchStorage) {
+   attachStorage(storage: any) {
       this.storage = storage;
    }
 

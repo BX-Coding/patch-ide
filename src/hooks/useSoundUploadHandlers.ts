@@ -16,7 +16,7 @@ export const useSoundHandlers = () => {
         const result = new Promise<void>((resolve, reject) => {
             input.onchange = (e: any) => {
             handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
-                soundUpload(buffer, fileType, patchVM.runtime.storage, async vmSound => {
+                soundUpload(buffer, async vmSound => {
                     if (targetId == undefined || targetId == null) {
                         await addSound({...vmSound, name: fileName });
                     } else {
