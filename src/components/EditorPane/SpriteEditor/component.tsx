@@ -10,6 +10,7 @@ import { DropdownMenu } from '../../DropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
 import { useCostumeHandlers } from '../../../hooks/useCostumeUploadHandlers';
 import { Costume, Sprite, Stage } from 'leopard';
+import patchAssetStorage from '../../../engine/storage/storage';
 
 function AddCostumeButton() {
     const showModalSelector = usePatchStore((state) => state.showModalSelector);
@@ -79,8 +80,10 @@ export const SpriteEditor = () => {
 
     const handleDeleteClick = (costumeName: string) => {
         const newCostumeIndex = getCostumeIndexByName(costumeName);
+        const costumeId = editingTarget.getCostumes()[newCostumeIndex].id;
+        patchAssetStorage.unrefAsset(costumeId);
         editingTarget.deleteCostume(newCostumeIndex);
-        setSelectedCostumeIndex(/* costumeNumber is 1-based instead of 0-based (it's a leopard thing) */ editingTarget.costumeNumber - 1);
+        setSelectedCostumeIndex(newCostumeIndex > 0 ? newCostumeIndex - 1 : 0);
         setCostumes([...editingTarget.getCostumes()]);
     }
 

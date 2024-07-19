@@ -1,11 +1,8 @@
-// @ts-ignore
-import {BitmapAdapter, sanitizeSvg} from 'scratch-svg-renderer';
+import patchAssetStorage from "../engine/storage/storage";
+import safeUid from "../engine/util/safe-uid";
+import { Costume, Sound } from "leopard";
+import bmpConverter from "../util/bmp-converter";
 
-import patchAssetStorage from '../engine/storage/storage';
-import safeUid from '../engine/util/safe-uid';
-import { Costume, Sound } from 'leopard';
-import bmpConverter from '../util/bmp-converter';
-  
 type AssetType = "VectorImage" | "BitmapImage" | "Sound";
 
 /**
@@ -16,7 +13,7 @@ type AssetType = "VectorImage" | "BitmapImage" | "Sound";
  */
 const extractFileName = function (nameExt: string) {
     // There could be multiple dots, but get the stuff before the first .
-    const nameParts = nameExt.split('.', 1); // we only care about the first .
+    const nameParts = nameExt.split(".", 1); // we only care about the first .
     return nameParts[0];
 };
 
@@ -28,15 +25,15 @@ const extractFileName = function (nameExt: string) {
  * @param {Function} onerror The function that handles any error loading the file
  */
 const handleFileUpload = function (
-    fileInput: HTMLInputElement | null, 
+    fileInput: HTMLInputElement | null,
     onload: (
         fileData: ArrayBuffer,
         fileType: string,
         fileName: string,
         index: number,
         total: number
-      ) => void,
-    onerror: (event: ProgressEvent<FileReader>) => void,
+    ) => void,
+    onerror: (event: ProgressEvent<FileReader>) => void
 ): void {
     if (!fileInput) {
         return;
@@ -55,7 +52,13 @@ const handleFileUpload = function (
         reader.onload = () => {
             const fileType = file.type;
             const fileName = extractFileName(file.name);
-            onload(reader.result as ArrayBuffer, fileType, fileName, i, files.length);
+            onload(
+                reader.result as ArrayBuffer,
+                fileType,
+                fileName,
+                i,
+                files.length
+            );
             readFile(i + 1, files);
         };
         reader.onerror = onerror;
@@ -88,14 +91,22 @@ const handleFileUpload = function (
  * @return {VMAsset} An object representing this asset and relevant information
  * which can be used to look up the data in storage
  */
-export const createVMAsset = function (assetType: AssetType, data: ArrayBuffer): Costume | Sound {
+export const createVMAsset = function (
+    assetType: AssetType,
+    data: ArrayBuffer,
+    name: string
+): Costume | Sound {
     const id = safeUid();
-    const assetURL = patchAssetStorage.addAsset(id, new Blob([data]), assetType);
+    const assetURL = patchAssetStorage.addAsset(
+        id,
+        data,
+        assetType
+    );
 
     if (assetType == "Sound") {
-        return new Sound("", assetURL, id);
+        return new Sound(name, assetURL, id);
     } else {
-        return new Costume("", assetURL, undefined, id);
+        return new Costume(name, assetURL, undefined, id);
     }
 };
 
@@ -113,66 +124,70 @@ export const createVMAsset = function (assetType: AssetType, data: ArrayBuffer):
 const costumeUpload = function (
     fileData: ArrayBuffer,
     fileType: string,
+    name: string,
     handleCostume: (vmCostumes: Costume[]) => void,
     handleError = () => {}
-    ) {
+) {
     let assetType: AssetType | null = null;
     switch (fileType) {
-    case "image/svg+xml": {
-        // run svg bytes through scratch-svg-renderer's sanitization code
-        fileData = sanitizeSvg.sanitizeByteStream(fileData);
+        case "image/svg+xml": {
+            // run svg bytes through scratch-svg-renderer's sanitization code
+            //fileData = sanitizeSvg.sanitizeByteStream(fileData);
 
-        assetType = "VectorImage";
-        break;
-    }
-    case "image/jpeg": {
-        assetType = "BitmapImage";
-        break;
-    }
-    case 'image/bmp': {
-        // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
-        // and would otherwise take up a lot of storage space and take much longer to upload and download.
-        bmpConverter(fileData).then((dataUrl: any) => {
-            costumeUpload(dataUrl, 'image/png', handleCostume);
-        });
-        return; // Return early because we're triggering another proper costumeUpload
-    }
-    case "image/png": {
-        assetType = "BitmapImage";
-        break;
-    }
-    default:
-        // @ts-ignore
-        handleError(`Encountered unexpected file type: ${fileType}`);
-        return;
+            assetType = "VectorImage";
+            break;
+        }
+        case "image/jpeg": {
+            assetType = "BitmapImage";
+            break;
+        }
+        case "image/bmp": {
+            // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
+            // and would otherwise take up a lot of storage space and take much longer to upload and download.
+            bmpConverter(fileData).then((dataUrl: any) => {
+                costumeUpload(dataUrl, "image/png", name, handleCostume, handleError);
+            });
+            return; // Return early because we're triggering another proper costumeUpload
+        }
+        case "image/png": {
+            assetType = "BitmapImage";
+            break;
+        }
+        default:
+            // @ts-ignore
+            handleError(`Encountered unexpected file type: ${fileType}`);
+            return;
     }
 
-    const bitmapAdapter = new BitmapAdapter();
-    const addCostumeFromBuffer = function (dataBuffer: ArrayBuffer) {
+    //const bitmapAdapter = new BitmapAdapter();
+    const addCostumeFromBuffer = function (
+        dataBuffer: ArrayBuffer,
+        name: string
+    ) {
         if (!assetType) {
             // @ts-ignore
-            handleError('Encountered unexpected error while loading costume');
+            handleError("Encountered unexpected error while loading costume");
             return;
         }
-        const vmCostume = createVMAsset(
-            assetType,
-            dataBuffer
-        );
+        
+        const vmCostume = createVMAsset(assetType, dataBuffer, name);
         handleCostume([vmCostume as Costume]);
     };
 
-    if (assetType == "VectorImage") {
+    //if (assetType == "VectorImage") {
         // Must pass in file data as a Uint8Array,
         // passing in an array buffer causes the sprite/costume
         // thumbnails to not display because the data URI for the costume
         // is invalid
         // @ts-ignore
-        addCostumeFromBuffer(fileData);
-    } else {
+        addCostumeFromBuffer(fileData, name);
+    /*} else {
         // otherwise it's a bitmap
-        bitmapAdapter.importBitmap(fileData, fileType).then(addCostumeFromBuffer)
+        bitmapAdapter
+            .importBitmap(fileData, fileType)
+            .then((buffer: Uint8Array) => addCostumeFromBuffer(buffer, name))
             .catch(handleError);
-    }
+    }*/
 };
 
 /**
@@ -188,12 +203,11 @@ const costumeUpload = function (
  */
 const soundUpload = function (
     fileData: ArrayBuffer,
+    name: string,
     handleSound: (vmSound: Sound) => void,
     handleError?: (error: string) => void
-  ): void {
-    const vmSound = createVMAsset(
-        "Sound",
-        fileData) as Sound;
+): void {
+    const vmSound = createVMAsset("Sound", fileData, name) as Sound;
 
     handleSound(vmSound);
 };
