@@ -28,7 +28,7 @@ class PatchStorage {
         }
 
         const assetDataBlob =
-            assetData instanceof Blob ? assetData : new Blob([assetData]);
+            assetData instanceof Blob ? assetData : new Blob([assetData], assetType == "VectorImage" ? {type: "image/svg+xml"} : undefined);
 
         const asset: Asset = {
             assetType: assetType,

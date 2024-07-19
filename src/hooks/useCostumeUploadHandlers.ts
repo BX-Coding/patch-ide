@@ -31,7 +31,7 @@ export const useCostumeHandlers = () => {
 
         input.onchange = (e: any) => {
             handleFileUpload(e.target, (buffer: ArrayBuffer, fileType: string, fileName: string , fileIndex: number, fileCount: number) => {
-                costumeUpload(buffer, fileType, async (vmCostumes: Costume[]) => {
+                costumeUpload(buffer, fileType, fileName, async (vmCostumes: Costume[]) => {
                     vmCostumes.forEach((costume, i) => {
                         costume.name = `${fileName}${i ? i + 1 : ''}`;
                     });

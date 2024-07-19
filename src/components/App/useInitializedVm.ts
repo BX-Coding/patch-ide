@@ -6,7 +6,6 @@ import Renderer from "scratch-render";
 // @ts-ignore
 import AudioEngine from "scratch-audio";
 // @ts-ignore
-import ScratchSVGRenderer from "scratch-svg-renderer";
 import usePatchStore from "../../store";
 //import patchFirebaseStorage from "../../lib/firebase-storage";
 import { storage } from "../../lib/firebase";
@@ -46,12 +45,9 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       const patchVM = new VirtualMachine();
       //patchFirebaseStorage.addFirebaseStorageStores(storage);
       //patchVM.attachStorage(patchFirebaseStorage);
-      //const scratchRenderer = new Renderer(patchStage.canvas);
-      //patchVM.attachRenderer(scratchRenderer);
       patchVM.attachRenderTarget(`#${patchStage.canvas.id}`);
-      
+
       patchVM.attachAudioEngine(new AudioEngine());
-      patchVM.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
       patchVM.runtime.draw();
       patchVM.start();
