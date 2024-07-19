@@ -81,8 +81,8 @@ export const SpriteEditor = () => {
     const handleDeleteClick = (costumeName: string) => {
         const newCostumeIndex = getCostumeIndexByName(costumeName);
         const costumeId = editingTarget.getCostumes()[newCostumeIndex].id;
-        patchAssetStorage.unrefAsset(costumeId);
         editingTarget.deleteCostume(newCostumeIndex);
+        patchAssetStorage.unrefAsset(costumeId);
         setSelectedCostumeIndex(newCostumeIndex > 0 ? newCostumeIndex - 1 : 0);
         setCostumes([...editingTarget.getCostumes()]);
     }
