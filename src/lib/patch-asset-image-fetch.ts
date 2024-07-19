@@ -1,5 +1,5 @@
 import { getStorage } from "firebase/storage";
-import { FIREBASE_STORAGE_URL, SCRATCH_PATH, URL_SLASH } from "./storage";
+import { FIREBASE_STORAGE_URL, SCRATCH_PATH, URL_SLASH } from "./firebase-storage";
 
 export const getPatchAssetImageUrl = (assetId: string, dataFormat: string) => {
   const storage = getStorage();

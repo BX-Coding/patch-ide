@@ -1,4 +1,4 @@
-import ScratchStorage from "scratch-storage";
+//import ScratchStorage from "scratch-storage";
 import { FirebaseStorage, ref } from "firebase/storage";
 import { Asset, AssetType, DataFormat } from "../components/EditorPane/old-types";
 
@@ -11,7 +11,7 @@ export const FIREBASE_STORAGE_URL =
  * Wrapper for ScratchStorage which adds default web sources.
  * @todo make this more configurable
  */
-class PatchFirebaseStorage extends ScratchStorage {
+/*class PatchFirebaseStorage extends ScratchStorage {
   constructor() {
     super();
   }
@@ -34,6 +34,7 @@ class PatchFirebaseStorage extends ScratchStorage {
   }
 }
 
-const patchStorage = new PatchFirebaseStorage();
+const patchFirebaseStorage = new PatchFirebaseStorage();
 
-export default patchStorage;
+export default patchFirebaseStorage;
+*/

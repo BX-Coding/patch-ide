@@ -1,7 +1,7 @@
 import { Dictionary } from '../../engine/interfaces';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { Sprite, Stage } from 'leopard';
-import { spriteUpload } from '../../lib/file-uploader';
+//import { spriteUpload } from '../../lib/file-uploader';
 import usePatchStore from '../../store';
 import { SpriteJson } from '../EditorPane/old-types';
 
@@ -47,7 +47,7 @@ export const useUploadSprite = () => {
     }
 
     const uploadSprite = async (file: File) => {
-        const storage = patchVM.runtime.storage;
+        /*const storage = patchVM.runtime.storage;
         const arrayBuffer = await file.arrayBuffer();
         spriteUpload(arrayBuffer, file.type, file.name, storage, newSprite => {
           const json = newSprite as SpriteJson;
@@ -59,7 +59,9 @@ export const useUploadSprite = () => {
             const newSpriteSprite = new Sprite({x: 0, y: 0, direction: 0, costumeNumber: 0, size: 1, visible: true});
             handleNewSprite(newSpriteSprite, json.name);
           }
-        }, console.log);
+        }, console.log);*/
+
+        console.warn("Sprite uploading isn't currently supported.");
     };
 
     return uploadSprite;

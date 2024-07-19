@@ -1,21 +1,12 @@
 // @ts-ignore
 import {BitmapAdapter, sanitizeSvg} from 'scratch-svg-renderer';
-import bmpConverter from '../util/bmp-converter';
-// @ts-ignore
-import gifDecoder from '../util/gif-decoder';
-// @ts-ignore
-import { ScratchStorage } from 'scratch-storage';
-import { SpriteJson } from '../components/EditorPane/old-types';
-  
-type AssetType = ScratchStorage.AssetType;
 
-interface VMAsset {
-    name: string | null;
-    dataFormat: string;
-    asset: ScratchStorage.Asset;
-    md5: string;
-    assetId: string;
-  }
+import patchAssetStorage from '../engine/storage/storage';
+import safeUid from '../engine/util/safe-uid';
+import { Costume, Sound } from 'leopard';
+import bmpConverter from '../util/bmp-converter';
+  
+type AssetType = "VectorImage" | "BitmapImage" | "Sound";
 
 /**
  * Extract the file name given a string of the form fileName + ext
@@ -39,7 +30,7 @@ const extractFileName = function (nameExt: string) {
 const handleFileUpload = function (
     fileInput: HTMLInputElement | null, 
     onload: (
-        fileData: ArrayBuffer | string,
+        fileData: ArrayBuffer,
         fileType: string,
         fileName: string,
         index: number,
@@ -64,7 +55,7 @@ const handleFileUpload = function (
         reader.onload = () => {
             const fileType = file.type;
             const fileName = extractFileName(file.name);
-            onload(reader.result as ArrayBuffer | string, fileType, fileName, i, files.length);
+            onload(reader.result as ArrayBuffer, fileType, fileName, i, files.length);
             readFile(i + 1, files);
         };
         reader.onerror = onerror;
@@ -97,22 +88,15 @@ const handleFileUpload = function (
  * @return {VMAsset} An object representing this asset and relevant information
  * which can be used to look up the data in storage
  */
-const createVMAsset = function (storage: any, assetType: AssetType, dataFormat: string, data: Uint8Array) {
-    const asset = storage.createAsset(
-        assetType,
-        dataFormat,
-        data,
-        null,
-        true // generate md5
-    );
+export const createVMAsset = function (assetType: AssetType, data: ArrayBuffer): Costume | Sound {
+    const id = safeUid();
+    const assetURL = patchAssetStorage.addAsset(id, new Blob([data]), assetType);
 
-    return {
-        name: null, // Needs to be set by caller
-        dataFormat: dataFormat,
-        asset: asset,
-        md5: `${asset.assetId}.${dataFormat}`,
-        assetId: asset.assetId
-    };
+    if (assetType == "Sound") {
+        return new Sound("", assetURL, id);
+    } else {
+        return new Costume("", assetURL, undefined, id);
+    }
 };
 
 /**
@@ -127,53 +111,35 @@ const createVMAsset = function (storage: any, assetType: AssetType, dataFormat: 
  * @param {Function} handleError The function to execute if there is an error parsing the costume
  */
 const costumeUpload = function (
-    fileData: ArrayBuffer | string,
+    fileData: ArrayBuffer,
     fileType: string,
-    storage: ScratchStorage,
-    handleCostume: (vmCostumes: any[]) => void,
+    handleCostume: (vmCostumes: Costume[]) => void,
     handleError = () => {}
     ) {
-    let costumeFormat: string | null = null;
-    let assetType: string | null = null;
+    let assetType: AssetType | null = null;
     switch (fileType) {
-    case 'image/svg+xml': {
+    case "image/svg+xml": {
         // run svg bytes through scratch-svg-renderer's sanitization code
         fileData = sanitizeSvg.sanitizeByteStream(fileData);
 
-        costumeFormat = storage.DataFormat.SVG;
-        assetType = storage.AssetType.ImageVector;
+        assetType = "VectorImage";
         break;
     }
-    case 'image/jpeg': {
-        costumeFormat = storage.DataFormat.JPG;
-        assetType = storage.AssetType.ImageBitmap;
+    case "image/jpeg": {
+        assetType = "BitmapImage";
         break;
     }
     case 'image/bmp': {
         // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
         // and would otherwise take up a lot of storage space and take much longer to upload and download.
         bmpConverter(fileData).then((dataUrl: any) => {
-            costumeUpload(dataUrl, 'image/png', storage, handleCostume);
+            costumeUpload(dataUrl, 'image/png', handleCostume);
         });
         return; // Return early because we're triggering another proper costumeUpload
     }
-    case 'image/png': {
-        costumeFormat = storage.DataFormat.PNG;
-        assetType = storage.AssetType.ImageBitmap;
+    case "image/png": {
+        assetType = "BitmapImage";
         break;
-    }
-    case 'image/gif': {
-        let costumes: any[] = [];
-        // @ts-ignore
-        gifDecoder(fileData, (frameNumber, dataUrl, numFrames) => {
-            costumeUpload(dataUrl, 'image/png', storage, costumes_ => {
-                costumes = costumes.concat(costumes_);
-                if (frameNumber === numFrames - 1) {
-                    handleCostume(costumes);
-                }
-            }, handleError);
-        });
-        return; // Abandon this load, do not try to load gif itself
     }
     default:
         // @ts-ignore
@@ -182,28 +148,26 @@ const costumeUpload = function (
     }
 
     const bitmapAdapter = new BitmapAdapter();
-    const addCostumeFromBuffer = function (dataBuffer: Uint8Array) {
-        if (!costumeFormat || !assetType) {
+    const addCostumeFromBuffer = function (dataBuffer: ArrayBuffer) {
+        if (!assetType) {
             // @ts-ignore
             handleError('Encountered unexpected error while loading costume');
             return;
         }
         const vmCostume = createVMAsset(
-            storage,
             assetType,
-            costumeFormat,
             dataBuffer
         );
-        handleCostume([vmCostume]);
+        handleCostume([vmCostume as Costume]);
     };
 
-    if (costumeFormat === storage.DataFormat.SVG) {
+    if (assetType == "VectorImage") {
         // Must pass in file data as a Uint8Array,
         // passing in an array buffer causes the sprite/costume
         // thumbnails to not display because the data URI for the costume
         // is invalid
         // @ts-ignore
-        addCostumeFromBuffer(new Uint8Array(fileData));
+        addCostumeFromBuffer(fileData);
     } else {
         // otherwise it's a bitmap
         bitmapAdapter.importBitmap(fileData, fileType).then(addCostumeFromBuffer)
@@ -223,43 +187,18 @@ const costumeUpload = function (
  * @param {Function} handleError The function to execute if there is an error parsing the sound
  */
 const soundUpload = function (
-    fileData: ArrayBuffer | string,
-    fileType: string,
-    storage: ScratchStorage,
-    handleSound: (vmSound: VMAsset) => void,
+    fileData: ArrayBuffer,
+    handleSound: (vmSound: Sound) => void,
     handleError?: (error: string) => void
   ): void {
-    let soundFormat;
-    switch (fileType) {
-    case 'audio/mp3':
-    case 'audio/mpeg': {
-        soundFormat = storage.DataFormat.MP3;
-        break;
-    }
-    case 'audio/wav':
-    case 'audio/wave':
-    case 'audio/x-wav':
-    case 'audio/x-pn-wav': {
-        soundFormat = storage.DataFormat.WAV;
-        break;
-    }
-    default:
-        // @ts-ignore
-        handleError(`Encountered unexpected file type: ${fileType}`);
-        return;
-    }
-
     const vmSound = createVMAsset(
-        storage,
-        storage.AssetType.Sound,
-        soundFormat,
-        // @ts-ignore
-        new Uint8Array(fileData));
+        "Sound",
+        fileData) as Sound;
 
     handleSound(vmSound);
 };
 
-const spriteUpload = function (
+/*const spriteUpload = function (
     fileData: ArrayBuffer,
     fileType: string,
     spriteName: string,
@@ -310,11 +249,11 @@ const spriteUpload = function (
         return;
     }
     }
-};
+};*/
 
 export {
     handleFileUpload,
     costumeUpload,
     soundUpload,
-    spriteUpload
+    //spriteUpload
 };

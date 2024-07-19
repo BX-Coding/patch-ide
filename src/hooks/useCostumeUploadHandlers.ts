@@ -14,7 +14,7 @@ export const useCostumeHandlers = () => {
         var returnval = await Promise.all(costumes.map(c => {
             // TODO: fix this?
             //return addCostume(fromCostumeLibrary ? c.md5ext : c.md5 ?? '', c, targetId);
-            return addCostume(fromCostumeLibrary ? c.name : c.name ?? '', c, targetId);
+            return addCostume(c.id ?? '', c, targetId);
         }));
     
         return returnval;
@@ -30,8 +30,8 @@ export const useCostumeHandlers = () => {
         input.accept = 'image/png, image/jpeg, image/svg+xml, image/bmp, image/gif';
 
         input.onchange = (e: any) => {
-            handleFileUpload(e.target, (buffer: string |ArrayBuffer, fileType: string, fileName: string , fileIndex: number, fileCount: number) => {
-                costumeUpload(buffer, fileType, patchVM.runtime.storage, async (vmCostumes: Costume[]) => {
+            handleFileUpload(e.target, (buffer: ArrayBuffer, fileType: string, fileName: string , fileIndex: number, fileCount: number) => {
+                costumeUpload(buffer, fileType, async (vmCostumes: Costume[]) => {
                     vmCostumes.forEach((costume, i) => {
                         costume.name = `${fileName}${i ? i + 1 : ''}`;
                     });

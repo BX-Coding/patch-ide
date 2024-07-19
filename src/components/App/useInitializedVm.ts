@@ -8,7 +8,7 @@ import AudioEngine from "scratch-audio";
 // @ts-ignore
 import ScratchSVGRenderer from "scratch-svg-renderer";
 import usePatchStore from "../../store";
-import patchStorage from "../../lib/storage";
+//import patchFirebaseStorage from "../../lib/firebase-storage";
 import { storage } from "../../lib/firebase";
 import { VmError, VmErrorType } from "../EditorPane/types";
 // import { LanguageServerState } from "../../store/LanguageServerEditorState";
@@ -44,8 +44,8 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       setPatchReady(false);
 
       const patchVM = new VirtualMachine();
-      patchStorage.addFirebaseStorageStores(storage);
-      patchVM.attachStorage(patchStorage);
+      //patchFirebaseStorage.addFirebaseStorageStores(storage);
+      //patchVM.attachStorage(patchFirebaseStorage);
       //const scratchRenderer = new Renderer(patchStage.canvas);
       //patchVM.attachRenderer(scratchRenderer);
       patchVM.attachRenderTarget(`#${patchStage.canvas.id}`);
