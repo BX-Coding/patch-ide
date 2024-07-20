@@ -1,13 +1,12 @@
 import EventEmitter from "events";
 import { Project, Sprite, Stage } from "leopard";
 import {
-   DefaultSprites,
-   DefaultStage,
+   defaultSprites,
+   defaultStage,
 } from "./default_sprites/default-project";
 
 import { Dictionary } from "./interfaces";
 import Thread from "./thread";
-import { createVMAsset } from "../lib/file-uploader";
 
 // This class manages the state of targets and other stuff
 
@@ -24,8 +23,8 @@ export default class Runtime extends EventEmitter {
    constructor() {
       super();
 
-      this._sprites = DefaultSprites;
-      this._stage = { stage: DefaultStage, threads: {} };
+      this._sprites = defaultSprites;
+      this._stage = { stage: defaultStage, threads: {} };
 
       // In React, the constructor runs twice for some reason. Only add a thread the first time.
       !Object.keys(this._sprites["Patch"].threads).length &&
@@ -108,7 +107,6 @@ export default class Runtime extends EventEmitter {
    quit() { }
 
    async greenFlag() {
-      //this.leopardProject = new Project(this.stage, this.sprites);
       this.leopardProject?.greenFlag();
    }
 

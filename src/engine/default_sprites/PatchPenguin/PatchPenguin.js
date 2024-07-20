@@ -87,10 +87,6 @@ export default class PatchPenguin extends Sprite {
 
   *whenGreenFlagClicked() {
     this.costume = "costume1";
-    // while (true) {
-    //   this.watchers.myVariableLarge.color.h = this.vars.myVariable;
-    //   this.watchers.myVariableLarge.x = this.vars.myVariable;
-    //   yield;
-    // }
+    this.visible = false
   }
 }
