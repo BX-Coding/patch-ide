@@ -3,7 +3,7 @@ import { Project, Sprite, Stage } from "leopard";
 import {
    defaultSprites,
    defaultStage,
-} from "./default_sprites/default-project";
+} from "./default_project/default-project";
 
 import { Dictionary } from "./interfaces";
 import Thread from "./thread";
