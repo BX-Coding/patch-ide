@@ -126,7 +126,7 @@ const costumeUpload = function (
     fileType: string,
     name: string,
     handleCostume: (vmCostumes: Costume[]) => void,
-    handleError = () => {}
+    handleError = () => { }
 ) {
     let assetType: AssetType | null = null;
     switch (fileType) {
@@ -144,9 +144,10 @@ const costumeUpload = function (
         case "image/bmp": {
             // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
             // and would otherwise take up a lot of storage space and take much longer to upload and download.
-            bmpConverter(fileData).then((dataUrl: any) => {
-                costumeUpload(dataUrl, "image/png", name, handleCostume, handleError);
-            });
+            bmpConverter(fileData)
+                .then(dataUrl => fetch(dataUrl))
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => costumeUpload(arrayBuffer, "image/png", name, handleCostume, handleError));
             return; // Return early because we're triggering another proper costumeUpload
         }
         case "image/png": {
@@ -169,18 +170,18 @@ const costumeUpload = function (
             handleError("Encountered unexpected error while loading costume");
             return;
         }
-        
+
         const vmCostume = createVMAsset(assetType, dataBuffer, name);
         handleCostume([vmCostume as Costume]);
     };
 
     //if (assetType == "VectorImage") {
-        // Must pass in file data as a Uint8Array,
-        // passing in an array buffer causes the sprite/costume
-        // thumbnails to not display because the data URI for the costume
-        // is invalid
-        // @ts-ignore
-        addCostumeFromBuffer(fileData, name);
+    // Must pass in file data as a Uint8Array,
+    // passing in an array buffer causes the sprite/costume
+    // thumbnails to not display because the data URI for the costume
+    // is invalid
+    // @ts-ignore
+    addCostumeFromBuffer(fileData, name);
     /*} else {
         // otherwise it's a bitmap
         bitmapAdapter
