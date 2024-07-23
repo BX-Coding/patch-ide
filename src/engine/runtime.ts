@@ -134,7 +134,9 @@ export default class Runtime extends EventEmitter {
     quit() { }
 
     async greenFlag() {
-        this.leopardProject?.greenFlag();
+        //this.leopardProject?.greenFlag();
+        await this.stopAll();
+        this.startHats("event_whenflagclicked");
     }
 
     stopAll() { }
@@ -198,6 +200,35 @@ export default class Runtime extends EventEmitter {
         }
 
         return undefined;
+    }
+
+    async startHats(hat: string, option?: string) {
+        /*const executionPromises = [];
+        Object.keys(this.targets).forEach((targetId) => {
+            //executionPromises.push(target.startHat(hat, option));
+            const threadPromises = [];
+            const restartThread = this.runtime.getHatMetadata(eventId).restartExistingThreads;
+            Object.keys(this.threads).forEach((threadId) => {
+                const thread = this.threads[threadId];
+                if (this.needsRestart(thread, restartThread, eventId, option)) {
+                    threadPromises.push(thread.startThread());
+                }
+            });
+            await Promise.all(threadPromises);
+        });
+        await Promise.all(executionPromises);*/
+
+        Object.keys(this.targets).forEach((targetId) => {
+            const threads = this.getTargetThreads(targetId);
+
+            const threadIds = Object.keys(threads);
+
+            threadIds.forEach((threadId) => {
+                if ((threads[threadId].triggerEvent == hat) && (option ? (threads[threadId].triggerEventOption == option) : true)) {
+                    threads[threadId].startThread();
+                }
+            })
+        });
     }
 
     getThreadById(id: string) {
@@ -265,7 +296,8 @@ export default class Runtime extends EventEmitter {
     }
 
     getOpcodeFunction(opcode: string) {
-        return BlockFunctions[opcode];
+        const placeholderFunc = (target: Sprite | Stage, ...args: []) => {console.log("Calling function that couldn't be found: " + opcode + (target as Sprite).x)};
+        return BlockFunctions[opcode] ?? placeholderFunc;
     }
 
     static get STAGE_WIDTH() {

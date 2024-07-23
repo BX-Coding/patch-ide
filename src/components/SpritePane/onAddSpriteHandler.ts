@@ -12,12 +12,7 @@ export const changeSpriteValues = (eventSource: Sprite | Stage | null = null, se
       }
     }
 
-    const [editingTarget] = useEditingTarget();
-
-    if (editingTarget) {
-      editingTarget instanceof Sprite ? setEditingTargetAttributes(editingTarget.x, editingTarget.y, editingTarget.size, editingTarget.direction) : setEditingTargetAttributes(0, 0, 0, 0);
-    }
-
+    eventSource instanceof Sprite ? setEditingTargetAttributes(eventSource.x, eventSource.y, eventSource.size, eventSource.direction) : setEditingTargetAttributes(0, 0, 0, 0);
   }
 
 

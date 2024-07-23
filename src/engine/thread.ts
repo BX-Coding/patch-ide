@@ -63,8 +63,6 @@ export default class Thread {
         // Confirm worker is loaded
         await this.runtime.workerLoadPromise;
 
-        console.log(script);
-
         // Reset Error Messages
         this.runtime.compileTimeErrors = this.runtime.compileTimeErrors.filter((error) => error.threadId !== this.id);
         this.runtime.runtimeErrors = this.runtime.runtimeErrors.filter((error) => error.threadId !== this.id);
@@ -88,6 +86,7 @@ export default class Thread {
     async startThread() {
         // I'm leaving the old code below for reference
         // If the last load had no syntax errors run it
+        console.log(this.script);
         if (this.loadPromise) {
             // If the thread is already running, restart it
             if (this.running) {
@@ -137,7 +136,7 @@ export default class Thread {
             }
 
             this.status = Thread.STATUS_RUNNING;
-            const result = await blockFunction(this.target, ...args);
+            const result = blockFunction(this, args);
 
             if (this.interruptThread) {
                 resolve({ id: "InterruptThread" });
