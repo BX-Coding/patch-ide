@@ -57,7 +57,7 @@ export default class Runtime extends EventEmitter {
    }
 
    get targets(): Dictionary<Sprite | Stage> {
-      return { Stage: this._stage.stage, ...this.sprites };
+    return { Stage: this._stage.stage, ...this.sprites };
    }
 
    addTarget(target: Sprite | Stage) {
@@ -133,11 +133,27 @@ export default class Runtime extends EventEmitter {
       return this._stage.stage;
    }
 
-   getSpriteById(id: string) {
-      //if (this.leopardProject.sprites[id])
-   }
+   renameSprite(id: string, newName: string) {
+    if (!this._sprites[id]) {
+        console.warn(`Sprite ${id} doesn't exist; can't rename it.`);
+        return null;
+    }
 
-   renameSprite(id: string, newName: string) { }
+    if (this.targets[newName]) {
+        console.warn(`Trying to rename/change id of sprite ${id} to ${newName}, but that name/id is already taken.`);
+    } else if (newName == "Stage") {
+        console.warn(`Trying to rename ${id} to "Stage" but naming a sprite "Stage" isn't allowed.`)
+    } else {
+        // TODO: consider renaming all references to this sprite as well (in python code and stuff)
+        this._sprites[newName] = this._sprites[id];
+        this._sprites[newName].sprite.id = newName;
+        delete this._sprites[id];
+
+        this.emit(Runtime.TARGETS_UPDATE)
+    }
+
+    return null;
+}
 
    draw() { }
 

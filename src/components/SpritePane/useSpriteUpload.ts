@@ -42,8 +42,7 @@ export const useUploadSprite = () => {
         setTargetIds(newTargetIds);
         setEditingTarget(newTargetIds[newTargetIds.length - 1]);
     
-        // TODO: make this work again
-        //newTarget.on('EVENT_TARGET_VISUAL_CHANGE', (eventSource: Sprite | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
+        newTarget.on('MOVE', (eventSource: Sprite | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
     }
 
     const uploadSprite = async (file: File) => {
