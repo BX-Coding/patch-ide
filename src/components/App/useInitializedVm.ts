@@ -10,6 +10,9 @@ import usePatchStore from "../../store";
 //import patchFirebaseStorage from "../../lib/firebase-storage";
 import { storage } from "../../lib/firebase";
 import { VmError, VmErrorType } from "../EditorPane/types";
+import { Sprite } from "leopard";
+import { changeSpriteValues } from "../SpritePane/onAddSpriteHandler";
+import { useEditingTarget } from "../../hooks/useEditingTarget";
 // import { LanguageServerState } from "../../store/LanguageServerEditorState";
 
 const useInitializedVm = (onVmInitialized: () => void) => {
@@ -21,7 +24,8 @@ const useInitializedVm = (onVmInitialized: () => void) => {
   const setVmLoaded = usePatchStore((state) => state.setVmLoaded);
   const addDiagnostic = usePatchStore((state) => state.addDiagnostic);
   const sendLspState = usePatchStore((state) => state.sendLspState);
-  const transRef = usePatchStore((state)=>state.transportRef)
+  const setEditingTargetAttributes = usePatchStore((state) => state.setEditingTargetAttributes);
+  const [editingTarget, setEditingTarget] = useEditingTarget();
 
   const handleRuntimeError = ({
     threadId,
@@ -52,9 +56,16 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       patchVM.runtime.draw();
       patchVM.start();
 
-      patchVM.on("VM READY", () => {
+      //patchVM.on("VM READY", () => {
         setVmLoaded(true);
-      });
+
+        const targets = patchVM.getAllRenderedTargets();
+        const targetIds = Object.keys(targets);
+
+        console.log(targetIds);
+
+        targetIds.forEach(targetId => targets[targetId].on('MOVE', (eventSource: Sprite | null) => changeSpriteValues(null, setEditingTargetAttributes, editingTarget?.id ?? "")));
+      //});
 
       patchVM.runtime.on("PROJECT_CHANGED", () =>
         sendLspState()

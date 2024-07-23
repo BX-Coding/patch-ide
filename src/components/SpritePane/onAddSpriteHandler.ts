@@ -33,13 +33,12 @@ export const useAddSprite = () => {
     await patchVM.addSprite(sprite, sprite instanceof Sprite ? sprite.id : sprite.name);
     const targets = patchVM.getAllRenderedTargets();
     const targetIds = Object.keys(targets);
-    const newTarget = targets[targetIds.length - 1];
+    const newTarget = targets[targetIds[targetIds.length - 1]];
 
     setTargetIds(targetIds);
     setEditingTarget(newTarget.id);
 
-    // TODO: make this work again
-    //newTarget.on('EVENT_TARGET_VISUAL_CHANGE', (eventSource: Sprite | Stage | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
+    newTarget.on('MOVE', (eventSource: Sprite | null) => changeSpriteValues(eventSource, setEditingTargetAttributes, editingTarget?.id ?? ""));
     return newTarget;
   }
 

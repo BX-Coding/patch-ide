@@ -37,6 +37,8 @@ import patchAssetStorage from "./storage/storage";
 export default class VirtualMachine extends EventEmitter {
     runtime: Runtime;
     editingTarget: Sprite | Stage | null;
+    protected _ready: boolean = false;
+    public get ready(): boolean { return this._ready };
 
     constructor() {
         super();
@@ -56,6 +58,8 @@ export default class VirtualMachine extends EventEmitter {
         this.runtime.on("COMPILE TIME ERROR", (threadId, message, lineNumber, type) => {
             this.emit("COMPILE TIME ERROR", threadId, message, lineNumber, type);
         });
+
+        this.runtime.on(Runtime.TARGETS_UPDATE, () => this.emitTargetsUpdate(true));
 
         this.editingTarget = null;
     }
@@ -145,7 +149,6 @@ export default class VirtualMachine extends EventEmitter {
      * Defaults to true.
      */
     emitTargetsUpdate(triggerProjectChange: any) {
-        // eslint-disable-next-line no-param-reassign
         const targets = this.getAllRenderedTargets();
         if (typeof triggerProjectChange === "undefined") triggerProjectChange = true;
         this.emit("targetsUpdate", {
@@ -236,37 +239,37 @@ export default class VirtualMachine extends EventEmitter {
             targets.forEach((target) => {
                 this.runtime.addTarget(target);
                 /** @type RenderedTarget *//* target.updateAllDrawableProperties();
-                // Ensure unique sprite name
-                if (target.isSprite()) this.renameSprite(target.id, target.getName());
-            });
-            // Sort the executable targets by layerOrder.
-            // Remove layerOrder property after use.
-            this.runtime.executableTargets.sort((a, b) => a.layerOrder - b.layerOrder);
-            targets.forEach((target) => {
-                // eslint-disable-next-line no-param-reassign
-                delete target.layerOrder;
-            });
+    // Ensure unique sprite name
+    if (target.isSprite()) this.renameSprite(target.id, target.getName());
+});
+// Sort the executable targets by layerOrder.
+// Remove layerOrder property after use.
+this.runtime.executableTargets.sort((a, b) => a.layerOrder - b.layerOrder);
+targets.forEach((target) => {
+    // eslint-disable-next-line no-param-reassign
+    delete target.layerOrder;
+});
 
-            // Select the first target for editing, e.g., the first sprite.
-            if (wholeProject && targets.length > 1) {
-                // eslint-disable-next-line prefer-destructuring
-                this.editingTarget = targets[1];
-            } else {
-                // eslint-disable-next-line prefer-destructuring
-                this.editingTarget = targets[0];
-            }
+// Select the first target for editing, e.g., the first sprite.
+if (wholeProject && targets.length > 1) {
+    // eslint-disable-next-line prefer-destructuring
+    this.editingTarget = targets[1];
+} else {
+    // eslint-disable-next-line prefer-destructuring
+    this.editingTarget = targets[0];
+}
 
-            if (!wholeProject) {
-                this.editingTarget.fixUpVariableReferences();
-            }
+if (!wholeProject) {
+    this.editingTarget.fixUpVariableReferences();
+}
 
-            // Update the VM user's knowledge of targets and blocks on the workspace.
-            this.emitTargetsUpdate(false /* Don't emit project change *//*);
-            // this.emitWorkspaceUpdate();
-            this.runtime.setEditingTarget(this.editingTarget);
-            // this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
-        });
-    }*/
+// Update the VM user's knowledge of targets and blocks on the workspace.
+this.emitTargetsUpdate(false /* Don't emit project change *//*);
+    // this.emitWorkspaceUpdate();
+    this.runtime.setEditingTarget(this.editingTarget);
+    // this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
+});
+}*/
 
     async installTargets(targets: (Sprite | Stage)[], wholeProject: boolean) {
         // TODO: implement this
@@ -378,32 +381,6 @@ export default class VirtualMachine extends EventEmitter {
      * @param {string} newName New name of the sprite.
      */
     renameSprite(targetId: string, newName: string) {
-        /*const target = this.runtime.getTargetById(targetId);
-        if (target) {
-            if (!target.isSprite()) {
-                throw new Error("Cannot rename non-sprite targets.");
-            }
-            const { sprite } = target;
-            if (!sprite) {
-                throw new Error("No sprite associated with this target.");
-            }
-            if (newName && RESERVED_NAMES.indexOf(newName) === -1) {
-                const names = this.runtime.targets.filter((runtimeTarget) => runtimeTarget.isSprite() && runtimeTarget.id !== target.id).map((runtimeTarget) => runtimeTarget.sprite.name);
-                const oldName = sprite.name;
-                const newUnusedName = StringUtil.unusedName(newName, names);
-                sprite.name = newUnusedName;
-                const allTargets = this.runtime.targets;
-                for (let i = 0; i < allTargets.length; i++) {
-                    const currTarget = allTargets[i];
-                    currTarget.blocks?.updateAssetName(oldName, newName, "sprite");
-                }
-
-                if (newUnusedName !== oldName) this.emitTargetsUpdate();
-            }
-        } else {
-            throw new Error("No target with the provided id.");
-        }*/
-
         this.runtime.renameSprite(targetId, newName);
     }
 
@@ -447,14 +424,14 @@ export default class VirtualMachine extends EventEmitter {
                         this.editingTarget = null;
                     }
                 } *//*
-        }
-        // Sprite object should be deleted by GC.
-        target.updateAllDrawableProperties();
-        this.emitTargetsUpdate();*/
+}
+// Sprite object should be deleted by GC.
+target.updateAllDrawableProperties();
+this.emitTargetsUpdate();*/
 
         // TODO: implement this
 
-        return () => {};
+        return () => { };
     }
 
     setEditingTarget(target: string | Sprite | Stage) {
@@ -467,9 +444,9 @@ export default class VirtualMachine extends EventEmitter {
             this.editingTarget = target;
             // Emit appropriate UI updates.
             this.emitTargetsUpdate(false /* Don't emit project change *//*);
-            // this.emitWorkspaceUpdate();
-            this.runtime.setEditingTarget(target);
-        }*/
+        // this.emitWorkspaceUpdate();
+        this.runtime.setEditingTarget(target);
+    }*/
 
         if (typeof target == "string")
             this.editingTarget = this.getTargetById(target);
@@ -594,7 +571,7 @@ export default class VirtualMachine extends EventEmitter {
 
         // TODO: implement this
     }
-    
+
     async zipProject() {
         /*const projectJson = await this.serializeProject();
         const projectJsonString = JSON.stringify(projectJson);
@@ -616,9 +593,9 @@ export default class VirtualMachine extends EventEmitter {
                     }
                 }); *//*
 
-        zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
-        const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
-        return zippedProject;*/
+zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
+const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
+return zippedProject;*/
 
         return new Blob();
 
@@ -710,7 +687,7 @@ export default class VirtualMachine extends EventEmitter {
 
         // TODO: implement this
 
-        return {globalVariables: []};
+        return { globalVariables: [] };
     }
 
     /**
@@ -846,9 +823,9 @@ export default class VirtualMachine extends EventEmitter {
         return messages;
     }
 
-        /*
-     * @type {Array<object>} Array of all costumes and sounds currently in the runtime
-     */
+    /*
+ * @type {Array<object>} Array of all costumes and sounds currently in the runtime
+ */
     /*get assets () {
         return this.runtime.targets.reduce((acc: string | any[], target: { sprite: { sounds: any[]; costumes: any[]; }; }) => (
             acc

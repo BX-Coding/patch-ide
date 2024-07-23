@@ -12,6 +12,7 @@ export function SpriteName() {
     const patchVM = usePatchStore((state) => state.patchVM);
     const targetIds = usePatchStore((state) => state.targetIds);
     const setProjectChanged = usePatchStore((state) => state.setProjectChanged);
+    const setTargetIds = usePatchStore((state) => state.setTargetIds);
 
     const [editingTarget, setEditingTarget] = useEditingTarget();
     const [nameSaved, setNameSaved] = useState(true);
@@ -24,6 +25,8 @@ export function SpriteName() {
         name && patchVM.renameSprite(editingTarget.id, name);
         setProjectChanged(true);
         setNameSaved(true);
+        setTargetIds(Object.keys(patchVM.getAllRenderedTargets()))
+        name && setEditingTarget(name);
     }
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
