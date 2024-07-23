@@ -56,7 +56,7 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       patchVM.runtime.draw();
       patchVM.start();
 
-      //patchVM.on("VM READY", () => {
+      patchVM.on("VM READY", () => {
         setVmLoaded(true);
 
         const targets = patchVM.getAllRenderedTargets();
@@ -65,7 +65,9 @@ const useInitializedVm = (onVmInitialized: () => void) => {
         console.log(targetIds);
 
         targetIds.forEach(targetId => targets[targetId].on('MOVE', (eventSource: Sprite | null) => changeSpriteValues(null, setEditingTargetAttributes, editingTarget?.id ?? "")));
-      //});
+
+        setPatchReady(true);
+      });
 
       patchVM.runtime.on("PROJECT_CHANGED", () =>
         sendLspState()
