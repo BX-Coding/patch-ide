@@ -1,338 +1,369 @@
 import EventEmitter from "events";
 import { Project, Sprite, Stage } from "leopard";
 import {
-   defaultSprites,
-   defaultStage,
+    defaultSprites,
+    defaultStage,
 } from "./default_project/default-project";
 
 import { Dictionary } from "./interfaces";
 import Thread from "./thread";
+import BlockFunctions from "./blocks";
+import PatchWorker from "./worker/patch-worker";
+import { GlobalVariable } from "../store/variableEditorStore";
+import PatchLinker from "./linker/patch-linker";
 
 // This class manages the state of targets and other stuff
 
 export default class Runtime extends EventEmitter {
-   leopardProject?: Project;
-   storage?: any;
-   protected _sprites: Dictionary<{
-      sprite: Sprite;
-      threads: Dictionary<Thread>;
-   }>;
-   protected _stage: { stage: Stage; threads: Dictionary<Thread> };
-   protected renderTarget?: string | HTMLElement;
+    leopardProject?: Project;
+    storage?: any;
+    protected _sprites: Dictionary<{
+        sprite: Sprite;
+        threads: Dictionary<Thread>;
+    }>;
+    protected _stage: { stage: Stage; threads: Dictionary<Thread> };
+    protected renderTarget?: string | HTMLElement;
+    patchWorker: PatchWorker;
+    runtimeErrors: any[];
+    compileTimeErrors: any[];
+    workerLoadPromise: Promise<void>;
+    workerLoaded: boolean;
+    _globalVariables: Dictionary<GlobalVariable>;
 
-   constructor() {
-      super();
+    constructor() {
+        super();
 
-      this._sprites = defaultSprites;
-      this._stage = { stage: defaultStage, threads: {} };
+        this._globalVariables = {};
 
-      // In React, the constructor runs twice for some reason. Only add a thread the first time.
-      !Object.keys(this._sprites["Patch"].threads).length &&
-         this.addThread(
-            "Patch",
-            "",
-            "event_whenflagclicked",
-            "",
-            "Thread 0"
-         );
+        this._sprites = defaultSprites;
+        this._stage = { stage: defaultStage, threads: {} };
 
-      !Object.keys(this._stage.threads).length &&
-         this.addThread(
-            "Stage",
-            "",
-            "event_whenflagclicked",
-            "",
-            "Thread 0"
-         );
+        this.leopardProject = new Project(
+            this.getTargetForStage(),
+            this.sprites
+        );
 
-      this.leopardProject = new Project(
-         this.getTargetForStage(),
-         this.sprites
-      );
-
-      console.log(this);
-
-      this.emit("WORKER READY");
-   }
-
-   get targets(): Dictionary<Sprite | Stage> {
-    return { Stage: this._stage.stage, ...this.sprites };
-   }
-
-   addTarget(target: Sprite | Stage) {
-      if (target instanceof Stage) {
-         if (this._stage) {
-            console.error("Can't add a stage; one already exists.");
-            return "";
-         } else {
-            this._stage = { stage: target, threads: {} };
-            return "Stage";
-         }
-      } else {
-         if (target.id && target.id != "") {
-            this._sprites[target.id] = { sprite: target, threads: {} };
-
-            return target.id;
-         } else {
-            console.warn("No id on the target to add. Creating a new one.");
-
-            const tryId = "Sprite";
-            let tryNumber = 1;
-
-            while (this.getTargetById(tryId + tryNumber.toString())) {
-               tryNumber++;
+        this.runtimeErrors = [];
+        this.compileTimeErrors = [];
+        this.patchWorker = new PatchWorker((threadId: any, message: any, lineNumber: any, type: string) => {
+            if (type === "RuntimeError") {
+                this.runtimeErrors.push({ threadId, message, lineNumber, type });
+                this.emit("RUNTIME ERROR", { threadId, message, lineNumber, type });
+            } else if (type === "CompileTimeError") {
+                this.compileTimeErrors.push({ threadId, message, lineNumber, type });
+                this.emit("COMPILE TIME ERROR", { threadId, message, lineNumber, type });
             }
+        });
+        this.workerLoaded = false;
+        this.workerLoadPromise = this.patchWorker.loadWorker().then(() => {
+            this.workerLoaded = true;
+            this.emit("WORKER READY");
+            console.log("Worker ready.");
+            // In React, the constructor runs twice for some reason. Only add a thread the first time.
+            !Object.keys(this._sprites["Patch"].threads).length &&
+                this.addThread(
+                    "Patch",
+                    "",
+                    "event_whenflagclicked",
+                    "",
+                    "Thread 0"
+                );
 
-            const newId = tryId + tryNumber;
+            !Object.keys(this._stage.threads).length &&
+                this.addThread(
+                    "Stage",
+                    "",
+                    "event_whenflagclicked",
+                    "",
+                    "Thread 0"
+                );
+        });
 
-            target.id = newId;
-            this._sprites[newId] = { sprite: target, threads: {} };
+        console.log(this);
+    }
 
-            return newId;
-         }
-      }
-   }
+    get targets(): Dictionary<Sprite | Stage> {
+        return { Stage: this._stage.stage, ...this.sprites };
+    }
 
-   get sprites(): Dictionary<Sprite> {
-      return Object.fromEntries(
-         Object.keys(this._sprites).map((id) => [
-            id,
-            this._sprites[id].sprite,
-         ])
-      );
-   }
+    addTarget(target: Sprite | Stage) {
+        if (target instanceof Stage) {
+            if (this._stage) {
+                console.error("Can't add a stage; one already exists.");
+                return "";
+            } else {
+                this._stage = { stage: target, threads: {} };
+                return "Stage";
+            }
+        } else {
+            if (target.id && target.id != "") {
+                this._sprites[target.id] = { sprite: target, threads: {} };
 
-   start() { }
+                return target.id;
+            } else {
+                console.warn("No id on the target to add. Creating a new one.");
 
-   quit() { }
+                const tryId = "Sprite";
+                let tryNumber = 1;
 
-   async greenFlag() {
-      this.leopardProject?.greenFlag();
-   }
+                while (this.getTargetById(tryId + tryNumber.toString())) {
+                    tryNumber++;
+                }
 
-   stopAll() { }
+                const newId = tryId + tryNumber;
 
-   dispose() { }
+                target.id = newId;
+                this._sprites[newId] = { sprite: target, threads: {} };
 
-   attachAudioEngine(engine: any) { }
+                return newId;
+            }
+        }
+    }
 
-   attachV2BitmapAdapter(adapter: any) { }
+    get sprites(): Dictionary<Sprite> {
+        return Object.fromEntries(
+            Object.keys(this._sprites).map((id) => [
+                id,
+                this._sprites[id].sprite,
+            ])
+        );
+    }
 
-   attachRenderTarget(renderTarget: string | HTMLElement) {
-      this.renderTarget = renderTarget;
-      this.leopardProject?.attach(renderTarget);
-   }
+    start() { }
 
-   attachStorage(storage: any) {
-      this.storage = storage;
-   }
+    quit() { }
 
-   getTargetForStage() {
-      return this._stage.stage;
-   }
+    async greenFlag() {
+        this.leopardProject?.greenFlag();
+    }
 
-   renameSprite(id: string, newName: string) {
-    if (!this._sprites[id]) {
-        console.warn(`Sprite ${id} doesn't exist; can't rename it.`);
+    stopAll() { }
+
+    dispose() { }
+
+    attachAudioEngine(engine: any) { }
+
+    attachV2BitmapAdapter(adapter: any) { }
+
+    attachRenderTarget(renderTarget: string | HTMLElement) {
+        this.renderTarget = renderTarget;
+        this.leopardProject?.attach(renderTarget);
+    }
+
+    attachStorage(storage: any) {
+        this.storage = storage;
+    }
+
+    getTargetForStage() {
+        return this._stage.stage;
+    }
+
+    renameSprite(id: string, newName: string) {
+        if (!this._sprites[id]) {
+            console.warn(`Sprite ${id} doesn't exist; can't rename it.`);
+            return null;
+        }
+
+        if (this.targets[newName]) {
+            console.warn(`Trying to rename/change id of sprite ${id} to ${newName}, but that name/id is already taken.`);
+        } else if (newName == "Stage") {
+            console.warn(`Trying to rename ${id} to "Stage" but naming a sprite "Stage" isn't allowed.`)
+        } else {
+            // TODO: consider renaming all references to this sprite as well (in python code and stuff)
+            this._sprites[newName] = this._sprites[id];
+            this._sprites[newName].sprite.id = newName;
+            delete this._sprites[id];
+
+            this.emit(Runtime.TARGETS_UPDATE)
+        }
+
         return null;
     }
 
-    if (this.targets[newName]) {
-        console.warn(`Trying to rename/change id of sprite ${id} to ${newName}, but that name/id is already taken.`);
-    } else if (newName == "Stage") {
-        console.warn(`Trying to rename ${id} to "Stage" but naming a sprite "Stage" isn't allowed.`)
-    } else {
-        // TODO: consider renaming all references to this sprite as well (in python code and stuff)
-        this._sprites[newName] = this._sprites[id];
-        this._sprites[newName].sprite.id = newName;
-        delete this._sprites[id];
+    draw() { }
 
-        this.emit(Runtime.TARGETS_UPDATE)
+    getTargetById(id: string) {
+        return this.targets[id];
     }
 
-    return null;
-}
+    getTargetThreads(id: string) {
+        return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
+    }
 
-   draw() { }
+    getThreadSprite(id: string) {
+        const spriteIds = Object.keys(this._sprites);
 
-   getTargetById(id: string) {
-      return this.targets[id];
-   }
+        for (const spriteId of spriteIds) {
+            if (this._sprites[spriteId].threads[id]) return spriteId;
+        }
 
-   getTargetThreads(id: string) {
-      return id == "Stage" ? this._stage.threads : this._sprites[id]?.threads;
-   }
+        return undefined;
+    }
 
-   getThreadSprite(id: string) {
-      const spriteIds = Object.keys(this._sprites);
+    getThreadById(id: string) {
+        const spriteId = this.getThreadSprite(id);
 
-      for (const spriteId of spriteIds) {
-         if (this._sprites[spriteId].threads[id]) return spriteId;
-      }
+        if (spriteId) return this._sprites[spriteId].threads[id];
 
-      return undefined;
-   }
+        console.log("Thread " + id + " not found.");
 
-   getThreadById(id: string) {
-      const spriteId = this.getThreadSprite(id);
+        return undefined;
+    }
 
-      if (spriteId) return this._sprites[spriteId].threads[id];
+    deleteThread(id: string) {
+        const spriteId = this.getThreadSprite(id);
 
-      console.log("Thread " + id + " not found.");
+        if (spriteId) { delete this._sprites[spriteId].threads[id]; return 0; }
 
-      return undefined;
-   }
+        console.log("Thread " + id + " not found; couldn't delete it.");
 
-   deleteThread(id: string) {
-      const spriteId = this.getThreadSprite(id);
+        return -1;
+    }
 
-      if (spriteId) { delete this._sprites[spriteId].threads[id]; return 0; }
+    async addThread(
+        targetId: string,
+        script: string,
+        triggerEventId: string,
+        option: string,
+        displayName = ""
+    ) {
+        const newThread = new Thread(
+            this,
+            this.getTargetById(targetId),
+            script,
+            triggerEventId,
+            option,
+            displayName
+        );
+        const threadId = newThread.id;
+        if (targetId == "Stage") {
+            this._stage.threads[threadId] = newThread;
+        } else {
+            this._sprites[targetId].threads[threadId] = newThread;
+        }
+        await newThread.loadPromise;
+        return threadId;
+    }
 
-      console.log("Thread " + id + " not found; couldn't delete it.");
+    updateThreadScript(threadId: string, script: string) {
+        const thread = this.getThreadById(threadId);
+        thread && thread.updateThreadScript(script);
+    }
 
-      return -1;
-   }
+    updateThreadTriggerEvent(threadId: string, eventTrigger: string) {
+        const thread = this.getThreadById(threadId);
+        thread && thread.updateThreadTriggerEvent(eventTrigger);
+    }
 
-   async addThread(
-      targetId: string,
-      script: string,
-      triggerEventId: string,
-      option: string,
-      displayName = ""
-   ) {
-      const newThread = new Thread(
-         this,
-         this.getTargetById(targetId),
-         script,
-         triggerEventId,
-         option,
-         displayName
-      );
-      const threadId = newThread.id;
-      if (targetId == "Stage") {
-         this._stage.threads[threadId] = newThread;
-      } else {
-         this._sprites[targetId].threads[threadId] = newThread;
-      }
-      await newThread.loadPromise;
-      return threadId;
-   }
+    updateThreadTriggerEventOption(threadId: string, eventTriggerOption: string) {
+        const thread = this.getThreadById(threadId);
+        thread && thread.updateThreadTriggerEventOption(eventTriggerOption);
+    }
 
-   updateThreadScript(threadId: string, script: string) {
-      const thread = this.getThreadById(threadId);
-      thread && thread.updateThreadScript(script);
-   }
+    emitProjectChanged() {
+        this.emit(Runtime.PROJECT_CHANGED);
+    }
 
-   updateThreadTriggerEvent(threadId: string, eventTrigger: string) {
-      const thread = this.getThreadById(threadId);
-      thread && thread.updateThreadTriggerEvent(eventTrigger);
-   }
+    getOpcodeFunction(opcode: string) {
+        return BlockFunctions[opcode];
+    }
 
-   updateThreadTriggerEventOption(threadId: string, eventTriggerOption: string) {
-      const thread = this.getThreadById(threadId);
-      thread && thread.updateThreadTriggerEventOption(eventTriggerOption);
-   }
+    static get STAGE_WIDTH() {
+        return 480;
+    }
 
-   emitProjectChanged() {
-      this.emit(Runtime.PROJECT_CHANGED);
-   }
+    static get STAGE_HEIGHT() {
+        return 360;
+    }
 
-   static get STAGE_WIDTH() {
-      return 480;
-   }
+    static get PROJECT_START() {
+        return "PROJECT_START";
+    }
 
-   static get STAGE_HEIGHT() {
-      return 360;
-   }
+    static get PROJECT_STOP_ALL() {
+        return "PROJECT_STOP_ALL";
+    }
 
-   static get PROJECT_START() {
-      return "PROJECT_START";
-   }
+    static get STOP_FOR_TARGET() {
+        return "STOP_FOR_TARGET";
+    }
 
-   static get PROJECT_STOP_ALL() {
-      return "PROJECT_STOP_ALL";
-   }
+    static get PROJECT_LOADED() {
+        return "PROJECT_LOADED";
+    }
 
-   static get STOP_FOR_TARGET() {
-      return "STOP_FOR_TARGET";
-   }
+    static get PROJECT_CHANGED() {
+        return "PROJECT_CHANGED";
+    }
 
-   static get PROJECT_LOADED() {
-      return "PROJECT_LOADED";
-   }
+    static get TARGETS_UPDATE() {
+        return "TARGETS_UPDATE";
+    }
 
-   static get PROJECT_CHANGED() {
-      return "PROJECT_CHANGED";
-   }
+    static get MONITORS_UPDATE() {
+        return "MONITORS_UPDATE";
+    }
 
-   static get TARGETS_UPDATE() {
-      return "TARGETS_UPDATE";
-   }
+    static get BLOCKSINFO_UPDATE() {
+        return "BLOCKSINFO_UPDATE";
+    }
 
-   static get MONITORS_UPDATE() {
-      return "MONITORS_UPDATE";
-   }
+    static get RUNTIME_STARTED() {
+        return "RUNTIME_STARTED";
+    }
 
-   static get BLOCKSINFO_UPDATE() {
-      return "BLOCKSINFO_UPDATE";
-   }
+    static get RUNTIME_DISPOSED() {
+        return "RUNTIME_DISPOSED";
+    }
 
-   static get RUNTIME_STARTED() {
-      return "RUNTIME_STARTED";
-   }
+    static get MAX_CLONES() {
+        return 50;
+    }
 
-   static get RUNTIME_DISPOSED() {
-      return "RUNTIME_DISPOSED";
-   }
+    static get RENDER_INTERVAL() {
+        return 1000 / 60;
+    }
 
-   static get MAX_CLONES() {
-      return 50;
-   }
-
-   static get RENDER_INTERVAL() {
-      return 1000 / 60;
-   }
-
-   static get HATS() {
-      return {
-         control_start_as_clone: {
-            label: "When I Start As Clone",
-            restartExistingThreads: false,
-         },
-         event_whenflagclicked: {
-            label: "When Flag Clicked",
-            restartExistingThreads: true,
-         },
-         event_whenkeypressed: {
-            label: "When Key Pressed",
-            restartExistingThreads: false,
-         },
-         event_whenthisspriteclicked: {
-            label: "When This Sprite Clicked",
-            restartExistingThreads: true,
-         },
-         event_whentouchingobject: {
-            label: "When Touching",
-            restartExistingThreads: false,
-            edgeActivated: true,
-         },
-         event_whenstageclicked: {
-            label: "When Stage Clicked",
-            restartExistingThreads: true,
-         },
-         event_whenbackdropswitchesto: {
-            label: "When Backdrop Switches To",
-            restartExistingThreads: true,
-         },
-         event_whengreaterthan: {
-            label: "When Greater Than",
-            restartExistingThreads: false,
-            edgeActivated: true,
-         },
-         event_whenbroadcastreceived: {
-            label: "When Broadcast Received",
-            restartExistingThreads: true,
-         },
-      } as Dictionary<{ restartExistingThreads: boolean, label: string }>;
-   }
+    static get HATS() {
+        return {
+            control_start_as_clone: {
+                label: "When I Start As Clone",
+                restartExistingThreads: false,
+            },
+            event_whenflagclicked: {
+                label: "When Flag Clicked",
+                restartExistingThreads: true,
+            },
+            event_whenkeypressed: {
+                label: "When Key Pressed",
+                restartExistingThreads: false,
+            },
+            event_whenthisspriteclicked: {
+                label: "When This Sprite Clicked",
+                restartExistingThreads: true,
+            },
+            event_whentouchingobject: {
+                label: "When Touching",
+                restartExistingThreads: false,
+                edgeActivated: true,
+            },
+            event_whenstageclicked: {
+                label: "When Stage Clicked",
+                restartExistingThreads: true,
+            },
+            event_whenbackdropswitchesto: {
+                label: "When Backdrop Switches To",
+                restartExistingThreads: true,
+            },
+            event_whengreaterthan: {
+                label: "When Greater Than",
+                restartExistingThreads: false,
+                edgeActivated: true,
+            },
+            event_whenbroadcastreceived: {
+                label: "When Broadcast Received",
+                restartExistingThreads: true,
+            },
+        } as Dictionary<{ restartExistingThreads: boolean, label: string }>;
+    }
 }

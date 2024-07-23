@@ -31,7 +31,7 @@ export const DropdownMenu = ({ type, icon, text, options, sx }: DropdownMenuProp
         {type === "text" ? text : icon}
       </Button>
       <Menu {...bindMenu(popupState)}>
-        {options.map((option, index) => (<MenuItem sx={{
+        {options.map((option, index) => (<MenuItem key={index} sx={{
           borderTopStyle: index > 0 ? "solid": "none",
           borderTopWidth: "1px",
           borderTopColor: "outlinedButtonBorder.main",

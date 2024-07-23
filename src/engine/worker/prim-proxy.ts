@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Dictionary } from "./interfaces";
+import { Dictionary } from "../interfaces";
 
 class PrimProxy {
     /**

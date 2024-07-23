@@ -42,7 +42,7 @@ export default function SpritePane(){
                 <AddSpriteButton />
                 {editingTarget && <DeleteSpriteButton /> }
             </HorizontalButtons>
-            <Grid container direction="row" spacing={"8px"} xs={12} sx={{
+            <Grid item container direction="row" spacing={"8px"} xs={12} sx={{
                 backgroundColor: 'panel.main',
                 margin: '-8px',
                 marginTop: '0px',
@@ -58,7 +58,7 @@ export default function SpritePane(){
                 {targetIds.map((targetId) => {
                     const target = patchVM.runtime.getTargetById(targetId);
                     return (
-                        target ? ((target instanceof Sprite) && <Grid item sx={{maxWidth: '136px', maxHeight: '136px'}}><SpriteCard key={targetId} target={target} /></Grid>) : <></>
+                        target ? ((target instanceof Sprite) && <Grid item key={targetId} sx={{maxWidth: '136px', maxHeight: '136px'}}><SpriteCard key={targetId} target={target} /></Grid>) : <></>
                     );
                 })}
                 <Grid item>

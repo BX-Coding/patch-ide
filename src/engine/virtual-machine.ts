@@ -27,7 +27,7 @@ import { Costume, Sound, Sprite, Stage } from "leopard";
 import { Dictionary } from "./interfaces";
 import { SpriteJson } from "../components/EditorPane/old-types";
 import Thread from "./thread";
-import PrimProxy from "./prim-proxy";
+import PrimProxy from "./worker/prim-proxy";
 import patchAssetStorage from "./storage/storage";
 
 /**

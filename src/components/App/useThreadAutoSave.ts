@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { EditorTab } from "../../store";
 import { useEditingTarget } from "../../hooks/useEditingTarget";
 
-const useThreadAutoSave = (pyatchVM: any, saveTargetThreads: (...params: any[]) => void, editorTab: EditorTab) => {
+const useThreadAutoSave = (patchVM: any, saveTargetThreads: (...params: any[]) => void, editorTab: EditorTab) => {
   const [editingTarget] = useEditingTarget();
   useEffect(() => {
       if (editingTarget) {

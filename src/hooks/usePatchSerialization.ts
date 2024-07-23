@@ -54,7 +54,7 @@ export const usePatchSerialization = () => {
 
             //patchVM.runtime.targets = oldTargets;
             //patchVM.runtime.executableTargets = oldExecutableTargets;
-            //patchVM.runtime.pyatchWorker._globalVariables = oldGlobalVariables;
+            //patchVM.runtime.patchWorker._globalVariables = oldGlobalVariables;
 
             return;
         }

@@ -1,6 +1,8 @@
 import safeUid from "./util/safe-uid";
 import { Sprite, Stage } from "leopard";
 import Runtime from "./runtime";
+import { BlockFunctionType } from "./blocks";
+import PatchWorker from "./worker/patch-worker";
 
 /**
  * A thread is just a queue of all the block operations requested by the worker
@@ -16,10 +18,11 @@ export default class Thread {
     script: string;
     triggerEvent: string;
     triggerEventOption: string;
-    loadPromise: Promise<boolean>;
+    loadPromise: Promise<boolean> | boolean;
     interruptThread: boolean;
     running: boolean;
     displayName: string;
+    worker: PatchWorker;
 
     /**
      * How rapidly we try to step threads by default, in ms.
@@ -31,6 +34,7 @@ export default class Thread {
     constructor(runtime: Runtime, target: Sprite | Stage, script: string, triggerEventId: string, triggerEventOption: string, displayName: string) {
         this.target = target;
         this.runtime = runtime;
+        this.worker = runtime.patchWorker;
 
         this.status = 0;
 
@@ -56,8 +60,10 @@ export default class Thread {
     async loadThread(script: string) {
         // I'm leaving the old code below for reference
 
-        /*// Confirm worker is loaded
+        // Confirm worker is loaded
         await this.runtime.workerLoadPromise;
+
+        console.log(script);
 
         // Reset Error Messages
         this.runtime.compileTimeErrors = this.runtime.compileTimeErrors.filter((error) => error.threadId !== this.id);
@@ -76,14 +82,12 @@ export default class Thread {
             await this.startThread();
         }
 
-        return this.loadPromise;*/
-
-        return false;
+        return this.loadPromise;
     }
 
     async startThread() {
         // I'm leaving the old code below for reference
-        /*// If the last load had no syntax errors run it
+        // If the last load had no syntax errors run it
         if (this.loadPromise) {
             // If the thread is already running, restart it
             if (this.running) {
@@ -94,17 +98,17 @@ export default class Thread {
             this.running = true;
             await this.worker.startThread(this.id, this.executeBlock);
             this.running = false;
-        }*/
+        }
     }
 
     async stopThread() {
         // I'm leaving the old code below for reference
-        /*if (this.running) {
+        if (this.running) {
             this.interruptThread = true;
             await this.worker.stopThread(this.id);
             this.running = false;
             this.interruptThread = false;
-        }*/
+        }
     }
 
     async updateThreadScript(script: string) {
@@ -120,9 +124,9 @@ export default class Thread {
         this.triggerEventOption = triggerEventOption;
     }
 
-    async executePrimitive(blockFunction: any, args: any, util: any) {
+    async executePrimitive(blockFunction: BlockFunctionType, args: any[]) {
         // I'm leaving the old code below for reference
-        /*const tick = async (resolve) => {
+        const tick = async (resolve: (arg0: { id: string; result?: any; }) => void) => {
             if (this.interruptThread) {
                 resolve({ id: "InterruptThread" });
                 return;
@@ -133,7 +137,7 @@ export default class Thread {
             }
 
             this.status = Thread.STATUS_RUNNING;
-            const result = await blockFunction(args, util);
+            const result = await blockFunction(this.target, ...args);
 
             if (this.interruptThread) {
                 resolve({ id: "InterruptThread" });
@@ -146,15 +150,15 @@ export default class Thread {
             setTimeout(tick.bind(this, resolve), Thread.THREAD_STEP_INTERVAL);
         };
         const returnValue = await new Promise(tick);
-        return returnValue;*/
+        return returnValue;
     }
 
     executeBlock = async (opcode: any, args: any) => {
         // I'm leaving the old code below for reference
-        /*this.status = Thread.STATUS_RUNNING;
+        this.status = Thread.STATUS_RUNNING;
         const blockFunction = this.runtime.getOpcodeFunction(opcode);
-        const result = await this.executePrimitive(blockFunction, args, this.blockUtility);
-        return result;*/
+        const result = await this.executePrimitive(blockFunction, args);
+        return result;
     };
 
     done() {
