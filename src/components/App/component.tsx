@@ -41,6 +41,7 @@ import { LegalDialogueButton } from "./LegalDialogueButton";
 import PatchFunctionJson from "../../assets/patch-api.json";
 
 import Popover from "@mui/material/Popover";
+import { useUser } from "../../hooks/useUser";
 
 interface Parameter {
   [key: string]: string;
@@ -100,6 +101,8 @@ const App = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+  const userData = useUser();
+  console.log(userData.userMeta);
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
@@ -231,7 +234,7 @@ const App = () => {
             <SpritePane />
           </Grid>
         </Grid>
-        {usePatchStore((state) => state.patchReady) ? <Tutorial/> : <></>}
+        {usePatchStore((state) => state.patchReady) && (userData == null || userData.userMeta?.newUser) ? <Tutorial/> : <></>}
       </SplashScreen>
     </ThemeProvider>
 

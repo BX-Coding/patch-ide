@@ -41,6 +41,7 @@ export const SignUpButton = () => {
       projects: [],
       username: username,
       role: "user",
+      newUser: true
     };
     const response = setDoc(reference, data, {merge: true, mergeFields: ["projects"]});
     setProjectId("new");

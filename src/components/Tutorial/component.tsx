@@ -13,6 +13,8 @@ import AddIcon from '@mui/icons-material/Add';
 import Draggable from 'react-draggable';
 import { Modal } from '@mui/base';
 import { Backdrop, css } from '@mui/material';
+import { useUser } from '../../hooks/useUser';
+import { updateDoc } from 'firebase/firestore';
 
 const steps = [
   {
@@ -83,17 +85,30 @@ const steps = [
 export function Tutorial() {
 
     const [selfGuided, setSelfGuided] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
 
     function SelfGuidedTutorial() {
         const theme = useTheme();
         const [activeStep, setActiveStep] = React.useState(0);
         const [minimize, setMinimize] = React.useState(false);
         const maxSteps = steps.length;
+        const [show, setShow] = React.useState(true);
       
-        const handleNext = () => {
+        const userRef = useUser().userReference;
+        const userData = useUser().userMeta;
+        const handleNext = async () => {
           if (activeStep == maxSteps - 1) {
-              setSelfGuided(false);
-              setOpen(true);
+              setShow(false);
+              if (userRef != null) {
+                console.log("here");
+                console.log("updating");
+                updateDoc(userRef, {
+                    newUser: false
+                    });
+                console.log(userData);
+
+              }
+
           } else {
               setActiveStep((prevActiveStep) => prevActiveStep + 1);
           }
@@ -139,6 +154,7 @@ export function Tutorial() {
         }
       
         return (
+            show ?
           <Draggable>
           <Box sx={{ height: minimize ? 30 : 200, position: "absolute", border: "1px solid rgba(255, 255, 255, 0.1)",
               borderRadius: "5px", mb: "0", ml: "100px", bottom: minimize ? 15 : 150, width: minimize ? 400 : "auto"}}>
@@ -194,10 +210,9 @@ export function Tutorial() {
                                     )}
                                     Back
                                 </Button>} /></>}
-          </Box></Draggable>
+          </Box></Draggable> : <></>
         );
       }
-    const [open, setOpen] = React.useState(true);
 
     const StyledBackdrop = styled(Backdrop)`
         z-index: -1;
@@ -242,8 +257,11 @@ export function Tutorial() {
           );
 
 
+    const userData = useUser().userMeta;
+    console.log(userData);
+
     return (<><Modal
-        open={open}
+        open={(userData == null || userData.newUser) && open}
         onClose={() => {setOpen(false)}}
         slots={{ backdrop: StyledBackdrop }}
       >
