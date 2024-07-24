@@ -4,6 +4,7 @@ import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import Dotenv from 'dotenv-webpack';
 
 import * as url from 'url';
+import webpack from 'webpack';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
@@ -68,6 +69,9 @@ export default {
       systemvars: true,
       silent: true,
       defaults: false
+    }),
+    new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+        resource.request = resource.request.replace(/^node:/, "");
     })
   ],
   resolve: {
