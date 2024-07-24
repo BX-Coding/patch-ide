@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { Project, Sprite, Stage } from "leopard";
+import { Project, Sprite, Stage, Trigger } from "leopard";
 import {
     defaultSprites,
     defaultStage,
@@ -16,7 +16,6 @@ import PatchLinker from "./linker/patch-linker";
 
 export default class Runtime extends EventEmitter {
     leopardProject?: Project;
-    storage?: any;
     protected _sprites: Dictionary<{
         sprite: Sprite;
         threads: Dictionary<Thread>;
@@ -129,31 +128,66 @@ export default class Runtime extends EventEmitter {
         );
     }
 
-    start() { }
-
-    quit() { }
-
     async greenFlag() {
         //this.leopardProject?.greenFlag();
         await this.stopAll();
+        for (let targetId of ["Stage", ...Object.keys(this._sprites)]) {
+            const threads = this.getTargetThreads(targetId);
+            
+            const threadIds = Object.keys(threads);
+
+            this.targets[targetId].triggers = [];
+
+            threadIds.forEach(threadId => {
+                const triggerEvent = threads[threadId].triggerEvent;
+                const triggerEventOption = threads[threadId].triggerEventOption;
+
+                switch (triggerEvent) {
+                    case "event_whenkeypressed":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.KEY_PRESSED, {key: triggerEventOption.toLowerCase()}, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "event_whenthisspriteclicked":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.CLICKED, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "control_start_as_clone":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.CLONE_START, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "event_whentouchingobject":
+                        console.log("when_touching trigger not supported.");
+                        break;
+                    case "event_whenstageclicked":
+                        this.getTargetForStage().triggers.push(new Trigger(Trigger.CLICKED, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "event_whenbackdropswitchesto":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.BACKDROP_CHANGED, {backdrop: triggerEventOption}, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "event_whengreaterthan":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.LOUDNESS_GREATER_THAN, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                    case "event_whenbroadcastreceived":
+                        this.targets[targetId].triggers.push(new Trigger(Trigger.BROADCAST, (() => {threads[threadId].startThread()}) as GeneratorFunction))
+                        break;
+                }
+            });
+        }
         this.startHats("event_whenflagclicked");
     }
 
-    stopAll() { }
+    stopAll() {
+        Object.keys(this.targets).forEach(targetId => {
+            const threads = this.getTargetThreads(targetId);
+
+            Object.keys(threads).forEach(threadId => {
+                threads[threadId].stopThread();
+            });
+        })
+    }
 
     dispose() { }
-
-    attachAudioEngine(engine: any) { }
-
-    attachV2BitmapAdapter(adapter: any) { }
 
     attachRenderTarget(renderTarget: string | HTMLElement) {
         this.renderTarget = renderTarget;
         this.leopardProject?.attach(renderTarget);
-    }
-
-    attachStorage(storage: any) {
-        this.storage = storage;
     }
 
     getTargetForStage() {
@@ -182,8 +216,6 @@ export default class Runtime extends EventEmitter {
         return null;
     }
 
-    draw() { }
-
     getTargetById(id: string) {
         return this.targets[id];
     }
@@ -203,20 +235,7 @@ export default class Runtime extends EventEmitter {
     }
 
     async startHats(hat: string, option?: string) {
-        /*const executionPromises = [];
-        Object.keys(this.targets).forEach((targetId) => {
-            //executionPromises.push(target.startHat(hat, option));
-            const threadPromises = [];
-            const restartThread = this.runtime.getHatMetadata(eventId).restartExistingThreads;
-            Object.keys(this.threads).forEach((threadId) => {
-                const thread = this.threads[threadId];
-                if (this.needsRestart(thread, restartThread, eventId, option)) {
-                    threadPromises.push(thread.startThread());
-                }
-            });
-            await Promise.all(threadPromises);
-        });
-        await Promise.all(executionPromises);*/
+        const executionPromises: Promise<void>[] = [];
 
         Object.keys(this.targets).forEach((targetId) => {
             const threads = this.getTargetThreads(targetId);
@@ -225,10 +244,12 @@ export default class Runtime extends EventEmitter {
 
             threadIds.forEach((threadId) => {
                 if ((threads[threadId].triggerEvent == hat) && (option ? (threads[threadId].triggerEventOption == option) : true)) {
-                    threads[threadId].startThread();
+                    executionPromises.push(threads[threadId].startThread());
                 }
             })
         });
+
+        await Promise.all(executionPromises);
     }
 
     getThreadById(id: string) {

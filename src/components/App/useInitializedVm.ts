@@ -51,11 +51,6 @@ const useInitializedVm = (onVmInitialized: () => void) => {
       //patchVM.attachStorage(patchFirebaseStorage);
       patchVM.attachRenderTarget(`#${patchStage.canvas.id}`);
 
-      patchVM.attachAudioEngine(new AudioEngine());
-
-      patchVM.runtime.draw();
-      patchVM.start();
-
       patchVM.on("VM READY", () => {
         setVmLoaded(true);
 

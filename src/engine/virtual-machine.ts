@@ -2,7 +2,7 @@ import EventEmitter from "events";
 
 //import JSZip from "jszip";
 
-import { get } from "http";
+//import { get } from "http";
 
 //import lodash from "lodash";
 
@@ -18,6 +18,16 @@ import PrimProxy from "./worker/prim-proxy.js";
 import ScratchConverter from "./conversion/scratch-conversion.mjs";*/
 
 //const { isUndefined } = lodash;
+
+const KEY_NAME: Dictionary<string> = {
+    SPACE: 'space',
+    LEFT: 'left arrow',
+    UP: 'up arrow',
+    RIGHT: 'right arrow',
+    DOWN: 'down arrow',
+    ENTER: 'enter',
+    ANY: 'any'
+};
 
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
@@ -65,21 +75,6 @@ export default class VirtualMachine extends EventEmitter {
     }
 
     /**
-     * Start running the VM - do this before anything else.
-     */
-    start() {
-        this.runtime.start();
-    }
-
-    /**
-     * Quit the VM, clearing any handles which might keep the process alive.
-     * Do not use the runtime after calling this method. This method is meant for test shutdown.
-     */
-    quit() {
-        this.runtime.quit();
-    }
-
-    /**
      * "Green flag" handler - start all threads starting with a green flag.
      */
     async greenFlag() {
@@ -100,45 +95,9 @@ export default class VirtualMachine extends EventEmitter {
         this.runtime.dispose();
     }
 
-    // TODO: implement the attach functions
-    /**
-     * Set the audio engine for the VM/runtime
-     * @param {!AudioEngine} audioEngine The audio engine to attach
-     */
-    attachAudioEngine(audioEngine: any) {
-        this.runtime.attachAudioEngine(audioEngine);
-    }
-
-    /**
-     * Set the bitmap adapter for the VM/runtime, which converts scratch 2
-     * bitmaps to scratch 3 bitmaps. (Scratch 3 bitmaps are all bitmap resolution 2)
-     * @param {!function} bitmapAdapter The adapter to attach
-     */
-    attachV2BitmapAdapter(bitmapAdapter: any) {
-        this.runtime.attachV2BitmapAdapter(bitmapAdapter);
-    }
-
     attachRenderTarget(renderer: string | HTMLElement) {
         this.runtime.attachRenderTarget(renderer);
     }
-
-    /**
-     * @returns {RenderWebGL} The renderer attached to the vm
-     */
-    /*get renderer() {
-        return this.runtime && this.runtime.renderer;
-    }*/
-    // TODO: implement that function
-
-    /**
-     * Set the storage module for the VM/runtime
-     * @param {!ScratchStorage} storage The storage module to attach
-     */
-    attachStorage(storage: any) {
-        this.runtime.attachStorage(storage);
-    }
-
-    // TODO: implement the next two "emit..." functions
 
     /**
      * Emit metadata about available targets.
@@ -192,18 +151,6 @@ export default class VirtualMachine extends EventEmitter {
 
         const globalVariables = Object.keys(globalVarMap).map((k) => globalVarMap[k]);
         const localVariables = Object.keys(localVarMap).map((k) => localVarMap[k]);
-        /*const workspaceComments = Object.keys(this.editingTarget.comments)
-            .map((k) => this.editingTarget.comments[k])
-            .filter((c) => c.blockId === null);*/
-
-        /*const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
-                            <variables>
-                                ${globalVariables.map((v) => v.toXML()).join()}
-                                ${localVariables.map((v) => v.toXML(true)).join()}
-                            </variables>
-                            ${workspaceComments.map((c) => c.toXML()).join()}
-                            ${this.editingTarget.blocks.toXML(this.editingTarget.comments)}
-                        </xml>`;*/
 
         const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
                             <variables>
@@ -334,25 +281,6 @@ this.emitTargetsUpdate(false /* Don't emit project change *//*);
     }*/
 
     /**
-     * Add a backdrop to the stage.
-     * @param {string} md5ext - the MD5 and extension of the backdrop to be loaded.
-     * @param {!object} backdropObject Object representing the backdrop.
-     * @property {int} skinId - the ID of the backdrop's render skin, once installed.
-     * @property {number} rotationCenterX - the X component of the backdrop's origin.
-     * @property {number} rotationCenterY - the Y component of the backdrop's origin.
-     * @property {number} [bitmapResolution] - the resolution scale for a bitmap backdrop.
-     * @returns {?Promise} - a promise that resolves when the backdrop has been added
-     */
-    /*addBackdrop(md5ext, backdropObject) {
-        return loadCostume(md5ext, backdropObject, this.runtime).then(() => {
-            const stage = this.runtime.getTargetForStage();
-            stage.addCostume(backdropObject);
-            stage.setCostume(stage.getCostumes().length - 1);
-            this.runtime.emitProjectChanged();
-        });
-    }*/
-
-    /**
      * Add a single sprite from the "Sprite2" (i.e., SB2 sprite) format.
      * @param {object} sprite Object representing 2.0 sprite to be added.
      * @param {?ArrayBuffer} zip Optional zip of assets being referenced by json
@@ -435,23 +363,13 @@ this.emitTargetsUpdate();*/
     }
 
     setEditingTarget(target: string | Sprite | Stage) {
-        /*// Has the target id changed? If not, exit.
-        if (this.editingTarget && targetId === this.editingTarget.id) {
-            return;
-        }
-        const target = this.runtime.getTargetById(targetId);
-        if (target) {
-            this.editingTarget = target;
-            // Emit appropriate UI updates.
-            this.emitTargetsUpdate(false /* Don't emit project change *//*);
-        // this.emitWorkspaceUpdate();
-        this.runtime.setEditingTarget(target);
-    }*/
-
         if (typeof target == "string")
             this.editingTarget = this.getTargetById(target);
         else
             this.editingTarget = target;
+
+        this.emitTargetsUpdate(false /* Don't emit project change */);
+        //this.emitWorkspaceUpdate();
     }
 
     async duplicateSprite(targetId: string) {
@@ -473,13 +391,6 @@ this.emitTargetsUpdate();*/
     async addCostume(md5ext: string, costumeObject: Costume, optTargetId?: string, optVersion?: string) {
         const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
-            // eslint-disable-next-line no-undef
-            /*return loadCostume(md5ext, costumeObject, this.runtime, optVersion).then(() => {
-                target.addCostume(costumeObject);
-                target.setCostume(target.getCostumes().length - 1);
-                this.runtime.emitProjectChanged();
-            });*/
-            // TODO: upload costume to storage or something
             target.addCostume(costumeObject);
             target.costume = costumeObject;
             return;
@@ -491,12 +402,6 @@ this.emitTargetsUpdate();*/
     async addSound(soundObject: Sound, optTargetId?: string) {
         const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
         if (target) {
-            // eslint-disable-next-line no-undef
-            /*return loadSound(soundObject, this.runtime, target.sprite.soundBank).then(() => {
-                target.addSound(soundObject);
-                this.emitTargetsUpdate();
-            });*/
-            // TODO: upload sound to storage or something
             target.addSound(soundObject);
         }
         // If the target cannot be found by id, return a rejected promise
@@ -510,8 +415,6 @@ this.emitTargetsUpdate();*/
             eventLabels[hatId] = hats[hatId].label;
         });
         return eventLabels;
-
-        return {}
     }
 
     getBackdropNames() {
@@ -531,12 +434,10 @@ this.emitTargetsUpdate();*/
     }
 
     getKeyboardOptions() {
-        /*const characterKeys = Array.from(Array(26), (e, i) => String.fromCharCode(65 + i));
+        const characterKeys = Array.from(Array(26), (e, i) => String.fromCharCode(65 + i));
         const scratchKeys = Object.keys(KEY_NAME).map((keyId) => KEY_NAME[keyId].toUpperCase());
 
-        return characterKeys.concat(scratchKeys);*/
-
-        // TODO: implement this? idk if its needed
+        return characterKeys.concat(scratchKeys);
     }
 
     // There is 100% a better way to implement this
@@ -687,32 +588,9 @@ return zippedProject;*/
 
         // TODO: implement this
 
+        await this.runtime.workerLoadPromise;
+
         return { globalVariables: [] };
-    }
-
-    /**
-     * Post I/O data to the virtual devices.
-     * @param {?string} device Name of virtual I/O device.
-     * @param {object} data Any data object to post to the I/O device.
-     */
-    postIOData(device: string | null, data: object) {
-        /*if (this.runtime.ioDevices[device]) {
-            this.runtime.ioDevices[device].postData(data);
-        }*/
-
-        // TODO: implement this
-    }
-
-    /**
-     * Start all relevant hats.
-     * @param {Array.<string>} requestedHatOpcode Opcode of hats to start.
-     * @param {object=} optMatchFields Optionally, fields to match on the hat.
-     * @param {Target=} optTarget Optionally, a target to restrict to.
-     * @return {Array.<Thread>} List of threads started by this function.
-     */
-    async startHats(hat: any, option: any) {//: Promise<Array<Thread>> {
-        //const startedHat = await this.runtime.startHats(hat, option);
-        //return startedHat;
     }
 
     async addThread(targetId: any, script: any, triggerEventId: any, option: any, displayName = ""): Promise<string> {
@@ -776,13 +654,8 @@ return zippedProject;*/
         //return this.runtime.getGlobalVariables();
     }
 
-    loadCostumeWrap(md5ext: any, costume: any, runtime: any, optVersion: any) {
-        // we gotta figure out a storage solution before this can be fixed
-        //return loadCostume(md5ext, costume, runtime, optVersion);
-    }
-
     isLoaded() {
-        //return this.runtime.workerLoaded;
+        return this.runtime.workerLoaded;
     }
 
     getApiInfo() {
@@ -794,15 +667,11 @@ return zippedProject;*/
     }
 
     getRuntimeErrors() {
-        //return this.runtime.runtimeErrors;
-
-        return []
+        return this.runtime.runtimeErrors;
     }
 
     getCompileTimeErrors() {
-        //return this.runtime.compileTimeErrors;
-
-        return []
+        return this.runtime.compileTimeErrors;
     }
 
     /**

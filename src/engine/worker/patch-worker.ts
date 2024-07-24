@@ -45,8 +45,6 @@ class PatchWorker {
     }
 
     handleWorkerMessage(event: MessageEvent<any>) {
-        console.log("Message received");
-
         if (event.data.id === WorkerMessages.ToVM.PyodideLoaded) {
             this._pyodidePromiseResolve && this._pyodidePromiseResolve();
         } else if (event.data.id === WorkerMessages.ToVM.PromiseLoaded) {
