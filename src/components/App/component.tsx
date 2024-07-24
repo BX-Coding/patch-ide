@@ -1,12 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import SpritePane from "../SpritePane";
-import { Button, Grid, Tooltip } from "@mui/material";
+import { Backdrop, Button, Grid, Tooltip } from "@mui/material";
 import "./style.css";
 import { TopBar } from "../TopBar";
 import { EditorPane, EditorTabButton } from "../EditorPane";
 import { VerticalButtons } from "../PatchButton";
 import { ThemeProvider } from "@emotion/react";
+import { Tutorial } from "../Tutorial"
 
 import darkTheme from "../../themes/dark";
 import lightTheme from "../../themes/light";
@@ -40,6 +41,7 @@ import { LegalDialogueButton } from "./LegalDialogueButton";
 import PatchFunctionJson from "../../assets/patch-api.json";
 
 import Popover from "@mui/material/Popover";
+import { useUser } from "../../hooks/useUser";
 
 interface Parameter {
   [key: string]: string;
@@ -59,6 +61,7 @@ const App = () => {
   const patchVM = usePatchStore((state) => state.patchVM);
   const saveTargetThreads = usePatchStore((state) => state.saveTargetThreads);
   const editorTab = usePatchStore((state) => state.editorTab);
+  const [newUser, setNewUser] = React.useState(true);
 
   // Popover state
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -98,6 +101,8 @@ const App = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+  const userData = useUser();
+  console.log(userData.userMeta);
 
   return (
     <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
@@ -229,6 +234,7 @@ const App = () => {
             <SpritePane />
           </Grid>
         </Grid>
+        {(usePatchStore((state) => state.patchReady) && (userData.user == null || userData.userMeta?.newUser)) ? <Tutorial/> : <></>}
       </SplashScreen>
     </ThemeProvider>
 

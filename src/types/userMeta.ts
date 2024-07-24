@@ -13,4 +13,5 @@ export type UserMeta = {
     username: string;
     role?: UserRole;
     projects: ProjectProfile[];
+    newUser: boolean;
 }
