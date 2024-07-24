@@ -234,7 +234,7 @@ const App = () => {
             <SpritePane />
           </Grid>
         </Grid>
-        {usePatchStore((state) => state.patchReady) && (userData == null || userData.userMeta?.newUser) ? <Tutorial/> : <></>}
+        {(usePatchStore((state) => state.patchReady) && (userData.user == null || userData.userMeta?.newUser)) ? <Tutorial/> : <></>}
       </SplashScreen>
     </ThemeProvider>
 
