@@ -6,7 +6,9 @@ export type BlockFunctionType = (thread: Thread, ...args: any[]) => any;
 
 const BlockFunctions: Dictionary<BlockFunctionType> = {
     motion_movesteps: (thread, ...args) => {
-        thread.target instanceof Sprite && thread.target.move(args[0].STEPS);
+        if(thread.target instanceof Sprite){
+            thread.target.move(args[0].STEPS);
+        }
     },
     core_endthread: (thread) => {
         thread.endThread();
@@ -31,7 +33,9 @@ const BlockFunctions: Dictionary<BlockFunctionType> = {
     //     thread.target instanceof Sprite && thread.target.pointTowards(args[0].name);
     // },
     motion_glidesecstoxy: (thread, ...args) => {
-        thread.target instanceof Sprite && thread.target.glide(args[0].seconds, args[0].x, args[0].y);
+        if(thread.target instanceof Sprite){
+            thread.target.glide(args[0].seconds, args[0].x, args[0].y)
+        }
     },
     // motion_glideto: (thread, ...args) => {
     //     thread.target instanceof Sprite && thread.target.glide(args[0].seconds, args[0].name);
