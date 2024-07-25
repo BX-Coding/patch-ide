@@ -643,15 +643,15 @@ return zippedProject;*/
     }
 
     updateGlobalVariable(name: any, value: any) {
-        //this.runtime.updateGlobalVariable(name, value);
+        this.runtime.updateGlobalVariable(name, value);
     }
 
     removeGlobalVariable(name: any) {
-        //this.runtime.removeGlobalVariable(name);
+        this.runtime.removeGlobalVariable(name);
     }
 
     getGlobalVariables() {
-        //return this.runtime.getGlobalVariables();
+        return this.runtime.getGlobalVariables();
     }
 
     isLoaded() {

@@ -321,6 +321,19 @@ export default class Runtime extends EventEmitter {
         return BlockFunctions[opcode] ?? placeholderFunc;
     }
 
+    updateGlobalVariable(name: string, value: any) {
+        this._globalVariables[String(name)] = value;
+        this.patchWorker.loadGlobalVariable(String(name), value);
+    }
+
+    removeGlobalVariable(name: string) {
+        delete this._globalVariables[String(name)];
+    }
+
+    getGlobalVariables() {
+        return Object.keys(this._globalVariables).map((name) => ({ name, value: this._globalVariables[name] }));
+    }
+
     static get STAGE_WIDTH() {
         return 480;
     }
