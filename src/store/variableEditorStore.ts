@@ -46,12 +46,11 @@ export const createVariableEditorSlice: StateCreator<
         return { globalVariables: newGlobalVariables };
     }),
     setGlobalVariables: (variables: GlobalVariable[]) => set((state) => {
-        const newGlobalVariables = [ ...state.globalVariables ];
         variables.forEach((variable) => {
             get().setGlobalVariable(variable.name, variable.value);
         });
         
-        return { globalVariables: newGlobalVariables };
+        return { };
     }),
     deleteGlobalVariable: (name: string) => set((state) => {
         const newGlobalVariables = [ ...state.globalVariables ];

@@ -578,9 +578,12 @@ this.emitTargetsUpdate();*/
         this.editingTarget = null;
 
         this.clear();
-        this.runtime.deserialize(jsonData);
+        await this.runtime.deserialize(jsonData);
 
-        const returnVal: { globalVariables: GlobalVariable[] } = { globalVariables: Object.keys(this.runtime._globalVariables).map(key => this.runtime._globalVariables[key]) };
+        console.log(this.runtime._globalVariables);
+        const returnVal: { globalVariables: GlobalVariable[] } = { globalVariables: Object.keys(this.runtime._globalVariables).map(key => {
+            return {name: key, value: this.runtime._globalVariables[key]}
+        })};
 
         await this.runtime.workerLoadPromise;
 

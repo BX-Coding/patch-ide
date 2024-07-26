@@ -20,7 +20,7 @@ import patchAssetStorage from "./storage/storage";
 export type RuntimeState = {
     sprites: SerializedSprite[],
     stage: SerializedStage,
-    globalVariables: Dictionary<GlobalVariable>
+    globalVariables: Dictionary<any>
 }
 
 export default class Runtime extends EventEmitter {
@@ -36,7 +36,7 @@ export default class Runtime extends EventEmitter {
     compileTimeErrors: any[];
     workerLoadPromise: Promise<void>;
     workerLoaded: boolean;
-    _globalVariables: Dictionary<GlobalVariable>;
+    _globalVariables: Dictionary<any>;
 
     constructor() {
         super();
@@ -513,13 +513,32 @@ export default class Runtime extends EventEmitter {
         return serializedRuntime;
     }
 
-    deserialize(serialized: RuntimeState) {
+    async deserialize(serialized: RuntimeState) {
         const newSprites = serialized.sprites.map(sprite => Runtime.deserializeSprite(sprite));
         const newStage = Runtime.deserializeStage(serialized.stage);
 
         this.stopAll();
         delete this.leopardProject;
         this.leopardProject = undefined;
+        this.runtimeErrors = [];
+        this.compileTimeErrors = [];
+        this.patchWorker = new PatchWorker((threadId: any, message: any, lineNumber: any, type: string) => {
+            if (type === "RuntimeError") {
+                this.runtimeErrors.push({ threadId, message, lineNumber, type });
+                this.emit("RUNTIME ERROR", { threadId, message, lineNumber, type });
+            } else if (type === "CompileTimeError") {
+                this.compileTimeErrors.push({ threadId, message, lineNumber, type });
+                this.emit("COMPILE TIME ERROR", { threadId, message, lineNumber, type });
+            }
+        });
+        this.workerLoaded = false;
+        this.workerLoadPromise = this.patchWorker.loadWorker().then(() => {
+            this.workerLoaded = true;
+            this.emit("WORKER READY");
+            console.log("Worker ready.");
+        });
+
+        await this.workerLoadPromise;
 
         if (this.renderTarget instanceof HTMLElement) {
             while (this.renderTarget.firstChild) {
@@ -550,7 +569,13 @@ export default class Runtime extends EventEmitter {
             newSpriteObj[1].forEach(newThread => this.addThread(newSprite.id, newThread.script, newThread.trigger, newThread.triggerOption, newThread.displayName, newThread.id));
         })
 
-        this._globalVariables = serialized.globalVariables;
+        this._globalVariables = {};
+
+        console.log(serialized);
+
+        Object.keys(serialized.globalVariables).forEach(globalVariableId => {
+            this.updateGlobalVariable(globalVariableId, serialized.globalVariables[globalVariableId]);
+        })
 
         this.leopardProject = new Project(
             this.getTargetForStage(),
