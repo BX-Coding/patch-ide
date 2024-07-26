@@ -31,14 +31,14 @@ const KEY_NAME: Dictionary<string> = {
 
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
-import Runtime from "./runtime";
+import Runtime, { RuntimeState } from "./runtime";
 import { Costume, Sound, Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
 import { SpriteJson } from "../components/EditorPane/old-types";
 import Thread from "./thread";
 import PrimProxy from "./worker/prim-proxy";
-import patchAssetStorage from "./storage/storage";
+import patchAssetStorage, { AssetType, isImageAssetType, isSoundAssetType } from "./storage/storage";
 import JSZip from "jszip";
 import { GlobalVariable } from "../store/variableEditorStore";
 
@@ -487,20 +487,12 @@ this.emitTargetsUpdate();*/
             const url = patchAssetStorage.loadAsset(assetId);
             const assetType = patchAssetStorage.getAssetType(assetId);
 
-            let ext = ""
-
-            if (assetType == "VectorImage") {
-                ext = "svg";
-            } else if (assetType == "BitmapImage") {
-                
-            }
+            zip.file(`${assetId}.${assetType}`, await fetch(url).then(r => r.blob()) as Blob);
         }
 
         zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
         const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
         return zippedProject;
-
-        // TODO: implement this
     }
 
     /**
@@ -547,9 +539,11 @@ this.emitTargetsUpdate();*/
      * @param {ArrayBuffer | JSON} projectData - A ArrayBuffer object generated from
      * a valid Patch Project .ptch2 file
      */
-    async loadProject(projectData: any, isJson = false) {
+    async loadProject(projectData: ArrayBuffer | Blob | RuntimeState) {
         let zip;
-        let jsonData = projectData;
+        let jsonData: RuntimeState;
+
+        const isJson = !(projectData instanceof ArrayBuffer || projectData instanceof Blob);
 
         // Check if project data is a json object
         if (!isJson) {
@@ -565,22 +559,20 @@ this.emitTargetsUpdate();*/
 
             // Import costumes and sounds
 
-            for (const file of Object.keys(JSZip.files)) {
+            for (const file of Object.keys(zip.files)) {
                 const filenameSplit = file.split('.');
                 const ext = filenameSplit.pop();
                 const id = filenameSplit.join();
 
-                if (ext == "png" || ext == "jpg" || ext == "bmp") {
-                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "BitmapImage");
-                } else if (ext == "svg") {
-                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "VectorImage");
-                } else if (ext == "wav" || ext == "mp3" || ext == "aac" || ext == "ogg" || ext == "flac") {
-                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "Sound");
+                if (ext) {
+                    if (isSoundAssetType(ext) || isImageAssetType(ext)) {
+                        patchAssetStorage.addAsset(id, await zip.files[file].async("blob"), ext as AssetType);
+                    }
                 }
             }
+        } else {
+            jsonData = projectData;
         }
-
-        
 
         this._ready = false;
         this.editingTarget = null;

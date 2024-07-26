@@ -6,7 +6,8 @@ import usePatchStore from '../store';
 import defaultPatchProject from '../assets/default-project.json';
 import { useLocalStorage } from 'usehooks-ts';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { PatchProject, VmState } from '../components/EditorPane/types';
+import { PatchProject } from '../components/EditorPane/types';
+import { RuntimeState } from '../engine/runtime';
 
 
 export const useProjectActions = (defaultProjectId?: string) => {
@@ -50,7 +51,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
             setNewProject(false);
             try {
                 setProjectName(projectSnapshot.data().name);
-                await loadSerializedProject(projectSnapshot.data() as VmState, true);
+                await loadSerializedProject(projectSnapshot.data() as RuntimeState);
             } catch (error) {
                 console.error("Failed to load project: ", error);
                 loadFailed = true;
@@ -60,8 +61,8 @@ export const useProjectActions = (defaultProjectId?: string) => {
             console.warn("Project does not exist. Creating default project.");
             setNewProject(true);
             // TODO: debug this when new project is loaded.
-            const vmStateJson = defaultPatchProject as unknown;
-            await loadSerializedProject(vmStateJson as VmState, true);
+            const vmStateJson = defaultPatchProject as RuntimeState;
+            await loadSerializedProject(vmStateJson);
         }
 
         setProjectLoading(false);
@@ -69,11 +70,11 @@ export const useProjectActions = (defaultProjectId?: string) => {
 
     const loadLocalProject = async (projectBuffer: ArrayBuffer) => {
         setProjectLoading(true);
-        await loadSerializedProject(projectBuffer, false);
+        await loadSerializedProject(projectBuffer);
         setProjectLoading(false);
     }
 
-    const addProjectMeta = (uid: string, name: string, vmState: VmState) => {
+    const addProjectMeta = (uid: string, name: string, vmState: RuntimeState) => {
         const projectObject = vmState as PatchProject;
         projectObject.lastEdited = new Date();
         projectObject.owner = uid;
@@ -154,9 +155,9 @@ export const useProjectActions = (defaultProjectId?: string) => {
             return;
         }
 
-        /*setProjectSaving(true);
+        setProjectSaving(true);
         
-        const projectObject = addProjectMeta(user.uid, name, await patchVM.serializeProject());
+        const projectObject = addProjectMeta(user.uid, name, patchVM.runtime.serialize());
         
         console.warn("Saving project: ", projectObject);
         if (isNewProject) {
@@ -168,7 +169,7 @@ export const useProjectActions = (defaultProjectId?: string) => {
         setNewProject(false);
         setProjectSaving(false);
         let id: string= projectReference?.id ?? "";
-        updateUserMeta(user.uid, id, projectName)*/
+        updateUserMeta(user.uid, id, projectName)
 
         // TODO: implement this
     }

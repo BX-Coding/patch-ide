@@ -155,7 +155,7 @@ const costumeUpload = function (
         }
         default:
             // @ts-ignore
-            handleError(`Encountered unexpected file type: ${fileType}`);
+            handleError && handleError(`Encountered unexpected file type: ${fileType}`);
             return;
     }
 
@@ -208,7 +208,27 @@ const soundUpload = function (
     handleSound: (vmSound: Sound) => void,
     handleError?: (error: string) => void
 ): void {
-    const vmSound = createVMAsset(fileType, fileData, name) as Sound;
+    let assetType: AssetType;
+
+    switch (fileType) {
+        case 'audio/mp3':
+        case 'audio/mpeg': {
+            assetType = "mp3";
+            break;
+        }
+        case 'audio/wav':
+        case 'audio/wave':
+        case 'audio/x-wav':
+        case 'audio/x-pn-wav': {
+            assetType = "wav";
+            break;
+        }
+        default:
+            handleError && handleError(`Encountered unexpected file type: ${fileType}`);
+            return;
+    }
+    
+    const vmSound = createVMAsset(assetType, fileData, name) as Sound;
 
     handleSound(vmSound);
 };

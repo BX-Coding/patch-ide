@@ -17,6 +17,12 @@ import patchAssetStorage from "./storage/storage";
 
 // This class manages the state of targets and other stuff
 
+export type RuntimeState = {
+    sprites: SerializedSprite[],
+    stage: SerializedStage,
+    globalVariables: Dictionary<GlobalVariable>
+}
+
 export default class Runtime extends EventEmitter {
     leopardProject?: Project;
     protected _sprites: Dictionary<{
@@ -37,13 +43,8 @@ export default class Runtime extends EventEmitter {
 
         this._globalVariables = {};
 
-        this._sprites = defaultSprites;
-        this._stage = { stage: defaultStage, threads: {} };
-
-        this.leopardProject = new Project(
-            this.getTargetForStage(),
-            this.sprites
-        );
+        this._sprites = {};
+        this._stage = {stage: defaultStage, threads: {}};
 
         this.runtimeErrors = [];
         this.compileTimeErrors = [];
@@ -61,24 +62,6 @@ export default class Runtime extends EventEmitter {
             this.workerLoaded = true;
             this.emit("WORKER READY");
             console.log("Worker ready.");
-            // In React, the constructor runs twice for some reason. Only add a thread the first time.
-            !Object.keys(this._sprites["Patch"].threads).length &&
-                this.addThread(
-                    "Patch",
-                    "",
-                    "event_whenflagclicked",
-                    "",
-                    "Thread 0"
-                );
-
-            !Object.keys(this._stage.threads).length &&
-                this.addThread(
-                    "Stage",
-                    "",
-                    "event_whenflagclicked",
-                    "",
-                    "Thread 0"
-                );
         });
 
         console.log(this);
@@ -469,7 +452,9 @@ export default class Runtime extends EventEmitter {
     static deserializeStage(serialized: SerializedStage): [Stage, typeof serialized.threads] {
         const stage = new Stage({
             costumeNumber: serialized.costumeNumber,
-            id: serialized.id
+            id: serialized.id,
+            width: 600,
+            height: 400
         });
 
         // Assets aren't added into patchAssetStorage here; they must be added into patchAssetStorage before
@@ -502,7 +487,7 @@ export default class Runtime extends EventEmitter {
         return [stage, serialized.threads];
     }
 
-    serialize() {
+    serialize(): RuntimeState {
         // The properties to keep from SpriteBase (sprites and stage):
         // TODO: add in watchers, _vars
         // _costumeNumber, _layerOrder, costumes, sounds, effects, audioEffects, id
@@ -528,11 +513,7 @@ export default class Runtime extends EventEmitter {
         return serializedRuntime;
     }
 
-    deserialize(serialized: {
-        sprites: SerializedSprite[],
-        stage: SerializedStage,
-        globalVariables: Dictionary<GlobalVariable>
-    }) {
+    deserialize(serialized: RuntimeState) {
         const newSprites = serialized.sprites.map(sprite => Runtime.deserializeSprite(sprite));
         const newStage = Runtime.deserializeStage(serialized.stage);
 
@@ -560,6 +541,7 @@ export default class Runtime extends EventEmitter {
 
         this._sprites = {};
         this._stage = { stage: newStage[0], threads: {} };
+        newStage[1].forEach(newThread => this.addThread("Stage", newThread.script, newThread.trigger, newThread.triggerOption, newThread.displayName, newThread.id));
 
         newSprites.forEach(newSpriteObj => {
             const newSprite = newSpriteObj[0];

@@ -1,71 +1,95 @@
 {
-    "vmstate": {
-      "targets": [
+    "sprites": [
         {
-          "name": "Stage",
-          "tags": [],
-          "isStage": true,
-          "variables": {},
-          "costumes": [
-            {
-              "name": "Arctic",
-              "assetId": "67e0db3305b3c8bac3a363b1c428892e",
-              "bitmapResolution": 2,
-              "dataFormat": "png",
-              "md5ext": "67e0db3305b3c8bac3a363b1c428892e.png",
-              "rotationCenterX": 480,
-              "rotationCenterY": 360
-            }
-          ],
-          "sounds": [],
-          "blocks": {}
-        },
-        {
-          "isStage": false,
-          "name": "Patch",
-          "variables": {},
-          "lists": {},
-          "broadcasts": {},
-          "blocks": {},
-          "comments": {},
-          "currentCostume": 0,
-          "costumes": [
-            {
-              "name": "patch-a",
-              "bitmapResolution": 1,
-              "dataFormat": "svg",
-              "assetId": "1043567ec098626025aa6d776ffd947c",
-              "md5ext": "1043567ec098626025aa6d776ffd947c.svg",
-              "rotationCenterX": 48,
-              "rotationCenterY": 50
-            }
-          ],
-          "sounds": [],
-          "volume": 100,
-          "layerOrder": 1,
-          "visible": true,
-          "x": 0,
-          "y": 0,
-          "size": 100,
-          "direction": 90,
-          "draggable": false,
-          "rotationStyle": "all around",
-          "threads": [
-            {
-              "script": "while True:\n  changeGraphicEffectBy('color', 25)",
-              "triggerEventId": "event_whenflagclicked",
-              "triggerEventOption": ""
-            }
-          ]
+            "x": 0,
+            "y": 30,
+            "direction": 90,
+            "rotationStyle": "ALL_AROUND",
+            "size": 75,
+            "visible": true,
+            "penDown": false,
+            "penSize": 1,
+            "penColor": {
+                "h": 66.66666666666666,
+                "s": 100,
+                "v": 100,
+                "a": 1
+            },
+            "costumeNumber": 1,
+            "costumes": [
+                {
+                    "name": "Patch Penguin",
+                    "center": {
+                        "x": 200,
+                        "y": 250
+                    },
+                    "id": "PatchPenguin"
+                }
+            ],
+            "sounds": [],
+            "effects": {
+                "color": 0,
+                "fisheye": 0,
+                "whirl": 0,
+                "pixelate": 0,
+                "mosaic": 0,
+                "brightness": 0,
+                "ghost": 0
+            },
+            "audioEffects": {
+                "pan": 0,
+                "pitch": 0,
+                "volume": 100
+            },
+            "id": "Patch",
+            "threads": [
+                {
+                    "script": "",
+                    "trigger": "event_whenflagclicked",
+                    "triggerOption": "",
+                    "id": "iZuLMJIcwMVQeAqNDyhv",
+                    "displayName": "Thread 0"
+                }
+            ]
         }
-      ],
-      "extensions": [],
-      "globalVariables": [],
-      "meta": {
-        "semver": "3.0.0",
-        "vm": "1.1.8",
-        "agent": ""
-      }
+    ],
+    "stage": {
+        "costumeNumber": 1,
+        "costumes": [
+            {
+                "name": "Default Backdrop",
+                "center": {
+                    "x": 125.00153898879995,
+                    "y": 156.4825870646767
+                },
+                "id": "DefaultBackdrop"
+            }
+        ],
+        "sounds": [],
+        "effects": {
+            "color": 0,
+            "fisheye": 0,
+            "whirl": 0,
+            "pixelate": 0,
+            "mosaic": 0,
+            "brightness": 0,
+            "ghost": 0
+        },
+        "audioEffects": {
+            "pan": 0,
+            "pitch": 0,
+            "volume": 100
+        },
+        "id": "Stage",
+        "threads": [
+            {
+                "script": "",
+                "trigger": "event_whenflagclicked",
+                "triggerOption": "",
+                "id": "bBlvQzREXYPiIqoqZkoH",
+                "displayName": "Thread 0"
+            }
+        ]
     },
-    "globalVariables": []
-  }
+    "globalVariables": {}
+}

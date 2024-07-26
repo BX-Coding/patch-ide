@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import usePatchStore from "../store"
 import { useEditingTarget } from "./useEditingTarget";
 import { GlobalVariable } from "../store/variableEditorStore";
-import { VmState } from "../components/EditorPane/types";
+import { RuntimeState } from "../engine/runtime";
 
 const b64dataurltoBlob = (b64Data: string, contentType = '', sliceSize = 512) => {
     // the split removes the encoding info from the data url and just returns the raw data
@@ -33,7 +33,7 @@ export const usePatchSerialization = () => {
     const setProjectChanged = usePatchStore(state => state.setProjectChanged);
     const [editingTarget, setEditingTarget] = useEditingTarget();
 
-    const loadSerializedProject = useCallback(async (vmState: VmState | Blob | string | ArrayBuffer, isJson: boolean) => {
+    const loadSerializedProject = useCallback(async (vmState: RuntimeState | Blob | ArrayBuffer) => {
         if (!patchVM) {
             console.warn("The patchVM was null. Aborting.");
             return;
@@ -47,7 +47,7 @@ export const usePatchSerialization = () => {
 
         //patchVM.runtime._globalVariables = {};
 
-        const result = await patchVM.loadProject(vmState, isJson);
+        const result = await patchVM.loadProject(vmState);
 
         if (!result) {
             console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");
@@ -99,7 +99,7 @@ export const usePatchSerialization = () => {
         if (text) {
           console.log("Loading from localStorage...");
           let proj = b64dataurltoBlob(text, 'application/zip');
-          await loadSerializedProject(proj, false);
+          await loadSerializedProject(proj);
           console.log("Loaded from localStorage...");
           return true;
         } else {

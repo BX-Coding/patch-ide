@@ -1,8 +1,6 @@
-export interface VmState {
+import { RuntimeState } from "../../engine/runtime"
 
-}
-
-export type PatchProject = VmState & {
+export type PatchProject = RuntimeState & {
     name: string,
     lastEdited: Date,
     owner: string,

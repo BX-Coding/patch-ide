@@ -3,19 +3,34 @@ import Asset from "./asset";
 
 export type AssetType = "png" | "bmp" | "svg" | "jpeg" | "wav" | "mp3" | "ogg" | "flac" | "acc";
 
-export function isSoundAssetType(assetType: AssetType) {
+export function isSoundAssetType(assetType: string) {
     return assetType == "wav" || assetType == "mp3" || assetType == "ogg" || assetType == "flac" || assetType == "acc";
 }
 
-export function isImageAssetType(assetType: AssetType) {
+export function isImageAssetType(assetType: string) {
     return assetType == "png" || assetType == "bmp" || assetType == "svg" || assetType == "jpeg";
+}
+
+const defaultAssets: Dictionary<Asset> = {
+    "PatchPenguin": {
+        assetType: "png",
+        refCount: 0,
+        url: "/project_assets/costume1.png",
+        id: "PatchPenguin"
+    },
+    "DefaultBackdrop": {
+        assetType: "svg",
+        refCount: 0,
+        url: "/project_assets/backdrop1.svg",
+        id: "DefaultBackdrop"
+    }
 }
 
 class PatchStorage {
     protected assets: Dictionary<Asset> = {};
 
     loadAsset(assetId: string): string {
-        const asset = this.assets[assetId];
+        const asset = this.assets[assetId] ?? defaultAssets[assetId];
 
         if (!asset) {
             console.warn("Trying to load nonexistent asset. Id: " + assetId);
@@ -39,6 +54,10 @@ class PatchStorage {
             this.assets[assetId].refCount++;
 
             return this.assets[assetId].url;
+        }
+
+        if (defaultAssets[assetId]) {
+            return defaultAssets[assetId].url;
         }
 
         const assetDataBlob =
