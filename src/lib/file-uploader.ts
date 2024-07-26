@@ -1,9 +1,8 @@
-import patchAssetStorage from "../engine/storage/storage";
+import patchAssetStorage, { isSoundAssetType } from "../engine/storage/storage";
 import safeUid from "../engine/util/safe-uid";
 import { Costume, Sound } from "leopard";
 import bmpConverter from "../util/bmp-converter";
-
-type AssetType = "VectorImage" | "BitmapImage" | "Sound";
+import { AssetType } from "../engine/storage/storage";
 
 /**
  * Extract the file name given a string of the form fileName + ext
@@ -103,7 +102,7 @@ export const createVMAsset = function (
         assetType
     );
 
-    if (assetType == "Sound") {
+    if (isSoundAssetType(assetType)) {
         return new Sound(name, assetURL, id);
     } else {
         return new Costume(name, assetURL, undefined, id);
@@ -134,11 +133,11 @@ const costumeUpload = function (
             // run svg bytes through scratch-svg-renderer's sanitization code
             //fileData = sanitizeSvg.sanitizeByteStream(fileData);
 
-            assetType = "VectorImage";
+            assetType = "svg";
             break;
         }
         case "image/jpeg": {
-            assetType = "BitmapImage";
+            assetType = "jpeg";
             break;
         }
         case "image/bmp": {
@@ -151,7 +150,7 @@ const costumeUpload = function (
             return; // Return early because we're triggering another proper costumeUpload
         }
         case "image/png": {
-            assetType = "BitmapImage";
+            assetType = "png";
             break;
         }
         default:
@@ -204,11 +203,12 @@ const costumeUpload = function (
  */
 const soundUpload = function (
     fileData: ArrayBuffer,
+    fileType: string,
     name: string,
     handleSound: (vmSound: Sound) => void,
     handleError?: (error: string) => void
 ): void {
-    const vmSound = createVMAsset("Sound", fileData, name) as Sound;
+    const vmSound = createVMAsset(fileType, fileData, name) as Sound;
 
     handleSound(vmSound);
 };

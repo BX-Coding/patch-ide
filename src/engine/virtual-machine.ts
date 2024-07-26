@@ -481,6 +481,21 @@ this.emitTargetsUpdate();*/
                     }
                 });*/
 
+        const assetIds = patchAssetStorage.assetIds;
+
+        for (const assetId of assetIds) {
+            const url = patchAssetStorage.loadAsset(assetId);
+            const assetType = patchAssetStorage.getAssetType(assetId);
+
+            let ext = ""
+
+            if (assetType == "VectorImage") {
+                ext = "svg";
+            } else if (assetType == "BitmapImage") {
+                
+            }
+        }
+
         zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
         const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
         return zippedProject;
@@ -547,7 +562,25 @@ this.emitTargetsUpdate();*/
                 return null;
             }
             jsonData = JSON.parse(jsonDataString);
+
+            // Import costumes and sounds
+
+            for (const file of Object.keys(JSZip.files)) {
+                const filenameSplit = file.split('.');
+                const ext = filenameSplit.pop();
+                const id = filenameSplit.join();
+
+                if (ext == "png" || ext == "jpg" || ext == "bmp") {
+                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "BitmapImage");
+                } else if (ext == "svg") {
+                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "VectorImage");
+                } else if (ext == "wav" || ext == "mp3" || ext == "aac" || ext == "ogg" || ext == "flac") {
+                    patchAssetStorage.addAsset(id, await JSZip.files[file].async("blob"), "Sound");
+                }
+            }
         }
+
+        
 
         this._ready = false;
         this.editingTarget = null;

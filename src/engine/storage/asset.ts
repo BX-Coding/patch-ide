@@ -1,5 +1,7 @@
+import { AssetType } from "./storage";
+
 interface Asset {
-    assetType: "VectorImage" | "BitmapImage" | "Sound";
+    assetType: AssetType;
     refCount: number;
     url: string;
     id: string;

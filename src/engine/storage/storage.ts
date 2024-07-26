@@ -1,6 +1,16 @@
 import { Dictionary } from "../interfaces";
 import Asset from "./asset";
 
+export type AssetType = "png" | "bmp" | "svg" | "jpeg" | "wav" | "mp3" | "ogg" | "flac" | "acc";
+
+export function isSoundAssetType(assetType: AssetType) {
+    return assetType == "wav" || assetType == "mp3" || assetType == "ogg" || assetType == "flac" || assetType == "acc";
+}
+
+export function isImageAssetType(assetType: AssetType) {
+    return assetType == "png" || assetType == "bmp" || assetType == "svg" || assetType == "jpeg";
+}
+
 class PatchStorage {
     protected assets: Dictionary<Asset> = {};
 
@@ -16,10 +26,14 @@ class PatchStorage {
         return asset.url;
     }
 
+    getAssetType(assetId: string): AssetType | null {
+        return this.assets[assetId] ? this.assets[assetId].assetType : null;
+    }
+
     addAsset(
         assetId: string,
         assetData: Blob | ArrayBuffer,
-        assetType: "VectorImage" | "BitmapImage" | "Sound"
+        assetType: AssetType
     ): string {
         if (this.assets[assetId]) {
             this.assets[assetId].refCount++;
@@ -28,7 +42,7 @@ class PatchStorage {
         }
 
         const assetDataBlob =
-            assetData instanceof Blob ? assetData : new Blob([assetData], assetType == "VectorImage" ? {type: "image/svg+xml"} : undefined);
+            assetData instanceof Blob ? assetData : new Blob([assetData], assetType == "svg" ? {type: "image/svg+xml"} : undefined);
 
         const asset: Asset = {
             assetType: assetType,
@@ -59,6 +73,10 @@ class PatchStorage {
             "Trying to unref asset that doesn't exist. Id: " + assetId
         );
         return -1;
+    }
+
+    get assetIds(): string[] {
+        return Object.keys(this.assets);
     }
 }
 
