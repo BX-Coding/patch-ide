@@ -39,6 +39,8 @@ import { SpriteJson } from "../components/EditorPane/old-types";
 import Thread from "./thread";
 import PrimProxy from "./worker/prim-proxy";
 import patchAssetStorage from "./storage/storage";
+import JSZip from "jszip";
+import { GlobalVariable } from "../store/variableEditorStore";
 
 /**
  * Handles connections between blocks, stage, and extensions.
@@ -186,37 +188,37 @@ export default class VirtualMachine extends EventEmitter {
             targets.forEach((target) => {
                 this.runtime.addTarget(target);
                 /** @type RenderedTarget *//* target.updateAllDrawableProperties();
-    // Ensure unique sprite name
-    if (target.isSprite()) this.renameSprite(target.id, target.getName());
+// Ensure unique sprite name
+if (target.isSprite()) this.renameSprite(target.id, target.getName());
 });
 // Sort the executable targets by layerOrder.
 // Remove layerOrder property after use.
 this.runtime.executableTargets.sort((a, b) => a.layerOrder - b.layerOrder);
 targets.forEach((target) => {
-    // eslint-disable-next-line no-param-reassign
-    delete target.layerOrder;
+// eslint-disable-next-line no-param-reassign
+delete target.layerOrder;
 });
 
 // Select the first target for editing, e.g., the first sprite.
 if (wholeProject && targets.length > 1) {
-    // eslint-disable-next-line prefer-destructuring
-    this.editingTarget = targets[1];
+// eslint-disable-next-line prefer-destructuring
+this.editingTarget = targets[1];
 } else {
-    // eslint-disable-next-line prefer-destructuring
-    this.editingTarget = targets[0];
+// eslint-disable-next-line prefer-destructuring
+this.editingTarget = targets[0];
 }
 
 if (!wholeProject) {
-    this.editingTarget.fixUpVariableReferences();
+this.editingTarget.fixUpVariableReferences();
 }
 
 // Update the VM user's knowledge of targets and blocks on the workspace.
 this.emitTargetsUpdate(false /* Don't emit project change *//*);
-    // this.emitWorkspaceUpdate();
-    this.runtime.setEditingTarget(this.editingTarget);
-    // this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
-});
-}*/
+        // this.emitWorkspaceUpdate();
+        this.runtime.setEditingTarget(this.editingTarget);
+        // this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
+    });
+    }*/
 
     async installTargets(targets: (Sprite | Stage)[], wholeProject: boolean) {
         // TODO: implement this
@@ -454,27 +456,12 @@ this.emitTargetsUpdate();*/
         } as Dictionary<any | null>)[eventId];
     }
 
-    /**
-     * Serializes the current state of the VM into a project.json file which is then
-     * then compressed into a zip file and returned as a Blob object
-     *
-     * @returns {Blob} A Blob object representing the zip file
-     */
-    async serializeProject() {//: Promise<Blob> {
-        // const vm = JSON.stringify(sb3.serialize(this.runtime));
-        /*const vm = sb3.serialize(this.runtime);
-
-        const projectJSON = {};
-        projectJSON.vmstate = vm;
-        projectJSON.globalVariables = this.getGlobalVariables();
-
-        return projectJSON;*/
-
-        // TODO: implement this
+    serializeRuntime() {
+        return this.runtime.serialize();
     }
 
     async zipProject() {
-        /*const projectJson = await this.serializeProject();
+        const projectJson = this.serializeRuntime();
         const projectJsonString = JSON.stringify(projectJson);
         const zip = new JSZip();
 
@@ -483,7 +470,7 @@ this.emitTargetsUpdate();*/
          */
 
         // This may be needed once custom sprites are added.
-        /* this.runtime.targets.forEach((target) => {
+        /*this.runtime.targets.forEach((target) => {
                     if (target instanceof RenderedTarget) {
                         target.getCostumes().forEach((costume) => {
                             console.log(costume);
@@ -492,45 +479,42 @@ this.emitTargetsUpdate();*/
                             }
                         });
                     }
-                }); *//*
+                });*/
 
-zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
-const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
-return zippedProject;*/
-
-        return new Blob();
+        zip.file("project.json", new Blob([projectJsonString], { type: "text/plain" }));
+        const zippedProject = await zip.generateAsync({ type: "blob" }).then((content) => content);
+        return zippedProject;
 
         // TODO: implement this
     }
 
     /**
      * Downloads a zip file containing all project data with the following
-     * naming template "[project name].ptch1"
+     * naming template "[project name].ptch2"
      *
      * @returns {Blob} A Blob object representing the zip file
      */
     async downloadProject() {//: Blob {
-        /*const zippedProject = await this.zipProject();
+        const zippedProject = await this.zipProject();
 
         // https://stackoverflow.com/questions/19327749/javascript-blob-filename-without-link
         const a = document.createElement("a");
         document.body.appendChild(a);
-        a.style = "display: none";
+        // TODO: is this needed?
+        //a.style = "display: none";
         const url = window.URL.createObjectURL(zippedProject);
         a.href = url;
-        a.download = "project.ptch1";
+        a.download = "project.ptch2";
         a.click();
-        window.URL.revokeObjectURL(url);*/
-
-        // TODO: implement this
+        window.URL.revokeObjectURL(url);
     }
 
     /**
-     * Converts a .sb3 scratch project to a .ptch1 patch project
+     * Converts a .sb3 scratch project to a .ptch2 patch project
      *
      * @param {ArrayBuffer} scratchData - An ArrayBuffer object generated from
      * a valid Scratch (.sb3) project file
-     * @returns {ArrayBuffer} An ArrayBuffer object representing a Patch (.ptch1) project file
+     * @returns {ArrayBuffer} An ArrayBuffer object representing a Patch (.ptch2) project file
      */
     async scratchToPatch(scratchData: ArrayBuffer) {//: ArrayBuffer {
         /*const converter = new ScratchConverter(scratchData);
@@ -543,14 +527,13 @@ return zippedProject;*/
 
     /**
      * Restores the state of the VM from a ArrayBuffer object that has been generated from a
-     * valid Patch Project .ptch1 file.
+     * valid Patch Project .ptch2 file.
      *
      * @param {ArrayBuffer | JSON} projectData - A ArrayBuffer object generated from
-     * a valid Patch Project .ptch1 file
+     * a valid Patch Project .ptch2 file
      */
     async loadProject(projectData: any, isJson = false) {
-
-        /*let zip;
+        let zip;
         let jsonData = projectData;
 
         // Check if project data is a json object
@@ -559,38 +542,24 @@ return zippedProject;*/
 
             // https://stackoverflow.com/questions/40223259/jszip-get-content-of-file-in-zip-from-file-input
             const jsonDataString = await zip.files["project.json"].async("text").then((text) => text);
-            if (!jsonDataString || isUndefined(jsonDataString)) {
+            if (!jsonDataString) {
                 console.warn("No project.json file. Is your project corrupted?");
                 return null;
             }
             jsonData = JSON.parse(jsonDataString);
         }
 
+        this._ready = false;
+        this.editingTarget = null;
+
         this.clear();
-        const importedProject = await sb3.deserialize(jsonData.vmstate, this.runtime, zip, false).then((proj) => proj);
+        this.runtime.deserialize(jsonData);
 
-        if (importedProject.extensionsInfo) {
-            await this.installTargets(importedProject.targets, importedProject.extensionsInfo, true);
-        } else {
-            await this.installTargets(importedProject.targets, { extensionIDs: [] }, true);
-        }
-
-        jsonData.globalVariables.forEach((variable) => {
-            this.updateGlobalVariable(variable.name, variable.value);
-        });
-
-        const returnVal = {};
-        returnVal.runtime = this.runtime;
-        returnVal.importedProject = importedProject;
-        returnVal.json = jsonData;
-
-        return returnVal;*/
-
-        // TODO: implement this
+        const returnVal: { globalVariables: GlobalVariable[] } = { globalVariables: Object.keys(this.runtime._globalVariables).map(key => this.runtime._globalVariables[key]) };
 
         await this.runtime.workerLoadPromise;
 
-        return { globalVariables: [] };
+        return returnVal;
     }
 
     async addThread(targetId: any, script: any, triggerEventId: any, option: any, displayName = ""): Promise<string> {

@@ -17,7 +17,7 @@ export const FileDropDown = ({ cloudEnabled }: FielDropDownProps) => {
     const { loadLocalProject } = useProjectActions();
     const [_, setProjectId ] = useLocalStorage("patchProjectId", "new");
     const { saveProject } = useProjectActions();
-    const openFileInputSelector = useAssetFileSelector(['.ptch1, .sb3']);
+    const openFileInputSelector = useAssetFileSelector(['.ptch2, .sb3']);
 
     const handleSaveNow = async () => {
         await saveAllThreads();

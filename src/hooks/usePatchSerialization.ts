@@ -47,7 +47,7 @@ export const usePatchSerialization = () => {
 
         //patchVM.runtime._globalVariables = {};
 
-        const result: { globalVariables: GlobalVariable[] } = await patchVM.loadProject(vmState, isJson);
+        const result = await patchVM.loadProject(vmState, isJson);
 
         if (!result) {
             console.warn("Something went wrong and the GUI received a null value for the project to load. Aborting.");

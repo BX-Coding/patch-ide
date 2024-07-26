@@ -52,7 +52,7 @@ export default {
         type: 'asset/resource'
       },
       {
-        test: /\.ptch1$/,
+        test: /\.ptch2$/,
         use: ['arraybuffer-loader'],
       },
     ]
