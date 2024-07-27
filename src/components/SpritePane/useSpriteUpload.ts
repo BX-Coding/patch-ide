@@ -3,7 +3,7 @@ import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { Sprite, Stage } from 'leopard';
 //import { spriteUpload } from '../../lib/file-uploader';
 import usePatchStore from '../../store';
-import { SpriteJson } from '../EditorPane/old-types';
+import { costumeUpload } from '../../lib/file-uploader';
 
 export const useUploadSprite = () => {
     const patchVM = usePatchStore(state => state.patchVM);
@@ -31,8 +31,8 @@ export const useUploadSprite = () => {
         }
       }
 
-    const handleNewSprite = async (sprite: Sprite, name: string) => {
-        await patchVM.addSprite(sprite, name);
+    const handleNewSprite = (sprite: Sprite) => {
+        patchVM.addSprite(sprite);
 
         const targets = patchVM.getAllRenderedTargets();
         const newTargetIds = Object.keys(targets);
@@ -46,21 +46,25 @@ export const useUploadSprite = () => {
     }
 
     const uploadSprite = async (file: File) => {
-        /*const storage = patchVM.runtime.storage;
-        const arrayBuffer = await file.arrayBuffer();
-        spriteUpload(arrayBuffer, file.type, file.name, storage, newSprite => {
-          const json = newSprite as SpriteJson;
-          if (json.isStage) {
-            console.error("Trying to add stage using uploadSprite, but this isn't a thing.");
-            const newSpriteSprite = new Sprite({x: 0, y: 0, direction: 0, costumeNumber: 0, size: 1, visible: true});
-            handleNewSprite(newSpriteSprite, json.name);
-          } else {
-            const newSpriteSprite = new Sprite({x: 0, y: 0, direction: 0, costumeNumber: 0, size: 1, visible: true});
-            handleNewSprite(newSpriteSprite, json.name);
-          }
-        }, console.log);*/
+        const newSprite = new Sprite({
+            x: 0,
+            y: 0,
+            direction: 0,
+            costumeNumber: 1,
+            size: 1,
+            visible: true,
+            id: ""
+        })
 
-        console.warn("Sprite uploading isn't currently supported.");
+        const arrayBuffer = await file.arrayBuffer();
+        costumeUpload(arrayBuffer, file.type, file.name, (vmCostumes => {
+            vmCostumes.forEach(costume => {
+                newSprite.addCostume(costume);
+            })
+        }), console.error);
+
+        handleNewSprite(newSprite);
+
     };
 
     return uploadSprite;

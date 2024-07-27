@@ -1,6 +1,6 @@
 import { handleFileUpload, soundUpload } from '../lib/file-uploader';
 import usePatchStore from '../store';
-import { SoundJson } from '../components/EditorPane/old-types';
+import { SoundJson } from '../components/EditorPane/types';
 import { Sound } from 'leopard';
 
 export const useSoundHandlers = () => {

@@ -7,7 +7,6 @@ import { Typography, Box, Grid } from "@mui/material";
 import { HorizontalButtons, IconButton } from "../PatchButton";
 import usePatchStore, { ModalSelectorType } from "../../store";
 import { useAddSprite } from "../SpritePane/onAddSpriteHandler";
-import { Asset, SoundJson, SpriteJson } from "../EditorPane/old-types";
 import { useSoundHandlers } from "../../hooks/useSoundUploadHandlers";
 import { ItemCard } from "../ItemCard";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
@@ -16,6 +15,8 @@ import { useCostumeHandlers } from "../../hooks/useCostumeUploadHandlers";
 import { getPatchAssetImageUrl } from "../../lib/patch-asset-image-fetch";
 import { createVMAsset } from "../../lib/file-uploader";
 import { Costume } from "leopard";
+import patchAssetStorage from "../../engine/storage/storage";
+import { CostumeJson, loadFromAssetJson, SoundJson, SpriteJson } from "../EditorPane/types";
 
 export const ModalSelector = () => {
   const modalSelectorType = usePatchStore((state) => state.modalSelectorType);
@@ -25,7 +26,7 @@ export const ModalSelector = () => {
   const { handleAddCostumesToEditingTarget } = useCostumeHandlers();
   const { onAddSprite } = useAddSprite();
 
-  const onClick = (asset: SpriteJson | SoundJson) => {
+  const onClick = (asset: CostumeJson | SpriteJson | SoundJson) => {
     if (modalSelectorType === ModalSelectorType.SPRITE) {
       const sprite = asset as SpriteJson;
       onAddSprite(sprite);
@@ -33,10 +34,8 @@ export const ModalSelector = () => {
       modalSelectorType === ModalSelectorType.COSTUME ||
       modalSelectorType === ModalSelectorType.BACKDROP
     ) {
-      // TODO: finish this
-      /*const sprite = asset as SpriteJson;
-      const costumes = sprite.costumes.map((oldCostume) => {return createVMAsset()}) as Costume[];
-      handleAddCostumesToEditingTarget(, true);*/
+      const costume = asset as CostumeJson;
+      handleAddCostumesToEditingTarget([loadFromAssetJson(costume) as Costume], true);
     } else if (modalSelectorType === ModalSelectorType.SOUND) {
       const sound = asset as SoundJson;
       handleAddSoundToEditingTarget(sound, true);
@@ -44,7 +43,7 @@ export const ModalSelector = () => {
     hideModalSelector();
   };
 
-  let internalAssets: SpriteJson[] | SoundJson[] = sprites;
+  let internalAssets: CostumeJson[] | SpriteJson[] | SoundJson[] = sprites;
   if (modalSelectorType === ModalSelectorType.COSTUME) {
     internalAssets = sprites.filter((sprite) => sprite.costumes.length > 1);
   } else if (modalSelectorType === ModalSelectorType.BACKDROP) {
@@ -89,7 +88,7 @@ export const ModalSelector = () => {
               sx={{
                 display:
                   modalSelectorType === ModalSelectorType.SOUND &&
-                  (asset as SoundJson).dataFormat == "adpcm"
+                  (asset as SoundJson).format == "adpcm"
                     ? "none"
                     : "block",
               }}
@@ -111,10 +110,11 @@ export const ModalSelector = () => {
                     {modalSelectorType === ModalSelectorType.SOUND ? (
                       <VolumeUpIcon />
                     ) : (
-                      <AssetImage sprite={asset as SpriteJson} />
+                      <AssetImage sprite={asset as CostumeJson} />
                     )}
                     <Typography sx={{ fontSize: "12pt" }}>
-                      {asset.name}
+                      {/* @ts-ignore */
+                      Object.hasOwn(asset, "name") ? asset.name : asset.id}
                     </Typography>
                   </div>
                 </ItemCard>
@@ -128,14 +128,11 @@ export const ModalSelector = () => {
 };
 
 type AssetImageProps = {
-  sprite: SpriteJson;
+  sprite: CostumeJson;
 };
 
 const AssetImage = ({ sprite }: AssetImageProps) => {
-  const assetUrl = getPatchAssetImageUrl(
-    sprite.costumes[0].assetId,
-    sprite.costumes[0].dataFormat
-  );
+  const assetUrl = patchAssetStorage.loadAsset(sprite.id);
 
   return (
     <div

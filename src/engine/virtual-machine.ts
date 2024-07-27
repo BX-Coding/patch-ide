@@ -31,11 +31,10 @@ const KEY_NAME: Dictionary<string> = {
 
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
-import Runtime, { RuntimeState } from "./runtime";
+import Runtime, { RuntimeState, SerializedThread } from "./runtime";
 import { Costume, Sound, Sprite, Stage } from "leopard";
 
 import { Dictionary } from "./interfaces";
-import { SpriteJson } from "../components/EditorPane/old-types";
 import Thread from "./thread";
 import PrimProxy from "./worker/prim-proxy";
 import patchAssetStorage, { AssetType, isImageAssetType, isSoundAssetType } from "./storage/storage";
@@ -224,8 +223,8 @@ this.emitTargetsUpdate(false /* Don't emit project change *//*);
         // TODO: implement this
     }
 
-    addSprite(sprite: Sprite | SpriteJson, name: string) {
-        // TODO: implement this
+    addSprite(sprite: Sprite, threads?: SerializedThread[]) {
+        this.runtime.addSprite(sprite, threads);
     }
 
     /**
@@ -319,49 +318,8 @@ this.emitTargetsUpdate(false /* Don't emit project change *//*);
      * @param {string} targetId ID of a target whose sprite to delete.
      * @return {Function} Returns a function to restore the sprite that was deleted
      */
-    deleteSprite(targetId: string): Function {
-        /*const target = this.runtime.getTargetById(targetId);
-        if (target) {
-            const targetIndexBeforeDelete = this.runtime.targets.map((t) => t.id).indexOf(target.id);
-            if (!target.isSprite()) {
-                throw new Error("Cannot delete non-sprite targets.");
-            }
-            const { sprite } = target;
-            if (!sprite) {
-                throw new Error("No sprite associated with this target.");
-            }
-            // Remove monitors from the runtime state and remove the
-            // target-specific monitored blocks (e.g. local variables)
-            const currentEditingTarget = this.editingTarget;
-            this.runtime.disposeTarget(target);
-            if (sprite === currentEditingTarget) {
-                const nextTargetIndex = Math.min(this.runtime.targets.length - 1, targetIndexBeforeDelete);
-                if (this.runtime.targets.length > 0) {
-                    this.setEditingTarget(this.runtime.targets[nextTargetIndex].id);
-                } else {
-                    this.editingTarget = null;
-                }
-            }
-            /* for (let i = 0; i < sprite.clones.length; i++) {
-                const clone = sprite.clones[i];
-                // Ensure editing target is switched if we are deleting it.
-                this.runtime.disposeTarget(sprite.clones[i]);
-                if (clone === currentEditingTarget) {
-                    const nextTargetIndex = Math.min(this.runtime.targets.length - 1, targetIndexBeforeDelete);
-                    if (this.runtime.targets.length > 0){
-                        this.setEditingTarget(this.runtime.targets[nextTargetIndex].id);
-                    } else {
-                        this.editingTarget = null;
-                    }
-                } *//*
-}
-// Sprite object should be deleted by GC.
-target.updateAllDrawableProperties();
-this.emitTargetsUpdate();*/
-
-        // TODO: implement this
-
-        return () => { };
+    deleteSprite(targetId: string) {
+        this.runtime.removeSprite(targetId);
     }
 
     setEditingTarget(target: string | Sprite | Stage) {
@@ -383,7 +341,7 @@ this.emitTargetsUpdate();*/
         }
         const newTarget = target.createClone();
 
-        this.runtime.addTarget(newTarget);
+        this.runtime.addSprite(newTarget);
         // TODO: implement this next line (probably involves the _layerOrder variable);
         // This function is implemented in rendered-target in the old patch vm/scratch vm
         //newTarget.goBehindOther(target);

@@ -14,6 +14,7 @@ import PatchLinker from "./linker/patch-linker";
 import _ from "lodash";
 import { createVMAsset } from "../lib/file-uploader";
 import patchAssetStorage from "./storage/storage";
+import safeUid from "./util/safe-uid";
 
 // This class manages the state of targets and other stuff
 
@@ -67,17 +68,43 @@ export default class Runtime extends EventEmitter {
         console.log(this);
     }
 
+    modifySprites(execFunction: () => any) {
+        this.stopAll();
+        delete this.leopardProject;
+
+        this.leopardProject = undefined;
+
+        const returnVal = execFunction();
+
+        this.leopardProject = new Project(
+            this.getTargetForStage(),
+            this.sprites
+        );
+
+        return returnVal;
+    }
+
     get targets(): Dictionary<Sprite | Stage> {
         return { Stage: this._stage.stage, ...this.sprites };
     }
 
-    addTarget(target: Sprite | Stage) {
+    addSprite(target: Sprite | Stage, threads?: SerializedThread[]) {
         if (target instanceof Stage) {
             if (this._stage) {
                 console.error("Can't add a stage; one already exists.");
                 return "";
             } else {
-                this._stage = { stage: target, threads: {} };
+                
+                this.modifySprites(() => {
+                    this._stage = { stage: target, threads: {} };
+                });
+
+                if (threads) {
+                    threads.forEach(newThread => this.addThread("Stage", newThread.script, newThread.trigger, newThread.triggerOption, newThread.displayName, newThread.id));
+                } else {
+                    this.addThread("Stage", "", "event_whenflagclicked", "", "Thread 0");
+                }
+
                 return "Stage";
             }
         } else {
@@ -98,10 +125,31 @@ export default class Runtime extends EventEmitter {
                 const newId = tryId + tryNumber;
 
                 target.id = newId;
-                this._sprites[newId] = { sprite: target, threads: {} };
+
+                console.log(target);
+
+                this.modifySprites(() => {
+                    this._sprites[newId] = { sprite: target, threads: {} };
+                });
+
+                if (threads) {
+                    threads.forEach(newThread => this.addThread(newId, newThread.script, newThread.trigger, newThread.triggerOption, newThread.displayName, newThread.id));
+                } else {
+                    this.addThread(newId, "", "event_whenflagclicked", "", "Thread 0");
+                }
 
                 return newId;
             }
+        }
+    }
+
+    removeSprite(target: string | Sprite) {
+        if (target instanceof Sprite) {
+            const targetId = target.id;
+
+            this.modifySprites(() => {
+                delete this._sprites[targetId];
+            })
         }
     }
 
@@ -685,6 +733,14 @@ export default class Runtime extends EventEmitter {
     }
 }
 
+export interface SerializedThread {
+    script: string,
+    trigger: string,
+    triggerOption: string,
+    id: string,
+    displayName: string
+}
+
 export interface SerializedSpriteBase {
     costumeNumber: number;
     //layerOrder: number;
@@ -712,13 +768,7 @@ export interface SerializedSpriteBase {
         volume: number
     };
     id: string;
-    threads: {
-        script: string,
-        trigger: string,
-        triggerOption: string,
-        id: string,
-        displayName: string
-    }[];
+    threads: SerializedThread[];
 }
 
 export interface SerializedSprite extends SerializedSpriteBase {

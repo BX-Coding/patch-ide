@@ -73,7 +73,7 @@ export interface OldSprite {
     sounds: OldSound[],
 }
 
-export interface SpriteJson {
+export interface OldSpriteJson {
     name: string,
     tags?: string[],
     isStage: boolean,
@@ -83,7 +83,7 @@ export interface SpriteJson {
     blocks?: {},
 }
 
-export interface SoundJson {
+export interface OldSoundJson {
     name: string,
     tags: string[],
     dataFormat: string,
