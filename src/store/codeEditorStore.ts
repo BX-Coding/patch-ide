@@ -10,6 +10,7 @@ import { LanguageServerState } from "./LanguageServerEditorState";
 import { Sprite, Stage } from "leopard";
 import { Dictionary } from "../engine/interfaces";
 import Thread from "../engine/thread";
+import { backdrops } from "../assets/backdrops";
 
 export function once<T extends (...args: any[]) => any>(fn: T): T {
   let result: ReturnType<T>;
@@ -85,18 +86,38 @@ export const createCodeEditorSlice: StateCreator<
 
   // Actions
   sendLspState: () => {
-    const patchVM = get().patchVM
-    const targets = patchVM.getAllRenderedTargets()
-    const dynamicOptions: LanguageServerState = {
-      targets: Object.keys(targets)
-        .filter((targetId: string) => targets[targetId] !instanceof Stage)
-        .map(targetId => targets[targetId]),
-      backdrops: patchVM
-        .getTargetForStage()
-        .getCostumes(),
-      costumes: patchVM.editingTarget?.getCostumes() || [],
-      sounds: patchVM.editingTarget?.getSounds() || [],
-      messages: patchVM.getAllBroadcastMessages() || [],
+    const patchVM = get().patchVM;
+
+    // Targets to send
+    const targets = Object.keys(patchVM.getAllRenderedTargets());
+
+    // Costumes and backdrops to send
+    const getCostumes = patchVM.editingTarget?.getCostumes();
+    let costumesAndBackdrops: string[] = [];
+    getCostumes?.forEach((c) => {
+      costumesAndBackdrops.push(c.name);
+    });
+
+    // Sounds to send
+    const getSounds = patchVM.editingTarget?.getSounds();
+    let sounds: string[] = [];
+    getSounds?.forEach((s) => {
+      sounds.push(s.name);
+    });
+
+    // Messages to send
+    const getMessages = patchVM.getAllBroadcastMessages();
+    let messages: string[] = [];
+    getMessages.forEach((message) => {
+      messages.push(message);
+    });
+
+    const dynamicOptions = {
+      targets: targets,
+      costumes: costumesAndBackdrops,
+      backdrops: costumesAndBackdrops,
+      sounds: sounds,
+      messages: messages,
       apiData: patchVM.getApiInfo() || [],
     };
 
@@ -115,29 +136,48 @@ export const createCodeEditorSlice: StateCreator<
       };
       // TODO: fix this
       // This line will throw an error because each target in the JSON references its project,
-      // which in turn references the target creating a circular structure. 
-      //transport.sendData(data);
+      // which in turn references the target creating a circular structure.
+      transport.sendData(data);
     } else {
       console.error("WebSocket is not initialized.");
     }
   },
   setTransportRef: (ref) => {
-    set({ transportRef: ref })
+    set({ transportRef: ref });
 
-    const patchVM = get().patchVM
+    const patchVM = get().patchVM;
 
-    setTimeout(()=>{
-      const targets = patchVM.getAllRenderedTargets()
-      const dynamicOptions: LanguageServerState = {
-        targets: Object.keys(targets)
-          .filter((targetId: string) => targets[targetId] !instanceof Stage)
-          .map(targetId => targets[targetId]),
-        backdrops: patchVM
-          .getTargetForStage()
-          .getCostumes(),
-        costumes: patchVM.editingTarget?.getCostumes() || [],
-        sounds: patchVM.editingTarget?.getSounds() || [],
-        messages: patchVM.getAllBroadcastMessages() || [],
+    setTimeout(() => {
+      // Targets to send
+      const targets = Object.keys(patchVM.getAllRenderedTargets());
+
+      // Costumes and backdrops to send
+      const getCostumes = patchVM.editingTarget?.getCostumes();
+      let costumesAndBackdrops: string[] = [];
+      getCostumes?.forEach((c) => {
+        costumesAndBackdrops.push(c.name);
+      });
+
+      // Sounds to send
+      const getSounds = patchVM.editingTarget?.getSounds();
+      let sounds: string[] = [];
+      getSounds?.forEach((s) => {
+        sounds.push(s.name);
+      });
+
+      // Messages to send
+      const getMessages = patchVM.getAllBroadcastMessages();
+      let messages: string[] = [];
+      getMessages.forEach((message) => {
+        messages.push(message);
+      });
+
+      const dynamicOptions = {
+        targets: targets,
+        costumes: costumesAndBackdrops,
+        backdrops: costumesAndBackdrops,
+        sounds: sounds,
+        messages: messages,
         apiData: patchVM.getApiInfo() || [],
       };
 
@@ -154,14 +194,11 @@ export const createCodeEditorSlice: StateCreator<
             },
           },
         };
-        // TODO: fix this
-        // This line will throw an error because each target in the JSON references its project,
-        // which in turn references the target creating a circular structure. 
-        //transport.sendData(data);
+        transport.sendData(data);
       } else {
         console.error("WebSocket is not initialized.");
       }
-    },3000)
+    }, 3000);
   },
   getTransportRef: () => get().transportRef,
   setCodemirrorRef: (id: string, ref: React.RefObject<ReactCodeMirrorRef>) =>
@@ -197,7 +234,12 @@ export const createCodeEditorSlice: StateCreator<
     }),
   addThread: async (target: Sprite | Stage) => {
     const patchVM = get().patchVM;
-    const id = await patchVM.addThread(target.id, "", "event_whenflagclicked", "");
+    const id = await patchVM.addThread(
+      target.id,
+      "",
+      "event_whenflagclicked",
+      ""
+    );
     const thread = patchVM.getThread(target.id, id);
     thread.displayName = "Thread " + get().nextThreadNumber;
     set((state) => {
@@ -253,7 +295,10 @@ export const createCodeEditorSlice: StateCreator<
         threads: newThreads,
         nextThreadNumber: nextThreadNumber,
       };
-      newState.codeThreadId = keys.length > 0 ? patchVM.getThreadsForTarget(target.id)[keys[0]].id : "";
+      newState.codeThreadId =
+        keys.length > 0
+          ? patchVM.getThreadsForTarget(target.id)[keys[0]].id
+          : "";
       return newState;
     }),
   saveThread: (id: string | string[]) =>
@@ -275,8 +320,10 @@ export const createCodeEditorSlice: StateCreator<
     }),
   saveTargetThreads: (target: Sprite | Stage) => {
     const patchVM = get().patchVM;
-    
-    const editingThreadIds = Object.keys(patchVM.getThreadsForTarget(target.id));
+
+    const editingThreadIds = Object.keys(
+      patchVM.getThreadsForTarget(target.id)
+    );
 
     editingThreadIds.forEach((threadId) => {
       get().saveThread(threadId);
@@ -374,7 +421,7 @@ export const createCodeEditorSlice: StateCreator<
     return get().diagnostics.filter((error) => error.threadId === threadId);
   },
 
-  formatCode: (threadId: string) => {   
+  formatCode: (threadId: string) => {
     const transport = get().transportRef;
     const formatRequest = {
       internalID: 1,
@@ -391,11 +438,10 @@ export const createCodeEditorSlice: StateCreator<
             insertSpaces: true,
           },
         },
-      }
+      },
     };
     if (transport) {
-      transport.sendData(formatRequest)
-      .then((event: any[] | null) => {
+      transport.sendData(formatRequest).then((event: any[] | null) => {
         if (event != null) {
           const response = JSON.parse(JSON.stringify(event[0]));
           get().updateThread(threadId, response.newText);
@@ -404,5 +450,5 @@ export const createCodeEditorSlice: StateCreator<
         }
       });
     }
-  }
+  },
 });
