@@ -13,7 +13,7 @@ import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { useStageTarget } from './useStageTarget';
 import { Box } from '@mui/material';
-import { Sprite, Stage } from 'leopard';
+import { Sprite, Stage } from '../../../vm/src';
 
 export default function SpritePane(){
     const patchVM = usePatchStore((state) => state.patchVM);

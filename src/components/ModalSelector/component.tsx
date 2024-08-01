@@ -15,7 +15,6 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useCostumeHandlers } from "../../hooks/useCostumeUploadHandlers";
 import { getPatchAssetImageUrl } from "../../lib/patch-asset-image-fetch";
 import { createVMAsset } from "../../lib/file-uploader";
-import { Costume } from "leopard";
 
 export const ModalSelector = () => {
   const modalSelectorType = usePatchStore((state) => state.modalSelectorType);

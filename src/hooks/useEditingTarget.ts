@@ -1,5 +1,5 @@
 //import { Target } from "../components/EditorPane/types";
-import { Sprite, Stage } from "leopard";
+import { Sprite, Stage } from "../../vm/src";
 import usePatchStore from "../store";
 
 export const useEditingTarget = (): [Sprite | Stage | null, (target: Sprite | Stage | string) => void] => {

@@ -10,7 +10,7 @@ import usePatchStore from "../../store";
 //import patchFirebaseStorage from "../../lib/firebase-storage";
 import { storage } from "../../lib/firebase";
 import { VmError, VmErrorType } from "../EditorPane/types";
-import { Sprite } from "leopard";
+import { Sprite } from "../../../vm/src";
 import { changeSpriteValues } from "../SpritePane/onAddSpriteHandler";
 import { useEditingTarget } from "../../hooks/useEditingTarget";
 // import { LanguageServerState } from "../../store/LanguageServerEditorState";

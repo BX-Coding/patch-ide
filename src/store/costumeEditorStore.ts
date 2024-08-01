@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { EditorState } from './index';
-import { Costume, Sprite, Stage } from 'leopard';
+// import { Costume, Sprite, Stage } from 'leopard';
+import { Costume, Sprite, Stage } from '../../vm/src';
 
 export interface CostumeEditorState {
     costumes: Costume[],

@@ -1,4 +1,4 @@
-import { Sprite, Stage } from "leopard";
+import { Sprite, Stage } from "../../vm/src";
 import { Dictionary } from "./interfaces";
 import Thread from "./thread";
 

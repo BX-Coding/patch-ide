@@ -1,6 +1,6 @@
 import patchAssetStorage, { isSoundAssetType } from "../engine/storage/storage";
 import safeUid from "../engine/util/safe-uid";
-import { Costume, Sound } from "leopard";
+import { Costume, Sound } from "../../vm/src";
 import bmpConverter from "../util/bmp-converter";
 import { AssetType } from "../engine/storage/storage";
 

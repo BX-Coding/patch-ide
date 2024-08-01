@@ -4,7 +4,7 @@ import getCostumeUrl from '../../util/get-costume-url';
 import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
 import { CostumeImage } from '../CostumeImage';
-import { Sprite, Stage } from 'leopard';
+import { Sprite, Stage } from '../../../vm/src';
 
 type SpriteCardProps = {
     target: Sprite | Stage,

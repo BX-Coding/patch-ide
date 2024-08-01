@@ -1,5 +1,5 @@
 import safeUid from "./util/safe-uid";
-import { Sprite, Stage } from "leopard";
+import { Sprite, Stage } from "../../vm/src";
 import Runtime from "./runtime";
 import { BlockFunctionType } from "./blocks";
 import PatchWorker from "./worker/patch-worker";

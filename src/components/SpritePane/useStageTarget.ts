@@ -1,4 +1,4 @@
-import { Stage } from "leopard";
+import { Stage } from "../../../vm/src";
 import usePatchStore from "../../store";
 
 export const useStageTarget = (): Stage | null => {

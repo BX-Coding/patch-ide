@@ -7,7 +7,7 @@ import { Transport } from "@open-rpc/client-js/build/transports/Transport";
 import { WebSocketTransport } from "@open-rpc/client-js";
 import { JSONRPCRequestData } from "@open-rpc/client-js/build/Request";
 import { LanguageServerState } from "./LanguageServerEditorState";
-import { Sprite, Stage } from "leopard";
+import { Sprite, Stage } from "../../vm/src";
 import { Dictionary } from "../engine/interfaces";
 import Thread from "../engine/thread";
 import { backdrops } from "../assets/backdrops";

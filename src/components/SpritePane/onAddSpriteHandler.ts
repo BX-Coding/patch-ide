@@ -1,4 +1,4 @@
-import { Sprite, Stage } from "leopard";
+import { Sprite, Stage } from "../../../vm/src";
 import { sprites } from "../../assets/sprites";
 import { useEditingTarget } from "../../hooks/useEditingTarget";
 import usePatchStore from "../../store";

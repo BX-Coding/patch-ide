@@ -1,7 +1,8 @@
 import { StateCreator } from "zustand";
 import { EditorState } from "./index";
-import { Sprite, Stage, Sound } from "leopard";
-import { Costume } from "leopard";
+// import { Sprite, Stage, Sound } from "leopard";
+// import { Costume } from "leopard";
+import { Sprite, Stage, Sound, Costume } from "../../vm/src";
 import { Dictionary } from "../engine/interfaces";
 
 export interface LanguageServerState {

@@ -1,7 +1,7 @@
 import usePatchStore from "../store";
 import { costumeUpload, handleFileUpload } from "../lib/file-uploader";
 import { useEditingTarget } from "./useEditingTarget";
-import { Costume } from "leopard";
+import { Costume } from "../../vm/src";
 
 export const useCostumeHandlers = () => {
     const patchVM = usePatchStore(state => state.patchVM);

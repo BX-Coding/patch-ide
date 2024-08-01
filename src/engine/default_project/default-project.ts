@@ -1,4 +1,5 @@
-import { Stage as StageBase, Costume, Sprite, Trigger} from "leopard";
+// import { Stage as StageBase, Costume, Sprite, Trigger} from "leopard";
+import { Stage as StageBase, Costume, Sprite, Trigger } from "../../../vm/src";
 import patchAssetStorage from "../storage/storage";
 
 export const defaultStage = new StageBase({ costumeNumber: 1, id: "Stage" });

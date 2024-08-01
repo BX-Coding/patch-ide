@@ -1,7 +1,7 @@
 import { handleFileUpload, soundUpload } from '../lib/file-uploader';
 import usePatchStore from '../store';
 import { SoundJson } from '../components/EditorPane/old-types';
-import { Sound } from 'leopard';
+import { Sound } from '../../vm/src';
 
 export const useSoundHandlers = () => {
     const patchVM = usePatchStore(state => state.patchVM);

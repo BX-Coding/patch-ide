@@ -1,6 +1,6 @@
 import { Dictionary } from '../../engine/interfaces';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
-import { Sprite, Stage } from 'leopard';
+import { Sprite, Stage } from '../../../vm/src';
 //import { spriteUpload } from '../../lib/file-uploader';
 import usePatchStore from '../../store';
 import { SpriteJson } from '../EditorPane/old-types';

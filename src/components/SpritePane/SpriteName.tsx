@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import { HorizontalButtons, IconButton } from '../PatchButton';
 import usePatchStore from '../../store';
 import { useEditingTarget } from '../../hooks/useEditingTarget';
-import { Sprite } from 'leopard';
+import { Sprite } from '../../../vm/src';
 
 export function SpriteName() {
     const patchVM = usePatchStore((state) => state.patchVM);

@@ -32,7 +32,8 @@ const KEY_NAME: Dictionary<string> = {
 const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
 import Runtime, { RuntimeState } from "./runtime";
-import { Costume, Sound, Sprite, Stage } from "leopard";
+// import { Costume, Sound, Sprite, Stage } from "leopard";
+import { Costume, Sound, Sprite, Stage } from "../../vm/src";
 
 import { Dictionary } from "./interfaces";
 import { SpriteJson } from "../components/EditorPane/old-types";

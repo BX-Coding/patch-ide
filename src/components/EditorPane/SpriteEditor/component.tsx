@@ -9,7 +9,7 @@ import { CostumeImage } from '../../CostumeImage';
 import { DropdownMenu } from '../../DropdownMenu';
 import AddIcon from '@mui/icons-material/Add';
 import { useCostumeHandlers } from '../../../hooks/useCostumeUploadHandlers';
-import { Costume, Sprite, Stage } from 'leopard';
+import { Costume, Sprite, Stage } from '../../../../vm/src';
 import patchAssetStorage from '../../../engine/storage/storage';
 
 function AddCostumeButton() {

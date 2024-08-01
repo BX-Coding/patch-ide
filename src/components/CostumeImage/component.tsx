@@ -1,6 +1,6 @@
 import React from "react"
 import getCostumeUrl from "../../util/get-costume-url"
-import { Costume } from "leopard"
+import { Costume } from "../../../vm/src"
 
 type CostumeImageProps = {
     costume: Costume,

@@ -1,5 +1,6 @@
 import EventEmitter from "events";
-import { Color, Costume, Project, Sound, Sprite, Stage, Trigger } from "leopard";
+// import { Color, Costume, Project, Sound, Sprite, Stage, Trigger } from "leopard";
+import { Color, Costume, Project, Sound, Sprite, Stage, Trigger } from "../../vm/src";
 import {
     defaultSprites,
     defaultStage,

@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand'
 import { EditorState } from './index'
 import { SoundJson } from '../components/EditorPane/old-types'
-import { Sound, Sprite, Stage } from 'leopard'
+import { Sound, Sprite, Stage } from '../../vm/src'
 
 type Asset = {
     data: number[]
